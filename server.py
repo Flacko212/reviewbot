@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, redirect, session
+from flask import Flask, request, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 import requests
 import os
@@ -6,8 +6,7 @@ import json
 import urllib.parse
 
 app = Flask(__name__, static_folder='static')
-app.secret_key = os.environ.get('SECRET_KEY', 'reviewbot-secret-key-2024')
-CORS(app, supports_credentials=True)
+CORS(app)
 
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
@@ -23,6 +22,7 @@ def oauth_callback():
     code = request.args.get('code')
     if not code:
         return redirect('/?error=no_code')
+
     token_response = requests.post('https://oauth2.googleapis.com/token', data={
         'code': code,
         'client_id': GOOGLE_CLIENT_ID,
@@ -31,36 +31,40 @@ def oauth_callback():
         'grant_type': 'authorization_code'
     })
     tokens = token_response.json()
+
     if 'error' in tokens:
         return redirect(f'/?error={tokens["error"]}')
-    access_token = tokens.get('access_token')
+
+    access_token = tokens.get('access_token', '')
     refresh_token = tokens.get('refresh_token', '')
+
     accounts_response = requests.get(
         'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
         headers={'Authorization': f'Bearer {access_token}'}
     )
     accounts = accounts_response.json().get('accounts', [])
-    session['g_access'] = access_token
-    session['g_refresh'] = refresh_token
-    session['g_accounts'] = json.dumps(accounts)
-    return redirect('/google-success')
+    accounts_json = urllib.parse.quote(json.dumps(accounts))
+    access_enc = urllib.parse.quote(access_token)
+    refresh_enc = urllib.parse.quote(refresh_token)
 
-@app.route('/google-success')
-def google_success():
-    access_token = session.get('g_access', '')
-    refresh_token = session.get('g_refresh', '')
-    accounts = session.get('g_accounts', '[]')
     html = f"""<!DOCTYPE html>
-<html><head><title>Connected</title></head><body>
+<html>
+<head><title>Connecting...</title></head>
+<body>
+<p>Connecting to Google Business, please wait...</p>
 <script>
-  localStorage.setItem('g_access', {json.dumps(access_token)});
-  localStorage.setItem('g_refresh', {json.dumps(refresh_token)});
-  localStorage.setItem('g_accounts', {json.dumps(accounts)});
-  localStorage.setItem('g_just_connected', 'true');
-  window.location.href = '/';
+  try {{
+    localStorage.setItem('g_access', decodeURIComponent('{access_enc}'));
+    localStorage.setItem('g_refresh', decodeURIComponent('{refresh_enc}'));
+    localStorage.setItem('g_accounts', decodeURIComponent('{accounts_json}'));
+    localStorage.setItem('g_just_connected', 'true');
+    window.location.href = '/';
+  }} catch(e) {{
+    document.body.innerHTML = 'Error saving connection: ' + e.message;
+  }}
 </script>
-<p>Connecting... please wait.</p>
-</body></html>"""
+</body>
+</html>"""
     return html
 
 @app.route('/api/generate', methods=['POST'])
