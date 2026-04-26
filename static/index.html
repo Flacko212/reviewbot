@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReviewBot</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -256,7 +256,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script>
 const SUPABASE_URL = 'https://oycuvjfkkyalxvwxhabd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95Y3V2amZra3lhbHh2d3hoYWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMDA1ODQsImV4cCI6MjA5MjU3NjU4NH0.koz8aXU10VYm8nPK0iP8s8n6vnb8QnK6Ts3JU6WpMow';
+const SUPABASE_ANON_KEY = 'sb_publishable_qp_jSOZtqFAuRXuS60Qbkw_VIoYztuf';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -279,7 +279,7 @@ async function doSignup(){
   err.style.display='none';btn.disabled=true;btn.textContent='Creating account...';
   const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
   if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Create account';return;}
-  if(data.user){await sb.from('profiles').upsert({id:data.user.id,email,role:'client'});toast('Account created! Check your email to confirm.','success');showLogin();btn.disabled=false;btn.textContent='Create account';}
+  if(data.user){await sb.from('profiles').upsert({id:data.user.id,email,role:'client'});toast('Account created! Signing you in...','success');showLogin();btn.disabled=false;btn.textContent='Create account';}
 }
 
 async function doLogout(){await sb.auth.signOut();}
