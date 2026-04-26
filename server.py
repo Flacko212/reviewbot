@@ -11,6 +11,7 @@ CORS(app)
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 APP_URL = os.environ.get('APP_URL', 'https://automatedreviewbot.co.uk')
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY')
 REDIRECT_URI = f"{APP_URL}/oauth/callback"
 
 @app.route('/')
@@ -22,7 +23,6 @@ def oauth_callback():
     code = request.args.get('code')
     if not code:
         return redirect('/?error=no_code')
-
     token_response = requests.post('https://oauth2.googleapis.com/token', data={
         'code': code,
         'client_id': GOOGLE_CLIENT_ID,
@@ -31,13 +31,10 @@ def oauth_callback():
         'grant_type': 'authorization_code'
     })
     tokens = token_response.json()
-
     if 'error' in tokens:
         return redirect(f'/?error={tokens["error"]}')
-
     access_token = tokens.get('access_token', '')
     refresh_token = tokens.get('refresh_token', '')
-
     accounts_response = requests.get(
         'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
         headers={'Authorization': f'Bearer {access_token}'}
@@ -46,11 +43,8 @@ def oauth_callback():
     accounts_json = urllib.parse.quote(json.dumps(accounts))
     access_enc = urllib.parse.quote(access_token)
     refresh_enc = urllib.parse.quote(refresh_token)
-
     html = f"""<!DOCTYPE html>
-<html>
-<head><title>Connecting...</title></head>
-<body>
+<html><head><title>Connecting...</title></head><body>
 <p>Connecting to Google Business, please wait...</p>
 <script>
   try {{
@@ -60,22 +54,21 @@ def oauth_callback():
     localStorage.setItem('g_just_connected', 'true');
     window.location.href = '/';
   }} catch(e) {{
-    document.body.innerHTML = 'Error saving connection: ' + e.message;
+    document.body.innerHTML = 'Error: ' + e.message;
   }}
 </script>
-</body>
-</html>"""
+</body></html>"""
     return html
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
     data = request.json
-    api_key = data.get('apiKey', '').strip()
     prompt = data.get('prompt', '').strip()
-    if not api_key:
-        return jsonify({'error': 'Missing API key'}), 400
     if not prompt:
         return jsonify({'error': 'Missing prompt'}), 400
+    api_key = ANTHROPIC_API_KEY or data.get('apiKey', '').strip()
+    if not api_key:
+        return jsonify({'error': 'No API key configured'}), 400
     response = requests.post(
         'https://api.anthropic.com/v1/messages',
         headers={
@@ -151,6 +144,10 @@ def google_auth_url():
         f'&state={state}'
     )
     return jsonify({'url': url})
+
+@app.route('/api/has-server-key', methods=['GET'])
+def has_server_key():
+    return jsonify({'has_key': bool(ANTHROPIC_API_KEY)})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
