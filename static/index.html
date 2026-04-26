@@ -4,272 +4,466 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReviewBot</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--green:#b8f57a;--amber:#f5c842;--red:#f55a42;--bg:#0a0a0a;--surface:#131313;--border:#222;--text:#f0ede8;--muted:#555}
-body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh}
-.app{max-width:960px;margin:0 auto;padding:40px 24px}
-.header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;border-bottom:1px solid var(--border);padding-bottom:24px;flex-wrap:wrap;gap:16px}
-.logo{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-1px;color:var(--green)}
-.logo span{color:var(--text)}
-.tagline{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-.nav{display:flex;gap:4px}
-.nav-btn{font-size:11px;padding:8px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
-.nav-btn:hover{border-color:var(--green);color:var(--green)}
-.nav-btn.active{background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600}
-.api-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);margin-bottom:28px;flex-wrap:wrap}
-.api-bar.ok{border-color:#2a4a10;background:#0d1a07}
-.api-bar label{font-size:12px;color:var(--muted);white-space:nowrap;letter-spacing:1px}
-.api-bar input{flex:1;min-width:180px;font-size:12px;padding:8px 12px;border:1px solid #333;background:#0a0a0a;color:var(--text);outline:none;font-family:'DM Mono',monospace}
-.api-bar input:focus{border-color:var(--green)}
-.api-ok{font-size:11px;color:var(--green);display:none;letter-spacing:1px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:28px}
-.stat{background:var(--surface);padding:18px 20px}
-.stat-n{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--green);line-height:1}
-.stat-l{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-.tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
-.tab{font-size:12px;padding:8px 16px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.15s;letter-spacing:0.5px}
-.tab:hover{border-color:var(--green);color:var(--green)}
-.tab.active{background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600}
-.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.section-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.btn{font-size:11px;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
-.btn:hover{border-color:var(--green);color:var(--green)}
-.btn-green{border-color:var(--green);color:var(--green)}
-.btn-green:hover{background:var(--green);color:#0a0a0a}
-.btn-red{border-color:var(--red);color:var(--red)}
-.btn-red:hover{background:var(--red);color:#0a0a0a}
-.reviews{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border)}
-.rcard{background:var(--surface);padding:18px 20px;transition:background 0.15s}
-.rcard:hover{background:#161616}
-.rmeta{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:6px}
-.rauthor{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
-.rmeta-right{display:flex;align-items:center;gap:8px}
-.rdate{font-size:11px;color:var(--muted)}
-.badge{font-size:10px;padding:2px 8px;border:1px solid;letter-spacing:1px;text-transform:uppercase}
-.badge-new{border-color:#333;color:#555}
-.badge-responded{border-color:#2a4a10;color:var(--green)}
-.stars{font-size:13px;margin-bottom:8px}
-.rtext{font-size:13px;color:#999;line-height:1.7;margin-bottom:12px}
-.ractions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn-gen{font-size:11px;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
-.btn-gen:hover{border-color:var(--green);color:var(--green)}
-.btn-gen:disabled{opacity:0.35;cursor:not-allowed}
-.btn-post{font-size:11px;padding:7px 14px;border:1px solid var(--green);background:transparent;color:var(--green);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
-.btn-post:hover{background:var(--green);color:#0a0a0a}
-.reply-box{margin-top:12px;border:1px solid #1a2e0a;background:#0d1a07}
-.reply-label{font-size:10px;color:var(--green);padding:6px 12px;border-bottom:1px solid #1a2e0a;display:flex;justify-content:space-between;letter-spacing:1px;text-transform:uppercase}
-.reply-ta{width:100%;background:transparent;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:12px;resize:vertical;min-height:80px;outline:none;line-height:1.7}
-.already{font-size:11px;color:var(--green);letter-spacing:1px}
-.dots{display:inline-flex;gap:4px;align-items:center}
-.dot{width:5px;height:5px;background:currentColor;border-radius:50%;animation:dp 1.2s infinite}
-.dot:nth-child(2){animation-delay:0.2s}
-.dot:nth-child(3){animation-delay:0.4s}
-@keyframes dp{0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
-.toast{position:fixed;bottom:24px;right:24px;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;padding:10px 18px;letter-spacing:1px;display:none;z-index:99}
-.toast.success{background:var(--green);color:#0a0a0a}
-.toast.error{background:var(--red);color:#0a0a0a}
+:root{
+  --primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;
+  --bg:#f8fafc;--white:#ffffff;--border:#e2e8f0;--border-strong:#cbd5e1;
+  --text:#0f172a;--text-secondary:#64748b;--text-muted:#94a3b8;
+  --red:#ef4444;--red-light:#fef2f2;--amber:#f59e0b;--amber-light:#fffbeb;
+  --shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,0.07),0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg:0 10px 15px rgba(0,0,0,0.1),0 4px 6px rgba(0,0,0,0.05);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.hidden{display:none!important}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#f0fdf4 0%,#f8fafc 50%,#f0f9ff 100%)}
+.auth-card{background:var(--white);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);padding:40px;width:100%;max-width:420px}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.auth-logo-icon{width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
+.auth-logo-text{font-size:20px;font-weight:700;color:var(--text)}
+.auth-logo-text span{color:var(--primary)}
+.auth-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.auth-sub{color:var(--text-secondary);font-size:14px;margin-bottom:28px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border-color 0.15s}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,0.1)}
+.auth-btn{width:100%;padding:11px;background:var(--primary);color:white;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s;margin-top:4px}
+.auth-btn:hover{background:var(--primary-dark)}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed}
+.auth-switch{text-align:center;margin-top:20px;font-size:13px;color:var(--text-secondary)}
+.auth-switch a{color:var(--primary);text-decoration:none;font-weight:500;cursor:pointer}
+.auth-error{background:var(--red-light);color:var(--red);padding:10px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:none}
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;left:0;top:0}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo-inner{display:flex;align-items:center;gap:10px}
+.sidebar-logo-icon{width:34px;height:34px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0}
+.sidebar-logo-text{font-size:16px;font-weight:700}
+.sidebar-logo-text span{color:var(--primary)}
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.nav-section{margin-bottom:20px}
+.nav-section-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;padding:0 10px;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:500;transition:all 0.15s;margin-bottom:1px}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--primary-light);color:var(--primary-dark);font-weight:600}
+.nav-item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-item-badge{margin-left:auto;background:var(--primary);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius)}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-size:13px;font-weight:700;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:var(--text-muted)}
+.logout-btn{font-size:16px;color:var(--text-muted);cursor:pointer;padding:4px}
+.logout-btn:hover{color:var(--red)}
+.main{margin-left:240px;flex:1;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.topbar-title{font-size:16px;font-weight:700}
+.topbar-actions{display:flex;gap:10px;align-items:center}
+.content{padding:28px}
 .page{display:none}
 .page.active{display:block}
-.admin-grid{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
-.admin-row{background:var(--surface);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.admin-row:hover{background:#161616}
-.biz-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:2px}
-.biz-meta{font-size:11px;color:var(--muted);letter-spacing:0.5px}
-.admin-actions{display:flex;gap:8px}
-.add-form{border:1px solid var(--border);background:var(--surface);padding:24px;margin-bottom:24px}
-.add-form h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:20px;letter-spacing:1px;text-transform:uppercase;color:var(--green)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-.form-group.full{grid-column:1/-1}
-.form-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.form-input{background:#0a0a0a;border:1px solid #333;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:10px 12px;outline:none;width:100%}
-.form-input:focus{border-color:var(--green)}
-.form-select{background:#0a0a0a;border:1px solid #333;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:10px 12px;outline:none;width:100%;cursor:pointer}
-.form-select:focus{border-color:var(--green)}
-.form-actions{display:flex;gap:8px;justify-content:flex-end}
-.empty-state{padding:48px;text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;background:var(--surface);border:1px solid var(--border)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.stat-card-label{font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px}
+.stat-card-value{font-size:28px;font-weight:700;color:var(--text);line-height:1}
+.stat-card-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.stat-card.green .stat-card-value{color:var(--primary)}
+.client-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.client-tab{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--white);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
+.client-tab:hover{border-color:var(--primary);color:var(--primary)}
+.client-tab.active{background:var(--primary);border-color:var(--primary);color:white}
+.reviews-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.reviews-title{font-size:15px;font-weight:600}
+.btn{padding:8px 16px;border-radius:var(--radius);border:1.5px solid var(--border-strong);background:var(--white);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:white}
+.btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);color:white}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-danger{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:white}
+.btn-sm{padding:6px 12px;font-size:12px}
+.review-list{display:flex;flex-direction:column;gap:12px}
+.review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:box-shadow 0.15s}
+.review-card:hover{box-shadow:var(--shadow-md)}
+.review-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.review-author{font-size:14px;font-weight:600}
+.review-meta-right{display:flex;align-items:center;gap:8px}
+.review-date{font-size:12px;color:var(--text-muted)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.badge-new{background:#f1f5f9;color:#64748b}
+.badge-responded{background:var(--primary-light);color:var(--primary-dark)}
+.stars-row{display:flex;gap:2px;margin-bottom:10px}
+.star{font-size:13px}
+.review-text{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px}
+.review-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.already-responded{font-size:12px;color:var(--primary);font-weight:500}
+.reply-box{margin-top:14px;border:1.5px solid var(--primary-light);border-radius:var(--radius-lg);overflow:hidden}
+.reply-box-header{background:var(--primary-light);padding:8px 14px;display:flex;justify-content:space-between;align-items:center}
+.reply-box-label{font-size:11px;font-weight:600;color:var(--primary-dark);text-transform:uppercase;letter-spacing:0.5px}
+.reply-textarea{width:100%;border:none;padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);line-height:1.6;resize:vertical;min-height:90px;outline:none;background:white}
+.dots{display:inline-flex;gap:3px;align-items:center}
+.dot{width:4px;height:4px;background:currentColor;border-radius:50%;animation:dp 1.2s infinite}
+.dot:nth-child(2){animation-delay:0.2s}
+.dot:nth-child(3){animation-delay:0.4s}
+@keyframes dp{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px}
+.section-card-title{font-size:15px;font-weight:700;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group-inner{display:flex;flex-direction:column;gap:6px}
+.form-group-inner.full{grid-column:1/-1}
+.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer;transition:border-color 0.15s}
+.form-select:focus{border-color:var(--primary)}
+.form-actions{display:flex;justify-content:flex-end;margin-top:16px}
+.clients-table{width:100%;border-collapse:collapse}
+.clients-table th{text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.clients-table td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.clients-table tr:last-child td{border-bottom:none}
+.clients-table tr:hover td{background:#fafafa}
+.api-key-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.api-key-bar.connected{border-color:var(--primary);background:var(--primary-light)}
+.api-key-label{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
+.api-key-input{flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',monospace;font-size:12px;color:var(--text);outline:none;background:white;transition:border-color 0.15s}
+.api-key-input:focus{border-color:var(--primary)}
+.api-connected-badge{font-size:12px;font-weight:600;color:var(--primary-dark);display:none;white-space:nowrap}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;display:none;z-index:999;box-shadow:var(--shadow-lg)}
+.toast.success{background:var(--primary);color:white}
+.toast.error{background:var(--red);color:white}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state-icon{font-size:40px;margin-bottom:12px}
+.empty-state-title{font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.role-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.role-admin{background:#faf5ff;color:#7c3aed}
+.role-client{background:var(--primary-light);color:var(--primary-dark)}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <div>
-      <div class="logo">REVIEW<span>BOT</span></div>
-      <div class="tagline">AI-powered Google review management</div>
-    </div>
-    <div class="nav">
-      <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
-      <button class="nav-btn" onclick="showPage('admin',this)">+ Clients</button>
-    </div>
+
+<div id="authWrap" class="auth-wrap">
+  <div class="auth-card" id="loginCard">
+    <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub">Sign in to manage your Google reviews</div>
+    <div class="auth-error" id="loginError"></div>
+    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in</button>
+    <div class="auth-switch">Don't have an account? <a onclick="showSignup()">Create one</a></div>
   </div>
 
-  <div class="api-bar" id="apiBar">
-    <label>API KEY</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." oninput="onKey()">
-    <span class="api-ok" id="apiOk">✓ CONNECTED</span>
+  <div class="auth-card hidden" id="signupCard">
+    <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
+    <div class="auth-title">Create account</div>
+    <div class="auth-sub">Get started with ReviewBot</div>
+    <div class="auth-error" id="signupError"></div>
+    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" type="text" placeholder="Nathan Gale"></div>
+    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="signupEmail" type="email" placeholder="you@example.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPassword" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()"></div>
+    <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create account</button>
+    <div class="auth-switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
   </div>
+</div>
 
-  <div class="page active" id="page-dashboard">
-    <div class="stats">
-      <div class="stat"><div class="stat-n" id="sNew">0</div><div class="stat-l">Awaiting reply</div></div>
-      <div class="stat"><div class="stat-n" id="sDone">0</div><div class="stat-l">Responded</div></div>
-      <div class="stat"><div class="stat-n" id="sAll">0</div><div class="stat-l">Total reviews</div></div>
-    </div>
-    <div class="tabs" id="tabs"></div>
-    <div class="section-row">
-      <span class="section-label" id="bizLabel">Reviews</span>
-      <button class="btn btn-green" onclick="autoAll()">Auto-respond all</button>
-    </div>
-    <div id="grid"></div>
-  </div>
-
-  <div class="page" id="page-admin">
-    <div class="add-form">
-      <h3>Add New Client</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Business Name</label>
-          <input class="form-input" id="newName" placeholder="e.g. Oakwood Plumbing">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Business Type</label>
-          <input class="form-input" id="newType" placeholder="e.g. plumbing contractor">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Reply Tone</label>
-          <select class="form-select" id="newTone">
-            <option value="professional and reassuring">Professional & Reassuring — trades, contractors</option>
-            <option value="warm, hospitable and genuine">Warm & Hospitable — restaurants, cafes</option>
-            <option value="friendly and personal">Friendly & Personal — salons, local shops</option>
-            <option value="confident and expert">Confident & Expert — professional services</option>
-            <option value="enthusiastic and energetic">Enthusiastic & Energetic — gyms, sports</option>
-            <option value="calm and trustworthy">Calm & Trustworthy — healthcare, wellness</option>
-          </select>
-        </div>
+<div id="appShell" class="app-shell hidden">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="sidebar-logo-inner"><div class="sidebar-logo-icon">⭐</div><div class="sidebar-logo-text">Review<span>Bot</span></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Main</div>
+        <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-item-icon">📊</span> Dashboard<span class="nav-item-badge hidden" id="pendingBadge">0</span></div>
+        <div class="nav-item" onclick="nav('reviews',this)"><span class="nav-item-icon">⭐</span> Reviews</div>
       </div>
-      <div class="form-actions">
-        <button class="btn btn-green" onclick="addBusiness()">Add Client</button>
+      <div class="nav-section" id="adminNav">
+        <div class="nav-section-label">Admin</div>
+        <div class="nav-item" onclick="nav('clients',this)"><span class="nav-item-icon">🏢</span> Clients</div>
+        <div class="nav-item" onclick="nav('users',this)"><span class="nav-item-icon">👥</span> Users</div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar" id="userAvatar">N</div>
+        <div class="user-info"><div class="user-name" id="userName">Loading...</div><div class="user-role" id="userRole">—</div></div>
+        <div class="logout-btn" onclick="doLogout()" title="Sign out">↪</div>
       </div>
     </div>
-    <div class="section-row">
-      <span class="section-label">Current Clients (<span id="clientCount">0</span>)</span>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-actions"><button class="btn btn-primary btn-sm" onclick="autoRespondAll()" id="autoBtn">Auto-respond all</button></div>
     </div>
-    <div id="adminGrid"></div>
-  </div>
+    <div class="content">
+      <div class="api-key-bar" id="apiKeyBar">
+        <span class="api-key-label">🔑 Anthropic API Key</span>
+        <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." oninput="onApiKey()">
+        <span class="api-connected-badge" id="apiConnected">✓ Connected</span>
+      </div>
+
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card green"><div class="stat-card-label">Pending replies</div><div class="stat-card-value" id="statPending">0</div><div class="stat-card-sub">Need attention</div></div>
+          <div class="stat-card"><div class="stat-card-label">Responded</div><div class="stat-card-value" id="statResponded">0</div><div class="stat-card-sub">All time</div></div>
+          <div class="stat-card"><div class="stat-card-label">Total reviews</div><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-sub">All time</div></div>
+          <div class="stat-card"><div class="stat-card-label">Clients</div><div class="stat-card-value" id="statClients">0</div><div class="stat-card-sub">Active</div></div>
+        </div>
+        <div id="dashRecentWrap"></div>
+      </div>
+
+      <div class="page" id="page-reviews">
+        <div class="client-tabs" id="clientTabs"></div>
+        <div class="reviews-header"><div class="reviews-title" id="reviewsTitle">Reviews</div></div>
+        <div id="reviewsList"></div>
+      </div>
+
+      <div class="page" id="page-clients">
+        <div class="section-card">
+          <div class="section-card-title">Add New Client</div>
+          <div class="form-grid">
+            <div class="form-group-inner"><label class="form-label">Business Name</label><input class="form-input" id="newBizName" placeholder="e.g. Oakwood Plumbing"></div>
+            <div class="form-group-inner"><label class="form-label">Business Type</label><input class="form-input" id="newBizType" placeholder="e.g. plumbing contractor"></div>
+            <div class="form-group-inner full"><label class="form-label">Reply Tone</label>
+              <select class="form-select" id="newBizTone">
+                <option value="professional and reassuring">Professional & Reassuring — trades, contractors</option>
+                <option value="warm, hospitable and genuine">Warm & Hospitable — restaurants, cafes</option>
+                <option value="friendly and personal">Friendly & Personal — salons, local shops</option>
+                <option value="confident and expert">Confident & Expert — professional services</option>
+                <option value="enthusiastic and energetic">Enthusiastic & Energetic — gyms, sports</option>
+                <option value="calm and trustworthy">Calm & Trustworthy — healthcare, wellness</option>
+              </select>
+            </div>
+            <div class="form-group-inner full"><label class="form-label">Assign to User (optional)</label><select class="form-select" id="newBizOwner"><option value="">— Admin managed —</option></select></div>
+          </div>
+          <div class="form-actions"><button class="btn btn-primary" onclick="addClient()">Add Client</button></div>
+        </div>
+        <div class="section-card"><div class="section-card-title">All Clients</div><div id="clientsTable"></div></div>
+      </div>
+
+      <div class="page" id="page-users">
+        <div class="section-card"><div class="section-card-title">All Users</div><div id="usersTable"></div></div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-let BIZ=JSON.parse(localStorage.getItem('rb_biz')||'null')||[
-  {id:1,name:"Oakwood Plumbing",type:"plumbing contractor",tone:"professional and reassuring"},
-  {id:2,name:"The Fig & Vine",type:"restaurant and wine bar",tone:"warm, hospitable and genuine"},
-  {id:3,name:"Bloom Hair Studio",type:"hair salon",tone:"friendly and personal"},
-];
-let REVIEWS=JSON.parse(localStorage.getItem('rb_reviews')||'null')||{
-  1:[
-    {id:1,author:"Sarah M.",stars:5,date:"2 days ago",text:"Brilliant service. Fixed our burst pipe at 11pm on a Sunday — no fuss, fair price. Will definitely use again.",status:"new"},
-    {id:2,author:"James P.",stars:2,date:"5 days ago",text:"Booked for 9am, didn't show until noon with no call. Work was fine once done but the communication was really poor.",status:"new"},
-    {id:3,author:"Helen R.",stars:5,date:"1 week ago",text:"Third time using Oakwood. Always reliable, always tidy. Dave is a legend.",status:"responded"},
-  ],
-  2:[
-    {id:4,author:"Marco T.",stars:4,date:"1 day ago",text:"Great atmosphere and the wine list is impressive. Food was lovely, service a little slow on a busy Friday but overall a solid evening.",status:"new"},
-    {id:5,author:"Priya K.",stars:1,date:"3 days ago",text:"Found a hair in my risotto. When I told the waiter he just shrugged. Really disappointing for the price point.",status:"new"},
-  ],
-  3:[
-    {id:6,author:"Charlotte B.",stars:5,date:"Today",text:"Amy is an absolute artist. I showed her a vague Pinterest board and she completely understood the vision. Best hair I've ever had!",status:"new"},
-  ],
-};
-let sel=BIZ[0]?.id||null,replies={},loading=new Set();
-let nextId=Math.max(...BIZ.map(b=>b.id),0)+1;
+const SUPABASE_URL = 'https://oycuvjfkkyalxvwxhabd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95Y3V2amZra3lhbHh2d3hoYWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMDA1ODQsImV4cCI6MjA5MjU3NjU4NH0.koz8aXU10VYm8nPK0iP8s8n6vnb8QnK6Ts3JU6WpMow';
 
-function save(){localStorage.setItem('rb_biz',JSON.stringify(BIZ));localStorage.setItem('rb_reviews',JSON.stringify(REVIEWS));}
-function getKey(){return document.getElementById('apiKey').value.trim()||localStorage.getItem('rb_key')||'';}
-function onKey(){const k=getKey(),ok=document.getElementById('apiOk'),bar=document.getElementById('apiBar');if(k.startsWith('sk-ant')){ok.style.display='block';bar.classList.add('ok');localStorage.setItem('rb_key',k);}else{ok.style.display='none';bar.classList.remove('ok');}}
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function showPage(name,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
-  if(name==='admin')renderAdmin();
-  if(name==='dashboard')renderDashboard();
+let currentUser=null,currentProfile=null,businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
+
+function showLogin(){document.getElementById('loginCard').classList.remove('hidden');document.getElementById('signupCard').classList.add('hidden');}
+function showSignup(){document.getElementById('signupCard').classList.remove('hidden');document.getElementById('loginCard').classList.add('hidden');}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value;
+  const btn=document.getElementById('loginBtn'),err=document.getElementById('loginError');
+  err.style.display='none';btn.disabled=true;btn.textContent='Signing in...';
+  const {error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Sign in';}
 }
 
-function updateStats(){const all=Object.values(REVIEWS).flat();document.getElementById('sNew').textContent=all.filter(r=>r.status==='new').length;document.getElementById('sDone').textContent=all.filter(r=>r.status==='responded').length;document.getElementById('sAll').textContent=all.length;}
-function renderTabs(){const el=document.getElementById('tabs');if(!BIZ.length){el.innerHTML='';return;}el.innerHTML=BIZ.map(b=>`<button class="tab ${b.id===sel?'active':''}" onclick="pick(${b.id})">${b.name}</button>`).join('');}
-function pick(id){sel=id;renderTabs();renderGrid();}
+async function doSignup(){
+  const name=document.getElementById('signupName').value.trim(),email=document.getElementById('signupEmail').value.trim(),pass=document.getElementById('signupPassword').value;
+  const btn=document.getElementById('signupBtn'),err=document.getElementById('signupError');
+  err.style.display='none';btn.disabled=true;btn.textContent='Creating account...';
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Create account';return;}
+  if(data.user){await sb.from('profiles').upsert({id:data.user.id,email,role:'client'});toast('Account created! Check your email to confirm.','success');showLogin();btn.disabled=false;btn.textContent='Create account';}
+}
+
+async function doLogout(){await sb.auth.signOut();}
+
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){currentUser=session.user;await loadProfile();showApp();}
+  else{currentUser=null;currentProfile=null;document.getElementById('authWrap').classList.remove('hidden');document.getElementById('appShell').classList.add('hidden');}
+});
+
+async function loadProfile(){
+  const {data}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  if(!data){await sb.from('profiles').insert({id:currentUser.id,email:currentUser.email,role:'client'});currentProfile={id:currentUser.id,email:currentUser.email,role:'client'};}
+  else{currentProfile=data;}
+}
+
+async function showApp(){
+  document.getElementById('authWrap').classList.add('hidden');
+  document.getElementById('appShell').classList.remove('hidden');
+  const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0]||'User';
+  document.getElementById('userName').textContent=name;
+  document.getElementById('userAvatar').textContent=name[0].toUpperCase();
+  document.getElementById('userRole').textContent=currentProfile?.role==='admin'?'Administrator':'Client';
+  if(currentProfile?.role!=='admin'){document.getElementById('adminNav').style.display='none';document.getElementById('autoBtn').style.display='none';}
+  const saved=localStorage.getItem('rb_key');
+  if(saved){document.getElementById('apiKeyInput').value=saved;onApiKey();}
+  await loadData();renderDashboard();
+}
+
+async function loadData(){
+  let q=sb.from('businesses').select('*');
+  if(currentProfile?.role!=='admin')q=q.eq('owner_id',currentUser.id);
+  const {data:bizData}=await q;businesses=bizData||[];
+  allReviews={};
+  for(const b of businesses){const {data:r}=await sb.from('reviews').select('*').eq('business_id',b.id);allReviews[b.id]=r||[];}
+  updateStats();
+}
+
+function updateStats(){
+  const all=Object.values(allReviews).flat(),pending=all.filter(r=>r.status==='new').length;
+  document.getElementById('statPending').textContent=pending;
+  document.getElementById('statResponded').textContent=all.filter(r=>r.status==='responded').length;
+  document.getElementById('statTotal').textContent=all.length;
+  document.getElementById('statClients').textContent=businesses.length;
+  const badge=document.getElementById('pendingBadge');
+  if(pending>0){badge.textContent=pending;badge.classList.remove('hidden');}else{badge.classList.add('hidden');}
+}
+
+function nav(page,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const titles={dashboard:'Dashboard',reviews:'Reviews',clients:'Clients',users:'Users'};
+  document.getElementById('topbarTitle').textContent=titles[page]||page;
+  if(page==='reviews')renderReviewsPage();
+  if(page==='clients')renderClientsPage();
+  if(page==='users')renderUsersPage();
+  if(page==='dashboard')renderDashboard();
+}
 
 function renderDashboard(){
-  if(!BIZ.length){sel=null;}else if(!sel||!BIZ.find(b=>b.id===sel)){sel=BIZ[0].id;}
-  renderTabs();renderGrid();updateStats();
-}
-
-function renderGrid(){
-  const grid=document.getElementById('grid');
-  if(!BIZ.length){grid.innerHTML=`<div class="empty-state">No clients yet — go to "+ Clients" to add your first one</div>`;document.getElementById('bizLabel').textContent='Reviews';return;}
-  const biz=BIZ.find(b=>b.id===sel);if(!biz)return;
-  document.getElementById('bizLabel').textContent=biz.name+' — reviews';
-  const revs=REVIEWS[sel]||[];
-  if(!revs.length){grid.innerHTML=`<div class="empty-state">No reviews yet for this client</div>`;return;}
-  grid.innerHTML=`<div class="reviews">`+revs.map(r=>{
-    const isLoad=loading.has(r.id),reply=replies[r.id];
-    const actions=r.status==='responded'&&!reply?`<span class="already">✓ Already responded</span>`:`<button class="btn-gen" onclick="gen(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate AI reply'}</button>${reply?`<button class="btn-post" onclick="post(${r.id})">Post response</button>`:''}`;
-    const replyBox=reply?`<div class="reply-box"><div class="reply-label"><span>AI generated reply</span><span style="opacity:0.6">${biz.tone}</span></div><textarea class="reply-ta" oninput="replies[${r.id}]=this.value">${reply}</textarea></div>`:'';
-    return`<div class="rcard"><div class="rmeta"><span class="rauthor">${r.author}</span><div class="rmeta-right"><span class="rdate">${r.date}</span><span class="badge badge-${r.status}">${r.status}</span></div></div><div class="stars">${[1,2,3,4,5].map(i=>`<span style="color:${i<=r.stars?'#f5c842':'#333'}">★</span>`).join('')}</div><div class="rtext">${r.text}</div><div class="ractions">${actions}</div>${replyBox}</div>`;
+  const pending=Object.values(allReviews).flat().filter(r=>r.status==='new');
+  const wrap=document.getElementById('dashRecentWrap');
+  if(!pending.length){wrap.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-title">All caught up!</div><div style="font-size:13px;color:var(--text-muted)">No pending reviews to respond to.</div></div>`;return;}
+  wrap.innerHTML=`<div style="font-size:15px;font-weight:600;margin-bottom:14px">Needs attention</div><div class="review-list">`+
+  pending.slice(0,5).map(r=>{
+    const biz=businesses.find(b=>b.id===r.business_id);
+    return`<div class="review-card"><div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">${biz?.name||''}</div><div class="review-card-header"><span class="review-author">${r.author}</span><span class="review-date">${r.date}</span></div><div class="stars-row">${[1,2,3,4,5].map(i=>`<span class="star" style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div><div class="review-text">${r.text}</div><div class="review-actions"><button class="btn btn-primary btn-sm" onclick="quickGen(${r.id},${r.business_id})">Generate AI reply</button></div></div>`;
   }).join('')+`</div>`;
 }
 
-async function gen(id){
+function renderReviewsPage(){
+  if(!businesses.length){document.getElementById('clientTabs').innerHTML='';document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No clients yet</div></div>`;return;}
+  if(!selectedBizId||!businesses.find(b=>b.id===selectedBizId))selectedBizId=businesses[0].id;
+  renderClientTabs();renderReviews();
+}
+
+function renderClientTabs(){
+  document.getElementById('clientTabs').innerHTML=businesses.map(b=>`<button class="client-tab ${b.id===selectedBizId?'active':''}" onclick="selectBiz(${b.id})">${b.name}</button>`).join('');
+}
+
+function selectBiz(id){selectedBizId=id;renderClientTabs();renderReviews();}
+
+function renderReviews(){
+  const biz=businesses.find(b=>b.id===selectedBizId);if(!biz)return;
+  document.getElementById('reviewsTitle').textContent=biz.name+' — Reviews';
+  const revs=allReviews[biz.id]||[];
+  if(!revs.length){document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><div class="empty-state-icon">⭐</div><div class="empty-state-title">No reviews yet</div></div>`;return;}
+  document.getElementById('reviewsList').innerHTML=`<div class="review-list">`+revs.map(r=>{
+    const isLoad=loadingIds.has(r.id),reply=replies[r.id]||r.ai_reply;
+    const actions=r.status==='responded'&&!reply?`<span class="already-responded">✓ Already responded</span>`:`<button class="btn btn-primary btn-sm" onclick="genReply(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate AI reply'}</button>${reply?`<button class="btn btn-sm" onclick="postReply(${r.id})" style="border-color:var(--primary);color:var(--primary)">Post response</button>`:''}`;
+    const replyBox=reply?`<div class="reply-box"><div class="reply-box-header"><span class="reply-box-label">✨ AI generated reply</span><span style="font-size:11px;color:var(--primary-dark)">${biz.tone}</span></div><textarea class="reply-textarea" oninput="replies[${r.id}]=this.value">${reply}</textarea></div>`:'';
+    return`<div class="review-card"><div class="review-card-header"><span class="review-author">${r.author}</span><div class="review-meta-right"><span class="review-date">${r.date}</span><span class="badge badge-${r.status}">${r.status}</span></div></div><div class="stars-row">${[1,2,3,4,5].map(i=>`<span class="star" style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div><div class="review-text">${r.text}</div><div class="review-actions">${actions}</div>${replyBox}</div>`;
+  }).join('')+`</div>`;
+}
+
+function getKey(){return document.getElementById('apiKeyInput').value.trim()||localStorage.getItem('rb_key')||'';}
+
+async function genReply(reviewId){
   const key=getKey();if(!key){toast('Add your API key first','error');return;}
-  const biz=BIZ.find(b=>b.id===sel),rev=(REVIEWS[sel]||[]).find(r=>r.id===id);
-  loading.add(id);renderGrid();
+  const biz=businesses.find(b=>b.id===selectedBizId),rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId);
+  loadingIds.add(reviewId);renderReviews();
   try{
     const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human, address their specifics. No hashtags or emojis.`})});
     const d=await res.json();if(d.error)throw new Error(JSON.stringify(d.error));
-    replies[id]=d.content?.find(b=>b.type==='text')?.text||'';toast('Reply generated','success');
-  }catch(e){replies[id]='Error: '+e.message;}
-  loading.delete(id);renderGrid();
+    replies[reviewId]=d.content?.find(b=>b.type==='text')?.text||'';
+    toast('Reply generated','success');
+  }catch(e){toast('Error: '+e.message,'error');}
+  loadingIds.delete(reviewId);renderReviews();
 }
 
-function post(id){const rev=(REVIEWS[sel]||[]).find(r=>r.id===id);if(rev)rev.status='responded';save();toast('Response posted','success');updateStats();renderGrid();}
-async function autoAll(){const p=(REVIEWS[sel]||[]).filter(r=>r.status==='new');if(!p.length){toast('No pending reviews','error');return;}for(const r of p)await gen(r.id);}
-
-function renderAdmin(){
-  document.getElementById('clientCount').textContent=BIZ.length;
-  const grid=document.getElementById('adminGrid');
-  if(!BIZ.length){grid.innerHTML=`<div class="empty-state">No clients yet — add your first one above</div>`;return;}
-  grid.innerHTML=`<div class="admin-grid">`+BIZ.map(b=>`<div class="admin-row"><div><div class="biz-name">${b.name}</div><div class="biz-meta">${b.type} · ${b.tone} · ${(REVIEWS[b.id]||[]).length} reviews</div></div><div class="admin-actions"><button class="btn btn-green" onclick="switchTo(${b.id})">View Reviews</button><button class="btn btn-red" onclick="removeBiz(${b.id})">Remove</button></div></div>`).join('')+`</div>`;
-}
-
-function addBusiness(){
-  const name=document.getElementById('newName').value.trim(),type=document.getElementById('newType').value.trim(),tone=document.getElementById('newTone').value;
-  if(!name||!type){toast('Fill in business name and type','error');return;}
-  const biz={id:nextId++,name,type,tone};BIZ.push(biz);REVIEWS[biz.id]=[];save();
-  document.getElementById('newName').value='';document.getElementById('newType').value='';
-  renderAdmin();toast(name+' added!','success');
-}
-
-function removeBiz(id){
-  if(!confirm('Remove this client and all their reviews?'))return;
-  BIZ=BIZ.filter(b=>b.id!==id);delete REVIEWS[id];if(sel===id)sel=BIZ[0]?.id||null;
-  save();renderAdmin();toast('Client removed','success');
-}
-
-function switchTo(id){
-  sel=id;
+async function quickGen(reviewId,bizId){
+  selectedBizId=bizId;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-dashboard').classList.add('active');
-  document.querySelectorAll('.nav-btn')[0].classList.add('active');
-  renderDashboard();
+  document.getElementById('page-reviews').classList.add('active');
+  document.getElementById('topbarTitle').textContent='Reviews';
+  renderReviewsPage();await genReply(reviewId);
+}
+
+async function postReply(reviewId){
+  const rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId),reply=replies[reviewId]||rev.ai_reply;
+  await sb.from('reviews').update({status:'responded',ai_reply:reply}).eq('id',reviewId);
+  rev.status='responded';rev.ai_reply=reply;
+  toast('Response posted','success');updateStats();renderReviews();renderDashboard();
+}
+
+async function autoRespondAll(){
+  if(!selectedBizId)return;
+  const pending=(allReviews[selectedBizId]||[]).filter(r=>r.status==='new');
+  if(!pending.length){toast('No pending reviews','error');return;}
+  for(const r of pending)await genReply(r.id);
+}
+
+async function renderClientsPage(){
+  const {data:users}=await sb.from('profiles').select('*');
+  const sel=document.getElementById('newBizOwner');
+  sel.innerHTML=`<option value="">— Admin managed —</option>`+(users||[]).map(u=>`<option value="${u.id}">${u.email} (${u.role})</option>`).join('');
+  const table=document.getElementById('clientsTable');
+  if(!businesses.length){table.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No clients yet</div></div>`;return;}
+  table.innerHTML=`<table class="clients-table"><thead><tr><th>Business</th><th>Type</th><th>Tone</th><th>Reviews</th><th>Actions</th></tr></thead><tbody>`+
+  businesses.map(b=>`<tr><td><strong>${b.name}</strong></td><td style="color:var(--text-secondary)">${b.type}</td><td style="color:var(--text-secondary)">${b.tone}</td><td>${(allReviews[b.id]||[]).length}</td><td><button class="btn btn-danger btn-sm" onclick="removeClient(${b.id})">Remove</button></td></tr>`).join('')+`</tbody></table>`;
+}
+
+async function addClient(){
+  const name=document.getElementById('newBizName').value.trim(),type=document.getElementById('newBizType').value.trim(),tone=document.getElementById('newBizTone').value,owner=document.getElementById('newBizOwner').value||null;
+  if(!name||!type){toast('Fill in business name and type','error');return;}
+  const {data,error}=await sb.from('businesses').insert({name,type,tone,owner_id:owner}).select().single();
+  if(error){toast('Error: '+error.message,'error');return;}
+  businesses.push(data);allReviews[data.id]=[];
+  document.getElementById('newBizName').value='';document.getElementById('newBizType').value='';
+  toast(name+' added!','success');updateStats();renderClientsPage();
+}
+
+async function removeClient(id){
+  if(!confirm('Remove this client and all their reviews?'))return;
+  await sb.from('businesses').delete().eq('id',id);
+  businesses=businesses.filter(b=>b.id!==id);delete allReviews[id];
+  if(selectedBizId===id)selectedBizId=null;
+  toast('Client removed','success');updateStats();renderClientsPage();
+}
+
+async function renderUsersPage(){
+  const {data:users}=await sb.from('profiles').select('*');
+  const table=document.getElementById('usersTable');
+  if(!users?.length){table.innerHTML=`<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No users yet</div></div>`;return;}
+  table.innerHTML=`<table class="clients-table"><thead><tr><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>`+
+  users.map(u=>`<tr><td>${u.email}</td><td><span class="role-badge role-${u.role}">${u.role}</span></td><td>${u.id!==currentUser.id?`<button class="btn btn-sm" onclick="toggleRole('${u.id}','${u.role}')">${u.role==='admin'?'Make client':'Make admin'}</button>`:'<span style="color:var(--text-muted);font-size:12px">You</span>'}</td></tr>`).join('')+`</tbody></table>`;
+}
+
+async function toggleRole(id,current){
+  const newRole=current==='admin'?'client':'admin';
+  await sb.from('profiles').update({role:newRole}).eq('id',id);
+  toast('Role updated','success');renderUsersPage();
+}
+
+function onApiKey(){
+  const k=getKey(),bar=document.getElementById('apiKeyBar'),badge=document.getElementById('apiConnected');
+  if(k.startsWith('sk-ant')){badge.style.display='block';bar.classList.add('connected');localStorage.setItem('rb_key',k);}
+  else{badge.style.display='none';bar.classList.remove('connected');}
 }
 
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;t.style.display='block';setTimeout(()=>{t.style.display='none';},3000);}
-
-window.onload=()=>{const s=localStorage.getItem('rb_key');if(s){document.getElementById('apiKey').value=s;onKey();}renderDashboard();};
 </script>
 </body>
 </html>
