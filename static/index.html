@@ -38,7 +38,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .auth-title{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px}
 .auth-sub{color:var(--text-secondary);font-size:14px;margin-bottom:28px;line-height:1.5}
 .form-group{margin-bottom:16px}
-.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
 .form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:all 0.15s}
 .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,0.12)}
 .auth-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;margin-top:6px;box-shadow:0 4px 12px rgba(22,163,74,0.25)}
@@ -64,8 +64,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .nav-item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
 .nav-item-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
 .sidebar-footer{padding:14px 12px;border-top:1px solid var(--border)}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-lg);cursor:pointer;transition:background 0.15s}
-.user-card:hover{background:var(--bg)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-lg)}
 .user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),#bbf7d0);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-size:13px;font-weight:700;flex-shrink:0;border:2px solid var(--primary-light)}
 .user-info{flex:1;min-width:0}
 .user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -81,7 +80,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .content{padding:28px;flex:1}
 .page{display:none}.page.active{display:block}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:box-shadow 0.15s;position:relative;overflow:hidden}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:box-shadow 0.15s}
 .stat-card:hover{box-shadow:var(--shadow-md)}
 .stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:12px}
 .stat-icon.green{background:var(--primary-light)}
@@ -107,7 +106,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
 .btn-instant{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-color:#7c3aed;color:white;box-shadow:0 2px 8px rgba(124,58,237,0.25)}
 .btn-instant:hover{background:linear-gradient(135deg,#6d28d9,#5b21b6);box-shadow:0 4px 12px rgba(124,58,237,0.35);transform:translateY(-1px);color:white;border-color:#6d28d9}
-.client-tabs-wrap{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.client-tabs-wrap{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .client-tab{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--white);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px}
 .client-tab:hover{border-color:var(--primary);color:var(--primary)}
 .client-tab.active{background:var(--primary);border-color:var(--primary);color:white}
@@ -115,7 +114,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .client-tab:not(.active) .client-tab-count{background:var(--red-light);color:var(--red)}
 .reviews-wrap{display:flex;flex-direction:column;gap:12px}
 .review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all 0.15s}
-.review-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-strong)}
+.review-card:hover{box-shadow:var(--shadow-md)}
 .review-card.priority{border-left:3px solid var(--red)}
 .review-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px}
 .review-author-wrap{display:flex;align-items:center;gap:10px}
@@ -123,7 +122,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .review-author{font-size:14px;font-weight:600}
 .review-source{font-size:11px;color:var(--text-muted);margin-top:1px}
 .review-meta-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.review-date{font-size:12px;color:var(--text-muted)}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
 .badge-new{background:#f1f5f9;color:#64748b}
 .badge-responded{background:var(--primary-light);color:var(--primary-dark)}
@@ -132,7 +130,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .review-text{font-size:13px;color:var(--text-secondary);line-height:1.65;margin-bottom:14px}
 .review-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .already-responded{font-size:12px;color:var(--primary);font-weight:500}
-.reply-box{margin-top:14px;border:1.5px solid #bbf7d0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 2px 8px rgba(22,163,74,0.08)}
+.reply-box{margin-top:14px;border:1.5px solid #bbf7d0;border-radius:var(--radius-lg);overflow:hidden}
 .reply-box-header{background:linear-gradient(135deg,var(--primary-light),#bbf7d0);padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
 .reply-box-label{font-size:11px;font-weight:700;color:var(--primary-dark);text-transform:uppercase;letter-spacing:0.5px}
 .reply-textarea{width:100%;border:none;padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);line-height:1.65;resize:vertical;min-height:90px;outline:none;background:white}
@@ -146,7 +144,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-group-inner{display:flex;flex-direction:column;gap:6px}
 .form-group-inner.full{grid-column:1/-1}
-.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer;transition:border-color 0.15s}
+.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer}
 .form-select:focus{border-color:var(--primary)}
 .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 .data-table{width:100%;border-collapse:collapse}
@@ -154,24 +152,24 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .data-table td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
 .data-table tr:last-child td{border-bottom:none}
 .data-table tbody tr:hover td{background:#fafbfc}
-.api-key-bar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;transition:all 0.15s}
+.api-key-bar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
 .api-key-bar.connected{border-color:var(--primary);background:var(--primary-50)}
-.api-key-label{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
-.api-key-input{flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:monospace;font-size:12px;color:var(--text);outline:none;background:white;transition:border-color 0.15s}
+.api-key-label{font-size:13px;font-weight:600;white-space:nowrap}
+.api-key-input{flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:monospace;font-size:12px;color:var(--text);outline:none;background:white}
 .api-key-input:focus{border-color:var(--primary)}
 .api-connected-badge{font-size:12px;font-weight:600;color:var(--primary-dark);display:none;align-items:center;gap:4px}
 .google-icon{width:18px;height:18px}
 .location-select-wrap{background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-lg);padding:16px 20px;margin-top:16px}
 .location-select-title{font-size:13px;font-weight:600;color:#92400e;margin-bottom:10px}
 .location-item{display:flex;align-items:center;gap:10px;padding:12px;background:white;border-radius:var(--radius);margin-bottom:8px;cursor:pointer;border:1.5px solid transparent;transition:all 0.15s}
-.location-item:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(22,163,74,0.1)}
+.location-item:hover{border-color:var(--primary)}
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;display:none;z-index:999;box-shadow:var(--shadow-lg);max-width:360px}
 .toast.success{background:var(--primary);color:white}
 .toast.error{background:var(--red);color:white}
 .toast.info{background:var(--blue);color:white}
 .empty-state{text-align:center;padding:60px 20px}
 .empty-state-icon{font-size:48px;margin-bottom:16px;display:block}
-.empty-state-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.empty-state-title{font-size:16px;font-weight:700;margin-bottom:8px}
 .empty-state-text{font-size:13px;color:var(--text-muted);line-height:1.6;max-width:340px;margin:0 auto 20px}
 .role-badge{display:inline-flex;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
 .role-admin{background:var(--purple-light);color:var(--purple)}
@@ -181,14 +179,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
 .activity-item:last-child{border-bottom:none}
-.activity-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.activity-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--primary-light)}
 .activity-content{flex:1;min-width:0}
 .activity-title{font-size:13px;font-weight:500;margin-bottom:2px}
 .activity-time{font-size:11px;color:var(--text-muted)}
 .client-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:24px}
 .client-overview-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:all 0.15s}
-.client-overview-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-strong);transform:translateY(-1px)}
-.client-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.client-overview-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .client-card-name{font-size:15px;font-weight:700;margin-bottom:2px}
 .client-card-type{font-size:12px;color:var(--text-muted)}
 .client-card-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
@@ -196,20 +193,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .client-card-stat-value{font-size:18px;font-weight:700;line-height:1}
 .client-card-stat-label{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
 .progress-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#22c55e);border-radius:99px;transition:width 0.5s ease}
-.billing-status{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#22c55e);border-radius:99px;transition:width 0.5s}
 .billing-active{background:var(--primary-light);color:var(--primary-dark)}
 .billing-trial{background:var(--amber-light);color:#92400e}
+.client-welcome{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:var(--radius-xl);padding:28px;color:white;margin-bottom:24px}
+.client-welcome-title{font-size:20px;font-weight:700;margin-bottom:6px}
+.client-welcome-sub{font-size:13px;opacity:0.85;line-height:1.5}
+.client-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
 .mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--text);font-size:18px}
-@media(max-width:1024px){
-  .sidebar{transform:translateX(-100%);transition:transform 0.3s ease}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
-  .mobile-menu-btn{display:flex}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .form-grid{grid-template-columns:1fr}
-}
-@media(max-width:640px){.stats-grid{grid-template-columns:1fr}.content{padding:16px}.topbar{padding:0 16px}}
+@media(max-width:1024px){.sidebar{transform:translateX(-100%);transition:transform 0.3s}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu-btn{display:flex}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.stats-grid{grid-template-columns:1fr}.client-stats-grid{grid-template-columns:1fr 1fr}.content{padding:16px}.topbar{padding:0 16px}}
 </style>
 </head>
 <body>
@@ -226,19 +219,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="auth-card" id="loginCard">
     <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
     <div class="auth-title">Welcome back</div>
-    <div class="auth-sub">Sign in to manage your clients' Google reviews</div>
+    <div class="auth-sub">Sign in to manage your Google reviews</div>
     <div class="auth-error" id="loginError"></div>
     <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
     <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password"></div>
     <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in →</button>
-    <div class="auth-switch">New to ReviewBot? <a onclick="showSignup()">Create an account</a></div>
+    <div class="auth-switch">Don't have an account? <a onclick="showSignup()">Create one</a></div>
   </div>
   <div class="auth-card hidden" id="signupCard">
     <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
-    <div class="auth-title">Create your account</div>
-    <div class="auth-sub">Start managing reviews for your clients today</div>
+    <div class="auth-title">Create account</div>
+    <div class="auth-sub">Get started with ReviewBot</div>
     <div class="auth-error" id="signupError"></div>
-    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" type="text" placeholder="Nathan Gale" autocomplete="name"></div>
+    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" type="text" placeholder="Your name" autocomplete="name"></div>
     <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
     <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPassword" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()" autocomplete="new-password"></div>
     <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create account →</button>
@@ -246,114 +239,96 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
-<div id="appShell" class="app-shell hidden">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-inner">
-        <div class="sidebar-logo-icon">⭐</div>
-        <div class="sidebar-logo-text">Review<span>Bot</span></div>
-      </div>
-    </div>
+<!-- ADMIN APP -->
+<div id="adminShell" class="app-shell hidden">
+  <aside class="sidebar" id="adminSidebar">
+    <div class="sidebar-logo"><div class="sidebar-logo-inner"><div class="sidebar-logo-icon">⭐</div><div class="sidebar-logo-text">Review<span>Bot</span></div></div></div>
     <nav class="sidebar-nav">
       <div class="nav-section">
         <div class="nav-section-label">Main</div>
-        <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-item-icon">📊</span>Dashboard<span class="nav-item-badge hidden" id="pendingBadge">0</span></div>
-        <div class="nav-item" onclick="nav('reviews',this)"><span class="nav-item-icon">⭐</span>All Reviews</div>
-        <div class="nav-item" onclick="nav('activity',this)"><span class="nav-item-icon">⚡</span>Activity Feed</div>
-        <div class="nav-item" onclick="nav('google',this)"><span class="nav-item-icon">🔗</span>Google Business</div>
+        <div class="nav-item active" onclick="adminNav('dashboard',this)"><span class="nav-item-icon">📊</span>Dashboard<span class="nav-item-badge hidden" id="adminPendingBadge">0</span></div>
+        <div class="nav-item" onclick="adminNav('reviews',this)"><span class="nav-item-icon">⭐</span>All Reviews</div>
+        <div class="nav-item" onclick="adminNav('activity',this)"><span class="nav-item-icon">⚡</span>Activity Feed</div>
+        <div class="nav-item" onclick="adminNav('google',this)"><span class="nav-item-icon">🔗</span>Google Business</div>
       </div>
-      <div class="nav-section hidden" id="adminNav">
+      <div class="nav-section">
         <div class="nav-section-label">Admin</div>
-        <div class="nav-item" onclick="nav('clients',this)"><span class="nav-item-icon">🏢</span>Clients</div>
-        <div class="nav-item" onclick="nav('billing',this)"><span class="nav-item-icon">💳</span>Billing</div>
-        <div class="nav-item" onclick="nav('users',this)"><span class="nav-item-icon">👥</span>Users</div>
+        <div class="nav-item" onclick="adminNav('clients',this)"><span class="nav-item-icon">🏢</span>Clients</div>
+        <div class="nav-item" onclick="adminNav('billing',this)"><span class="nav-item-icon">💳</span>Billing</div>
+        <div class="nav-item" onclick="adminNav('users',this)"><span class="nav-item-icon">👥</span>Users</div>
+        <div class="nav-item" onclick="adminNav('settings',this)"><span class="nav-item-icon">⚙️</span>Settings</div>
       </div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
-        <div class="user-avatar" id="userAvatar">N</div>
-        <div class="user-info"><div class="user-name" id="userName">Loading...</div><div class="user-role" id="userRole">—</div></div>
-        <div class="logout-btn" onclick="doLogout()" title="Sign out">↪</div>
+        <div class="user-avatar" id="adminAvatar">N</div>
+        <div class="user-info"><div class="user-name" id="adminName">Admin</div><div class="user-role">Administrator</div></div>
+        <div class="logout-btn" onclick="doLogout()">↪</div>
       </div>
     </div>
   </aside>
-
   <main class="main">
     <div class="topbar">
       <div class="topbar-left">
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-        <div>
-          <div class="topbar-title" id="topbarTitle">Dashboard</div>
-          <div class="topbar-sub" id="topbarSub"></div>
-        </div>
+        <button class="mobile-menu-btn" onclick="document.getElementById('adminSidebar').classList.toggle('open')">☰</button>
+        <div><div class="topbar-title" id="adminTopbarTitle">Dashboard</div><div class="topbar-sub" id="adminTopbarSub"></div></div>
       </div>
       <div class="topbar-actions">
         <button class="btn btn-sm btn-ghost" onclick="refreshData()">🔄 Refresh</button>
-        <button class="btn btn-sm btn-primary" onclick="autoRespondAll()" id="autoBtn" style="display:none">⚡ Auto-respond all</button>
+        <button class="btn btn-sm btn-primary" onclick="autoRespondAll()" id="autoBtn">⚡ Auto-respond all</button>
       </div>
     </div>
-
     <div class="content">
       <div class="api-key-bar" id="apiKeyBar">
         <span class="api-key-label">🔑 Anthropic API Key</span>
-        <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." oninput="onApiKey()">
+        <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-... (or set ANTHROPIC_API_KEY in Railway)" oninput="onApiKey()">
         <span class="api-connected-badge" id="apiConnected" style="display:flex">✓ Connected</span>
       </div>
 
-      <!-- DASHBOARD -->
-      <div class="page active" id="page-dashboard">
+      <div class="page active" id="admin-page-dashboard">
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon red">🔔</div><div class="stat-value" id="statPending" style="color:var(--red)">0</div><div class="stat-label">Pending replies</div><div class="stat-trend">Need attention now</div></div>
+          <div class="stat-card"><div class="stat-icon red">🔔</div><div class="stat-value" id="statPending" style="color:var(--red)">0</div><div class="stat-label">Pending replies</div><div class="stat-trend">Need attention</div></div>
           <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-value" id="statResponded" style="color:var(--primary)">0</div><div class="stat-label">Responded</div><div class="stat-trend">All time</div></div>
-          <div class="stat-card"><div class="stat-icon blue">⭐</div><div class="stat-value" id="statTotal" style="color:var(--blue)">0</div><div class="stat-label">Total reviews</div><div class="stat-trend" id="statAvgRating">Avg rating —</div></div>
-          <div class="stat-card"><div class="stat-icon amber">🏢</div><div class="stat-value" id="statClients" style="color:var(--amber)">0</div><div class="stat-label">Active clients</div><div class="stat-trend" id="statMonthly">£0/mo revenue</div></div>
+          <div class="stat-card"><div class="stat-icon blue">⭐</div><div class="stat-value" id="statTotal" style="color:var(--blue)">0</div><div class="stat-label">Total reviews</div><div class="stat-trend" id="statAvgRating">—</div></div>
+          <div class="stat-card"><div class="stat-icon amber">🏢</div><div class="stat-value" id="statClients" style="color:var(--amber)">0</div><div class="stat-label">Clients</div><div class="stat-trend" id="statMonthly">£0/mo</div></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
           <div>
-            <div style="font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between"><span>Client Overview</span><button class="btn btn-xs btn-ghost" onclick="nav('clients',document.querySelectorAll('.nav-item')[4])">View all →</button></div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between"><span>Client Overview</span><button class="btn btn-xs btn-ghost" onclick="adminNav('clients',null)">View all →</button></div>
             <div class="client-overview-grid" id="clientOverviewGrid"></div>
-            <div style="font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between"><span>🔔 Needs attention</span><span class="badge badge-new" id="pendingCount">0 pending</span></div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">🔔 Needs attention</div>
             <div id="dashRecentWrap"></div>
           </div>
           <div>
-            <div style="font-size:15px;font-weight:700;margin-bottom:14px">⚡ Recent activity</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">⚡ Activity</div>
             <div class="section-card" style="padding:16px"><div id="activityFeedDash"></div></div>
           </div>
         </div>
       </div>
 
-      <!-- REVIEWS -->
-      <div class="page" id="page-reviews">
-        <div class="client-tabs-wrap" id="clientTabs"></div>
+      <div class="page" id="admin-page-reviews">
+        <div class="client-tabs-wrap" id="adminClientTabs"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-          <div><div style="font-size:15px;font-weight:700" id="reviewsTitle">Reviews</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="reviewsSubtitle"></div></div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <select class="form-select" style="width:auto;padding:6px 10px;font-size:12px" id="reviewFilter" onchange="renderReviews()">
-              <option value="all">All reviews</option>
-              <option value="new">Pending only</option>
-              <option value="responded">Responded</option>
-              <option value="1">⭐ 1 star</option>
-              <option value="2">⭐⭐ 2 stars</option>
-              <option value="3">⭐⭐⭐ 3 stars</option>
-              <option value="4">⭐⭐⭐⭐ 4 stars</option>
-              <option value="5">⭐⭐⭐⭐⭐ 5 stars</option>
+          <div><div style="font-size:15px;font-weight:700" id="adminReviewsTitle">Reviews</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="adminReviewsSub"></div></div>
+          <div style="display:flex;gap:8px">
+            <select class="form-select" style="width:auto;padding:6px 10px;font-size:12px" id="adminReviewFilter" onchange="renderAdminReviews()">
+              <option value="all">All</option><option value="new">Pending</option><option value="responded">Responded</option>
+              <option value="1">⭐ 1★</option><option value="2">⭐ 2★</option><option value="3">⭐ 3★</option><option value="4">⭐ 4★</option><option value="5">⭐ 5★</option>
             </select>
             <button class="btn btn-sm" onclick="fetchLiveReviews()" id="fetchBtn" style="display:none">🔄 Sync Google</button>
           </div>
         </div>
-        <div id="reviewsList"></div>
+        <div id="adminReviewsList"></div>
       </div>
 
-      <!-- ACTIVITY -->
-      <div class="page" id="page-activity">
+      <div class="page" id="admin-page-activity">
         <div class="section-card"><div class="section-card-title">Activity Feed</div><div id="activityFeedFull"></div></div>
       </div>
 
-      <!-- GOOGLE -->
-      <div class="page" id="page-google">
+      <div class="page" id="admin-page-google">
         <div class="section-card">
           <div class="section-card-title">Connect Google Business Profile</div>
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Connect your Google Business Profile to automatically pull in real reviews and post AI-generated replies directly to Google.</p>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Connect your Google Business Profile to pull in real reviews and post AI replies directly to Google.</p>
           <button class="btn btn-google" onclick="connectGoogle()" id="connectGoogleBtn">
             <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
             Connect Google Business
@@ -363,26 +338,24 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         </div>
         <div class="section-card" id="autoReplyCard" style="display:none">
           <div class="section-card-title">Auto-reply Settings</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)">
-            <div><div style="font-size:14px;font-weight:600">⚡ Instant auto-reply</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically generate and post replies to new reviews within minutes</div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0">
+            <div><div style="font-size:14px;font-weight:600">⚡ Auto-reply new reviews</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically post AI replies to new reviews</div></div>
             <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer">
               <input type="checkbox" id="autoReplyToggle" style="opacity:0;width:0;height:0" onchange="toggleAutoReply()">
               <span id="toggleSlider" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:26px;transition:0.3s"><span style="position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></span></span>
             </label>
           </div>
-          <div style="padding:14px 0;font-size:13px;color:var(--text-secondary);line-height:1.6">When enabled, ReviewBot monitors for new reviews and posts AI replies automatically.</div>
         </div>
         <div class="section-card">
           <div class="section-card-title">API Access Status</div>
           <div style="background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-lg);padding:16px 20px">
             <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:6px">⏳ Google Business Profile API approval pending</div>
-            <div style="font-size:13px;color:#78350f;line-height:1.6">Google requires manual approval to access Business Profile data via API. This can take 2-5 business days. Once approved, live review syncing will work automatically.</div>
+            <div style="font-size:13px;color:#78350f;line-height:1.6">Google requires manual approval to access Business Profile data via API. Once approved (2-5 days), live review syncing will work automatically.</div>
           </div>
         </div>
       </div>
 
-      <!-- CLIENTS -->
-      <div class="page" id="page-clients">
+      <div class="page" id="admin-page-clients">
         <div class="section-card">
           <div class="section-card-title">Add New Client</div>
           <div class="form-grid">
@@ -404,25 +377,116 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           </div>
           <div class="form-actions"><button class="btn btn-primary" onclick="addClient()">➕ Add Client</button></div>
         </div>
-        <div class="section-card">
-          <div class="section-card-title">All Clients <span style="font-size:12px;color:var(--text-muted);font-weight:400" id="clientCountLabel"></span></div>
-          <div id="clientsTable"></div>
-        </div>
+        <div class="section-card"><div class="section-card-title">All Clients</div><div id="clientsTable"></div></div>
       </div>
 
-      <!-- BILLING -->
-      <div class="page" id="page-billing">
+      <div class="page" id="admin-page-billing">
         <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-          <div class="stat-card"><div class="stat-icon green">💰</div><div class="stat-value" id="billingMRR" style="color:var(--primary)">£0</div><div class="stat-label">Monthly recurring revenue</div></div>
+          <div class="stat-card"><div class="stat-icon green">💰</div><div class="stat-value" id="billingMRR" style="color:var(--primary)">£0</div><div class="stat-label">Monthly revenue</div></div>
           <div class="stat-card"><div class="stat-icon blue">📊</div><div class="stat-value" id="billingClients" style="color:var(--blue)">0</div><div class="stat-label">Paying clients</div></div>
           <div class="stat-card"><div class="stat-icon amber">📈</div><div class="stat-value" id="billingARR" style="color:var(--amber)">£0</div><div class="stat-label">Annual run rate</div></div>
         </div>
         <div class="section-card"><div class="section-card-title">Client Billing</div><div id="billingTable"></div></div>
       </div>
 
-      <!-- USERS -->
-      <div class="page" id="page-users">
+      <div class="page" id="admin-page-users">
         <div class="section-card"><div class="section-card-title">All Users</div><div id="usersTable"></div></div>
+      </div>
+
+      <div class="page" id="admin-page-settings">
+        <div class="section-card">
+          <div class="section-card-title">API Configuration</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Set your Anthropic API key here. Clients never see this — they use the server key set in Railway automatically.</p>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input class="form-input" id="settingsApiKey" type="password" placeholder="sk-ant-api03-..." style="max-width:440px">
+            <button class="btn btn-primary" onclick="saveApiKey()">Save key</button>
+          </div>
+          <div style="margin-top:16px;padding:14px;background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg)">
+            <div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">💡 Pro tip — set server-side key in Railway</div>
+            <div style="font-size:13px;color:var(--primary-dark);line-height:1.6">Add <code style="background:white;padding:2px 6px;border-radius:4px;font-size:12px">ANTHROPIC_API_KEY</code> as a Railway environment variable. This means AI replies work for all users without any key in the browser.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- CLIENT APP -->
+<div id="clientShell" class="app-shell hidden">
+  <aside class="sidebar" id="clientSidebar">
+    <div class="sidebar-logo"><div class="sidebar-logo-inner"><div class="sidebar-logo-icon">⭐</div><div class="sidebar-logo-text">Review<span>Bot</span></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Menu</div>
+        <div class="nav-item active" onclick="clientNav('dashboard',this)"><span class="nav-item-icon">📊</span>My Dashboard<span class="nav-item-badge hidden" id="clientPendingBadge">0</span></div>
+        <div class="nav-item" onclick="clientNav('reviews',this)"><span class="nav-item-icon">⭐</span>My Reviews</div>
+        <div class="nav-item" onclick="clientNav('google',this)"><span class="nav-item-icon">🔗</span>Google Business</div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar" id="clientAvatar">C</div>
+        <div class="user-info"><div class="user-name" id="clientName">Client</div><div class="user-role">Client account</div></div>
+        <div class="logout-btn" onclick="doLogout()">↪</div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="document.getElementById('clientSidebar').classList.toggle('open')">☰</button>
+        <div><div class="topbar-title" id="clientTopbarTitle">My Dashboard</div></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-sm btn-ghost" onclick="refreshClientData()">🔄 Refresh</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page active" id="client-page-dashboard">
+        <div class="client-welcome">
+          <div class="client-welcome-title" id="clientWelcomeTitle">Welcome back! 👋</div>
+          <div class="client-welcome-sub">Here's an overview of your Google Business reviews</div>
+        </div>
+        <div class="client-stats-grid">
+          <div class="stat-card"><div class="stat-icon red">🔔</div><div class="stat-value" id="clientStatPending" style="color:var(--red)">0</div><div class="stat-label">Awaiting reply</div></div>
+          <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-value" id="clientStatResponded" style="color:var(--primary)">0</div><div class="stat-label">Replied</div></div>
+          <div class="stat-card"><div class="stat-icon amber">⭐</div><div class="stat-value" id="clientStatAvg" style="color:var(--amber)">—</div><div class="stat-label">Avg rating</div></div>
+        </div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:14px">Reviews needing a reply</div>
+        <div id="clientDashReviews"></div>
+      </div>
+
+      <div class="page" id="client-page-reviews">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div><div style="font-size:15px;font-weight:700" id="clientReviewsTitle">My Reviews</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="clientReviewsSub"></div></div>
+          <div style="display:flex;gap:8px">
+            <select class="form-select" style="width:auto;padding:6px 10px;font-size:12px" id="clientReviewFilter" onchange="renderClientReviews()">
+              <option value="all">All reviews</option>
+              <option value="new">Awaiting reply</option>
+              <option value="responded">Replied</option>
+              <option value="5">⭐⭐⭐⭐⭐ 5 star</option>
+              <option value="4">⭐⭐⭐⭐ 4 star</option>
+              <option value="3">⭐⭐⭐ 3 star</option>
+              <option value="2">⭐⭐ 2 star</option>
+              <option value="1">⭐ 1 star</option>
+            </select>
+            <button class="btn btn-sm" onclick="fetchLiveReviews()" id="clientFetchBtn" style="display:none">🔄 Sync Google</button>
+          </div>
+        </div>
+        <div id="clientReviewsList"></div>
+      </div>
+
+      <div class="page" id="client-page-google">
+        <div class="section-card">
+          <div class="section-card-title">Connect Google Business Profile</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Connect your Google Business Profile so ReviewBot can automatically import your reviews and post AI-generated replies on your behalf.</p>
+          <button class="btn btn-google" onclick="connectGoogle()" id="clientConnectGoogleBtn">
+            <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Connect Google Business
+          </button>
+          <div id="clientLocationSelectWrap"></div>
+          <div id="clientConnectedLocations"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -438,39 +502,18 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let currentUser=null,currentProfile=null,businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
 let googleAccessToken=null,googleRefreshToken=null,googleAccounts=[],selectedLocation=null;
 let activityLog=JSON.parse(localStorage.getItem('rb_activity')||'[]');
+let isAdmin=false,clientBiz=null;
 
 (function(){if(localStorage.getItem('g_just_connected')==='true'){localStorage.removeItem('g_just_connected');localStorage.setItem('g_pending_google','true');}})();
 
 function logActivity(icon,title,bizName){
-  const entry={icon,title,bizName,time:Date.now()};
-  activityLog.unshift(entry);if(activityLog.length>50)activityLog=activityLog.slice(0,50);
+  const e={icon,title,bizName,time:Date.now()};activityLog.unshift(e);
+  if(activityLog.length>50)activityLog=activityLog.slice(0,50);
   localStorage.setItem('rb_activity',JSON.stringify(activityLog));
 }
-
 function timeAgo(ts){
   const d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000),dy=Math.floor(d/86400000);
   if(d<60000)return'just now';if(m<60)return m+'m ago';if(h<24)return h+'h ago';return dy+'d ago';
-}
-
-function checkOAuthCallback(){
-  const pending=localStorage.getItem('g_pending_google');
-  if(pending==='true'){
-    localStorage.removeItem('g_pending_google');
-    googleAccessToken=localStorage.getItem('g_access');
-    googleRefreshToken=localStorage.getItem('g_refresh')||'';
-    try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
-    if(googleAccessToken){
-      toast('Google Business connected! Select your location.','success');
-      setTimeout(()=>{
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-        document.querySelectorAll('.nav-item')[3].classList.add('active');
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-        document.getElementById('page-google').classList.add('active');
-        document.getElementById('topbarTitle').textContent='Google Business';
-        renderGooglePage();showLocationSelector();
-      },300);
-    }
-  }
 }
 
 function showLogin(){document.getElementById('loginCard').classList.remove('hidden');document.getElementById('signupCard').classList.add('hidden');}
@@ -483,7 +526,6 @@ async function doLogin(){
   const {error}=await sb.auth.signInWithPassword({email,password:pass});
   if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Sign in →';}
 }
-
 async function doSignup(){
   const name=document.getElementById('signupName').value.trim(),email=document.getElementById('signupEmail').value.trim(),pass=document.getElementById('signupPassword').value;
   const btn=document.getElementById('signupBtn'),err=document.getElementById('signupError');
@@ -492,7 +534,6 @@ async function doSignup(){
   if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Create account →';return;}
   if(data.user){await sb.from('profiles').upsert({id:data.user.id,email,role:'client'},{onConflict:'id'});toast('Account created!','success');btn.disabled=false;btn.textContent='Create account →';}
 }
-
 async function doLogout(){
   localStorage.removeItem('g_access');localStorage.removeItem('g_refresh');localStorage.removeItem('g_accounts');localStorage.removeItem('g_location');localStorage.removeItem('g_pending_google');
   await sb.auth.signOut();
@@ -500,7 +541,13 @@ async function doLogout(){
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(session?.user){currentUser=session.user;await loadProfile();showApp();}
-  else{currentUser=null;currentProfile=null;document.getElementById('loadingScreen').classList.add('hidden');document.getElementById('authWrap').classList.remove('hidden');document.getElementById('appShell').classList.add('hidden');}
+  else{
+    currentUser=null;currentProfile=null;
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('authWrap').classList.remove('hidden');
+    document.getElementById('adminShell').classList.add('hidden');
+    document.getElementById('clientShell').classList.add('hidden');
+  }
 });
 
 async function loadProfile(){
@@ -515,15 +562,8 @@ async function loadProfile(){
 async function showApp(){
   document.getElementById('loadingScreen').classList.add('hidden');
   document.getElementById('authWrap').classList.add('hidden');
-  document.getElementById('appShell').classList.remove('hidden');
+  isAdmin=currentProfile?.role==='admin';
   const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0]||'User';
-  document.getElementById('userName').textContent=name;
-  document.getElementById('userAvatar').textContent=name[0].toUpperCase();
-  const isAdmin=currentProfile?.role==='admin';
-  document.getElementById('userRole').textContent=isAdmin?'Administrator':'Client';
-  if(isAdmin){document.getElementById('adminNav').classList.remove('hidden');document.getElementById('autoBtn').style.display='flex';}
-  const saved=localStorage.getItem('rb_key');
-  if(saved){document.getElementById('apiKeyInput').value=saved;onApiKey();}
   const ga=localStorage.getItem('g_access');
   if(ga){
     googleAccessToken=ga;googleRefreshToken=localStorage.getItem('g_refresh')||'';
@@ -531,23 +571,40 @@ async function showApp(){
     const loc=localStorage.getItem('g_location');
     if(loc){try{selectedLocation=JSON.parse(loc);}catch(e){}}
   }
-  await loadData();renderDashboard();renderGooglePage();checkOAuthCallback();
+  if(isAdmin){
+    document.getElementById('adminShell').classList.remove('hidden');
+    document.getElementById('adminName').textContent=name;
+    document.getElementById('adminAvatar').textContent=name[0].toUpperCase();
+    const saved=localStorage.getItem('rb_key');
+    if(saved){document.getElementById('apiKeyInput').value=saved;document.getElementById('settingsApiKey').value=saved;onApiKey();}
+    try{const r=await fetch('/api/has-server-key');const d=await r.json();if(d.has_key){document.getElementById('apiConnected').style.display='flex';document.getElementById('apiKeyBar').classList.add('connected');}}catch(e){}
+    await loadData();renderAdminDashboard();renderAdminGooglePage();checkOAuthCallback();
+  }else{
+    document.getElementById('clientShell').classList.remove('hidden');
+    document.getElementById('clientName').textContent=name;
+    document.getElementById('clientAvatar').textContent=name[0].toUpperCase();
+    document.getElementById('clientWelcomeTitle').textContent=`Welcome back, ${name}! 👋`;
+    await loadClientData();renderClientDashboard();renderClientGooglePage();checkOAuthCallbackClient();
+  }
 }
 
 async function loadData(){
   try{
-    let q=sb.from('businesses').select('*');
-    if(currentProfile?.role!=='admin')q=q.eq('owner_id',currentUser.id);
-    const {data:bizData}=await q;businesses=bizData||[];
+    const {data:bizData}=await sb.from('businesses').select('*');businesses=bizData||[];
     allReviews={};
     for(const b of businesses){const {data:r}=await sb.from('reviews').select('*').eq('business_id',b.id).order('id',{ascending:false});allReviews[b.id]=r||[];}
-    updateStats();
+    updateAdminStats();
   }catch(e){console.error(e);}
 }
 
-async function refreshData(){await loadData();const p=document.querySelector('.page.active')?.id?.replace('page-','');if(p==='dashboard')renderDashboard();else if(p==='reviews')renderReviewsPage();toast('Refreshed','success');}
+async function refreshData(){
+  await loadData();
+  const p=document.querySelector('#adminShell .page.active')?.id?.replace('admin-page-','');
+  if(p==='dashboard')renderAdminDashboard();else if(p==='reviews')renderAdminReviewsPage();
+  toast('Refreshed','success');
+}
 
-function updateStats(){
+function updateAdminStats(){
   const all=Object.values(allReviews).flat();
   const pending=all.filter(r=>r.status==='new').length;
   const avg=all.length?(all.reduce((s,r)=>s+r.stars,0)/all.length).toFixed(1):'—';
@@ -556,49 +613,46 @@ function updateStats(){
   document.getElementById('statResponded').textContent=all.filter(r=>r.status==='responded').length;
   document.getElementById('statTotal').textContent=all.length;
   document.getElementById('statClients').textContent=businesses.length;
-  document.getElementById('statAvgRating').textContent=avg!=='—'?`★ ${avg} avg rating`:'No reviews yet';
-  document.getElementById('statMonthly').textContent=`£${mrr}/mo revenue`;
-  const badge=document.getElementById('pendingBadge');
+  document.getElementById('statAvgRating').textContent=avg!=='—'?'★ '+avg+' avg':'No reviews yet';
+  document.getElementById('statMonthly').textContent='£'+mrr+'/mo';
+  const badge=document.getElementById('adminPendingBadge');
   if(pending>0){badge.textContent=pending;badge.classList.remove('hidden');}else{badge.classList.add('hidden');}
-  document.getElementById('pendingCount').textContent=pending+' pending';
   const bMRR=document.getElementById('billingMRR');
   if(bMRR){bMRR.textContent='£'+mrr;document.getElementById('billingClients').textContent=businesses.filter(b=>b.monthly_fee>0).length;document.getElementById('billingARR').textContent='£'+(mrr*12);}
 }
 
-function nav(page,el){
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+function adminNav(page,el){
+  document.querySelectorAll('#adminShell .nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const titles={dashboard:'Dashboard',reviews:'All Reviews',activity:'Activity Feed',google:'Google Business',clients:'Clients',billing:'Billing',users:'Users'};
-  document.getElementById('topbarTitle').textContent=titles[page]||page;
-  document.getElementById('topbarSub').textContent='';
-  if(page==='reviews')renderReviewsPage();
+  document.querySelectorAll('#adminShell .page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('admin-page-'+page).classList.add('active');
+  const titles={dashboard:'Dashboard',reviews:'All Reviews',activity:'Activity Feed',google:'Google Business',clients:'Clients',billing:'Billing',users:'Users',settings:'Settings'};
+  document.getElementById('adminTopbarTitle').textContent=titles[page]||page;
+  if(page==='reviews')renderAdminReviewsPage();
   if(page==='clients')renderClientsPage();
   if(page==='users')renderUsersPage();
-  if(page==='dashboard')renderDashboard();
-  if(page==='google')renderGooglePage();
+  if(page==='dashboard')renderAdminDashboard();
+  if(page==='google')renderAdminGooglePage();
   if(page==='activity')renderActivityFull();
   if(page==='billing')renderBilling();
-  document.getElementById('sidebar').classList.remove('open');
+  if(page==='settings'){const k=localStorage.getItem('rb_key');if(k)document.getElementById('settingsApiKey').value=k;}
+  document.getElementById('adminSidebar').classList.remove('open');
 }
 
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
-
-function renderDashboard(){
+function renderAdminDashboard(){
   const grid=document.getElementById('clientOverviewGrid');
   if(!businesses.length){
-    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:40px 20px"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client to get started</div><button class="btn btn-primary" onclick="nav('clients',document.querySelectorAll('.nav-item')[4])">Add first client</button></div>`;
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:32px"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><button class="btn btn-primary" onclick="adminNav('clients',null)">Add first client</button></div>`;
   }else{
     grid.innerHTML=businesses.map(b=>{
       const revs=allReviews[b.id]||[];
       const pending=revs.filter(r=>r.status==='new').length;
       const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
       const rr=revs.length?Math.round((revs.filter(r=>r.status==='responded').length/revs.length)*100):0;
-      return`<div class="client-overview-card" onclick="selectClientAndNav(${b.id})">
-        <div class="client-card-header">
+      return`<div class="client-overview-card" onclick="goToClientReviews(${b.id})">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
           <div><div class="client-card-name">${b.name}</div><div class="client-card-type">${b.type}</div></div>
-          ${pending>0?`<span class="badge" style="background:var(--red-light);color:var(--red)">${pending} new</span>`:'<span class="badge badge-responded">✓ Up to date</span>'}
+          ${pending>0?`<span class="badge" style="background:var(--red-light);color:var(--red)">${pending} new</span>`:'<span class="badge badge-responded">✓ Good</span>'}
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${rr}%"></div></div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:4px">${rr}% response rate</div>
@@ -612,24 +666,18 @@ function renderDashboard(){
   }
   const pending=Object.values(allReviews).flat().filter(r=>r.status==='new');
   const wrap=document.getElementById('dashRecentWrap');
-  if(!pending.length){
-    wrap.innerHTML=`<div class="empty-state" style="padding:40px 20px"><span class="empty-state-icon">🎉</span><div class="empty-state-title">All caught up!</div><div class="empty-state-text">No pending reviews. Great work!</div></div>`;
-  }else{
+  if(!pending.length){wrap.innerHTML=`<div class="empty-state" style="padding:32px"><span class="empty-state-icon">🎉</span><div class="empty-state-title">All caught up!</div></div>`;}
+  else{
     wrap.innerHTML=`<div class="reviews-wrap">`+pending.slice(0,5).map(r=>{
       const biz=businesses.find(b=>b.id===r.business_id);
       return`<div class="review-card${r.stars<=2?' priority':''}">
         <div style="font-size:11px;font-weight:600;color:var(--primary-dark);background:var(--primary-light);padding:3px 10px;border-radius:99px;display:inline-block;margin-bottom:10px">${biz?.name||''}</div>
-        <div class="review-card-header">
-          <div class="review-author-wrap">
-            <div class="review-avatar">${r.author[0]||'?'}</div>
-            <div><div class="review-author">${r.author}</div><div class="review-source">${r.date}</div></div>
-          </div>
-        </div>
+        <div class="review-card-header"><div class="review-author-wrap"><div class="review-avatar">${r.author[0]||'?'}</div><div><div class="review-author">${r.author}</div><div class="review-source">${r.date}</div></div></div></div>
         <div class="stars-row">${[1,2,3,4,5].map(i=>`<span class="star" style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div>
         <div class="review-text">${r.text}</div>
         <div class="review-actions">
-          <button class="btn btn-sm btn-primary" onclick="quickGen(${r.id},${r.business_id})">Generate reply</button>
-          <button class="btn btn-sm btn-instant" onclick="instantReply(${r.id},${r.business_id})">⚡ Instant reply</button>
+          <button class="btn btn-sm btn-primary" onclick="adminQuickGen(${r.id},${r.business_id})">Generate reply</button>
+          <button class="btn btn-sm btn-instant" onclick="adminInstantReply(${r.id},${r.business_id})">⚡ Instant reply</button>
         </div>
       </div>`;
     }).join('')+`</div>`;
@@ -639,59 +687,65 @@ function renderDashboard(){
 
 function renderActivityDash(){
   const feed=document.getElementById('activityFeedDash');
-  if(!activityLog.length){feed.innerHTML=`<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">No activity yet</div>`;return;}
-  feed.innerHTML=activityLog.slice(0,8).map(a=>`<div class="activity-item"><div class="activity-icon" style="background:var(--primary-light)">${a.icon}</div><div class="activity-content"><div class="activity-title">${a.title}${a.bizName?` <span style="color:var(--text-muted)">· ${a.bizName}</span>`:''}</div><div class="activity-time">${timeAgo(a.time)}</div></div></div>`).join('');
+  if(!activityLog.length){feed.innerHTML=`<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No activity yet</div>`;return;}
+  feed.innerHTML=activityLog.slice(0,8).map(a=>`<div class="activity-item"><div class="activity-icon">${a.icon}</div><div class="activity-content"><div class="activity-title">${a.title}${a.bizName?` · <span style="color:var(--text-muted)">${a.bizName}</span>`:''}</div><div class="activity-time">${timeAgo(a.time)}</div></div></div>`).join('');
 }
 
 function renderActivityFull(){
   const feed=document.getElementById('activityFeedFull');
   if(!activityLog.length){feed.innerHTML=`<div class="empty-state"><span class="empty-state-icon">⚡</span><div class="empty-state-title">No activity yet</div></div>`;return;}
-  feed.innerHTML=activityLog.map(a=>`<div class="activity-item"><div class="activity-icon" style="background:var(--primary-light)">${a.icon}</div><div class="activity-content"><div class="activity-title">${a.title}${a.bizName?` <span style="color:var(--text-muted)">· ${a.bizName}</span>`:''}</div><div class="activity-time">${timeAgo(a.time)}</div></div></div>`).join('');
+  feed.innerHTML=activityLog.map(a=>`<div class="activity-item"><div class="activity-icon">${a.icon}</div><div class="activity-content"><div class="activity-title">${a.title}${a.bizName?` · <span style="color:var(--text-muted)">${a.bizName}</span>`:''}</div><div class="activity-time">${timeAgo(a.time)}</div></div></div>`).join('');
 }
 
-function selectClientAndNav(bizId){selectedBizId=bizId;nav('reviews',document.querySelectorAll('.nav-item')[1]);renderReviewsPage();}
+function goToClientReviews(bizId){selectedBizId=bizId;adminNav('reviews',document.querySelectorAll('#adminShell .nav-item')[1]);}
 
-function renderReviewsPage(){
-  if(!businesses.length){document.getElementById('clientTabs').innerHTML='';document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div></div>`;return;}
+function renderAdminReviewsPage(){
+  if(!businesses.length){document.getElementById('adminClientTabs').innerHTML='';document.getElementById('adminReviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div></div>`;return;}
   if(!selectedBizId||!businesses.find(b=>b.id===selectedBizId))selectedBizId=businesses[0].id;
-  const fetchBtn=document.getElementById('fetchBtn');
-  if(googleAccessToken&&selectedLocation)fetchBtn.style.display='flex';else fetchBtn.style.display='none';
-  renderClientTabs();renderReviews();
+  if(googleAccessToken&&selectedLocation)document.getElementById('fetchBtn').style.display='flex';else document.getElementById('fetchBtn').style.display='none';
+  renderAdminClientTabs();renderAdminReviews();
 }
 
-function renderClientTabs(){
-  document.getElementById('clientTabs').innerHTML=businesses.map(b=>{
+function renderAdminClientTabs(){
+  document.getElementById('adminClientTabs').innerHTML=businesses.map(b=>{
     const pending=(allReviews[b.id]||[]).filter(r=>r.status==='new').length;
-    return`<button class="client-tab ${b.id===selectedBizId?'active':''}" onclick="selectBiz(${b.id})">${b.name}${pending>0?`<span class="client-tab-count">${pending}</span>`:''}`;
+    return`<button class="client-tab ${b.id===selectedBizId?'active':''}" onclick="selectAdminBiz(${b.id})">${b.name}${pending>0?`<span class="client-tab-count">${pending}</span>`:''}`;
   }).join('');
 }
 
-function selectBiz(id){selectedBizId=id;renderClientTabs();renderReviews();}
+function selectAdminBiz(id){selectedBizId=id;renderAdminClientTabs();renderAdminReviews();}
 
-function renderReviews(){
+function renderAdminReviews(){
   const biz=businesses.find(b=>b.id===selectedBizId);if(!biz)return;
-  const filter=document.getElementById('reviewFilter')?.value||'all';
+  const filter=document.getElementById('adminReviewFilter')?.value||'all';
   let revs=allReviews[biz.id]||[];
   if(filter==='new')revs=revs.filter(r=>r.status==='new');
   else if(filter==='responded')revs=revs.filter(r=>r.status==='responded');
   else if(['1','2','3','4','5'].includes(filter))revs=revs.filter(r=>r.stars===parseInt(filter));
   const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
-  document.getElementById('reviewsTitle').textContent=biz.name;
-  document.getElementById('reviewsSubtitle').textContent=`${revs.length} reviews · ★ ${avg} avg · ${biz.tone}`;
-  if(!revs.length){document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-title">No reviews found</div><div class="empty-state-text">No reviews match this filter.</div></div>`;return;}
-  document.getElementById('reviewsList').innerHTML=`<div class="reviews-wrap">`+revs.map(r=>{
+  document.getElementById('adminReviewsTitle').textContent=biz.name;
+  document.getElementById('adminReviewsSub').textContent=`${revs.length} reviews · ★ ${avg} avg`;
+  if(!revs.length){document.getElementById('adminReviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-title">No reviews found</div></div>`;return;}
+  document.getElementById('adminReviewsList').innerHTML=renderReviewCards(revs,biz,'admin');
+}
+
+function renderReviewCards(revs,biz,mode){
+  return`<div class="reviews-wrap">`+revs.map(r=>{
     const isLoad=loadingIds.has(r.id),reply=replies[r.id]||r.ai_reply,isLive=r.google_review_id;
+    const genFn=mode==='admin'?'adminGenReply':'clientGenReply';
+    const postFn=mode==='admin'?'adminPostReply':'clientPostReply';
+    const instFn=mode==='admin'?`adminInstantReply(${r.id},${biz.id})`:`clientInstantReply(${r.id})`;
     const actions=r.status==='responded'&&!reply
       ?`<span class="already-responded">✅ Responded</span>`
-      :`<button class="btn btn-sm btn-primary" onclick="genReply(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate reply'}</button>
-        <button class="btn btn-sm btn-instant" onclick="instantReply(${r.id},${biz.id})" ${isLoad?'disabled':''}>⚡ Instant reply</button>
-        ${reply?`<button class="btn btn-sm" onclick="postReply(${r.id})" style="border-color:var(--primary);color:var(--primary)">${isLive?'📤 Post to Google':'✓ Mark done'}</button>`:''}`;
+      :`<button class="btn btn-sm btn-primary" onclick="${genFn}(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate reply'}</button>
+        <button class="btn btn-sm btn-instant" onclick="${instFn}" ${isLoad?'disabled':''}>⚡ Instant reply</button>
+        ${reply?`<button class="btn btn-sm" onclick="${postFn}(${r.id})" style="border-color:var(--primary);color:var(--primary)">${isLive?'📤 Post to Google':'✓ Mark done'}</button>`:''}`;
     const replyBox=reply?`<div class="reply-box">
-      <div class="reply-box-header"><span class="reply-box-label">✨ AI generated reply</span><span style="font-size:11px;color:var(--primary-dark);font-weight:500">${biz.tone}</span></div>
+      <div class="reply-box-header"><span class="reply-box-label">✨ AI Reply</span><span style="font-size:11px;color:var(--primary-dark);font-weight:500">${biz.tone}</span></div>
       <textarea class="reply-textarea" oninput="replies[${r.id}]=this.value">${reply}</textarea>
       <div class="reply-actions">
-        <button class="btn btn-xs btn-ghost" onclick="genReply(${r.id})">🔄 Regenerate</button>
-        ${isLive?`<button class="btn btn-xs btn-instant" onclick="postReply(${r.id})">📤 Post to Google now</button>`:`<button class="btn btn-xs btn-primary" onclick="postReply(${r.id})">✓ Mark as responded</button>`}
+        <button class="btn btn-xs btn-ghost" onclick="${genFn}(${r.id})">🔄 Regenerate</button>
+        ${isLive?`<button class="btn btn-xs btn-instant" onclick="${postFn}(${r.id})">📤 Post to Google now</button>`:`<button class="btn btn-xs btn-primary" onclick="${postFn}(${r.id})">✓ Mark responded</button>`}
       </div>
     </div>`:'';
     return`<div class="review-card${r.stars<=2?' priority':''}">
@@ -700,7 +754,7 @@ function renderReviews(){
           <div class="review-avatar">${r.author[0]||'?'}</div>
           <div><div class="review-author">${r.author}${isLive?` <span class="live-badge"><span class="live-dot"></span>Live</span>`:''}</div><div class="review-source">🗓 ${r.date}</div></div>
         </div>
-        <div class="review-meta-right"><span class="badge badge-${r.status}">${r.status==='responded'?'✅ responded':'🔔 new'}</span></div>
+        <span class="badge badge-${r.status}">${r.status==='responded'?'✅ responded':'🔔 new'}</span>
       </div>
       <div class="stars-row">${[1,2,3,4,5].map(i=>`<span class="star" style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div>
       <div class="review-text">${r.text}</div>
@@ -710,101 +764,185 @@ function renderReviews(){
   }).join('')+`</div>`;
 }
 
-function getKey(){return document.getElementById('apiKeyInput').value.trim()||localStorage.getItem('rb_key')||'';}
-
-async function genReply(reviewId){
-  const key=getKey();if(!key){toast('Add your Anthropic API key first','error');return;}
-  const biz=businesses.find(b=>b.id===selectedBizId),rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId);
-  if(!biz||!rev)return;
-  loadingIds.add(reviewId);renderReviews();
-  try{
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human and genuine, address their specific points. No hashtags or emojis.`})});
-    const d=await res.json();if(d.error)throw new Error(JSON.stringify(d.error));
-    replies[reviewId]=d.content?.find(b=>b.type==='text')?.text||'';
-    logActivity('✍️',`Reply generated for ${rev.author}'s ${rev.stars}★ review`,biz.name);
-    toast('Reply generated!','success');
-  }catch(e){toast('Error: '+e.message,'error');}
-  loadingIds.delete(reviewId);renderReviews();
+async function callGenerate(reviewId,bizId){
+  const biz=businesses.find(b=>b.id===bizId)||clientBiz;
+  const rev=(allReviews[bizId]||[]).find(r=>r.id===reviewId);
+  if(!biz||!rev)return null;
+  const body={prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human and genuine, address their specific points. No hashtags or emojis.`};
+  const adminKey=localStorage.getItem('rb_key')||document.getElementById('apiKeyInput')?.value.trim()||'';
+  if(adminKey)body.apiKey=adminKey;
+  const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await res.json();if(d.error)throw new Error(JSON.stringify(d.error));
+  return d.content?.find(b=>b.type==='text')?.text||'';
 }
 
-async function instantReply(reviewId,bizId){
-  selectedBizId=bizId;
-  await genReply(reviewId);
-  if(replies[reviewId])await postReply(reviewId);
+async function adminGenReply(reviewId){
+  const biz=businesses.find(b=>b.id===selectedBizId);
+  loadingIds.add(reviewId);renderAdminReviews();
+  try{const text=await callGenerate(reviewId,selectedBizId);replies[reviewId]=text;logActivity('✍️','Reply generated',biz?.name);toast('Reply generated!','success');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loadingIds.delete(reviewId);renderAdminReviews();
 }
 
-async function quickGen(reviewId,bizId){
-  selectedBizId=bizId;
-  nav('reviews',document.querySelectorAll('.nav-item')[1]);
-  renderReviewsPage();
-  await genReply(reviewId);
-}
-
-async function postReply(reviewId){
+async function adminPostReply(reviewId){
   const rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId);
-  const reply=replies[reviewId]||rev?.ai_reply;
-  if(!rev||!reply)return;
+  const reply=replies[reviewId]||rev?.ai_reply;if(!rev||!reply)return;
+  const biz=businesses.find(b=>b.id===selectedBizId);
   if(rev.google_review_id&&googleAccessToken&&selectedLocation){
     try{
       const res=await fetch('/api/post-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name,review_id:rev.google_review_id,reply_text:reply})});
-      const d=await res.json();
-      if(d.error){toast('Google error: '+JSON.stringify(d.error),'error');return;}
-      toast('✅ Reply posted to Google!','success');
-      logActivity('📤','Reply posted to Google',businesses.find(b=>b.id===selectedBizId)?.name);
+      const d=await res.json();if(d.error){toast('Google error: '+JSON.stringify(d.error),'error');return;}
+      toast('✅ Posted to Google!','success');logActivity('📤','Reply posted to Google',biz?.name);
     }catch(e){toast('Error posting to Google','error');return;}
   }
   await sb.from('reviews').update({status:'responded',ai_reply:reply}).eq('id',reviewId);
   rev.status='responded';rev.ai_reply=reply;
-  logActivity('✅','Review marked as responded',businesses.find(b=>b.id===selectedBizId)?.name);
-  updateStats();renderReviews();renderDashboard();
-  toast('Response saved!','success');
+  logActivity('✅','Review responded',biz?.name);updateAdminStats();renderAdminReviews();renderAdminDashboard();toast('Response saved!','success');
 }
 
+async function adminInstantReply(reviewId,bizId){selectedBizId=bizId;await adminGenReply(reviewId);if(replies[reviewId])await adminPostReply(reviewId);}
+async function adminQuickGen(reviewId,bizId){selectedBizId=bizId;adminNav('reviews',document.querySelectorAll('#adminShell .nav-item')[1]);await adminGenReply(reviewId);}
+
 async function autoRespondAll(){
-  if(!selectedBizId){if(businesses.length)selectedBizId=businesses[0].id;else{toast('No clients','error');return;}}
+  if(!selectedBizId&&businesses.length)selectedBizId=businesses[0].id;
   const pending=(allReviews[selectedBizId]||[]).filter(r=>r.status==='new');
   if(!pending.length){toast('No pending reviews','error');return;}
   toast(`Processing ${pending.length} reviews...`,'info');
-  for(const r of pending)await genReply(r.id);
+  for(const r of pending)await adminGenReply(r.id);
   toast('All replies generated!','success');
 }
 
-async function connectGoogle(){
-  const btn=document.getElementById('connectGoogleBtn');
-  btn.disabled=true;btn.innerHTML='Connecting...';
-  try{const res=await fetch('/api/google-auth-url');const {url}=await res.json();window.location.href=url;}
-  catch(e){toast('Error connecting Google','error');btn.disabled=false;renderGooglePage();}
+async function loadClientData(){
+  try{
+    const {data:bizData}=await sb.from('businesses').select('*').eq('owner_id',currentUser.id);
+    businesses=bizData||[];allReviews={};
+    for(const b of businesses){const {data:r}=await sb.from('reviews').select('*').eq('business_id',b.id).order('id',{ascending:false});allReviews[b.id]=r||[];}
+    clientBiz=businesses[0]||null;if(clientBiz)selectedBizId=clientBiz.id;
+    updateClientStats();
+  }catch(e){console.error(e);}
 }
 
-async function showLocationSelector(){
-  const wrap=document.getElementById('locationSelectWrap');
+async function refreshClientData(){
+  await loadClientData();
+  const p=document.querySelector('#clientShell .page.active')?.id?.replace('client-page-','');
+  if(p==='dashboard')renderClientDashboard();else if(p==='reviews')renderClientReviews();
+  toast('Refreshed','success');
+}
+
+function updateClientStats(){
+  if(!clientBiz)return;
+  const revs=allReviews[clientBiz.id]||[];
+  const pending=revs.filter(r=>r.status==='new').length;
+  const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
+  document.getElementById('clientStatPending').textContent=pending;
+  document.getElementById('clientStatResponded').textContent=revs.filter(r=>r.status==='responded').length;
+  document.getElementById('clientStatAvg').textContent=avg;
+  const badge=document.getElementById('clientPendingBadge');
+  if(pending>0){badge.textContent=pending;badge.classList.remove('hidden');}else{badge.classList.add('hidden');}
+}
+
+function clientNav(page,el){
+  document.querySelectorAll('#clientShell .nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.querySelectorAll('#clientShell .page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('client-page-'+page).classList.add('active');
+  const titles={dashboard:'My Dashboard',reviews:'My Reviews',google:'Google Business'};
+  document.getElementById('clientTopbarTitle').textContent=titles[page]||page;
+  if(page==='reviews')renderClientReviews();
+  if(page==='google')renderClientGooglePage();
+  if(page==='dashboard')renderClientDashboard();
+  document.getElementById('clientSidebar').classList.remove('open');
+}
+
+function renderClientDashboard(){
+  if(!clientBiz){document.getElementById('clientDashReviews').innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No business assigned yet</div><div class="empty-state-text">Please contact your ReviewBot administrator to get set up.</div></div>`;return;}
+  updateClientStats();
+  const revs=(allReviews[clientBiz.id]||[]).filter(r=>r.status==='new');
+  if(!revs.length){document.getElementById('clientDashReviews').innerHTML=`<div class="empty-state"><span class="empty-state-icon">🎉</span><div class="empty-state-title">All caught up!</div><div class="empty-state-text">No reviews waiting for a reply. Check back soon!</div></div>`;return;}
+  document.getElementById('clientDashReviews').innerHTML=renderReviewCards(revs.slice(0,5),clientBiz,'client');
+}
+
+function renderClientReviews(){
+  if(!clientBiz){document.getElementById('clientReviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No business assigned yet</div></div>`;return;}
+  const filter=document.getElementById('clientReviewFilter')?.value||'all';
+  let revs=allReviews[clientBiz.id]||[];
+  if(filter==='new')revs=revs.filter(r=>r.status==='new');
+  else if(filter==='responded')revs=revs.filter(r=>r.status==='responded');
+  else if(['1','2','3','4','5'].includes(filter))revs=revs.filter(r=>r.stars===parseInt(filter));
+  const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
+  document.getElementById('clientReviewsTitle').textContent=clientBiz.name+' — Reviews';
+  document.getElementById('clientReviewsSub').textContent=`${revs.length} reviews · ★ ${avg} avg`;
+  if(googleAccessToken&&selectedLocation)document.getElementById('clientFetchBtn').style.display='flex';else document.getElementById('clientFetchBtn').style.display='none';
+  if(!revs.length){document.getElementById('clientReviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-title">No reviews found</div></div>`;return;}
+  document.getElementById('clientReviewsList').innerHTML=renderReviewCards(revs,clientBiz,'client');
+}
+
+async function clientGenReply(reviewId){
+  loadingIds.add(reviewId);renderClientReviews();
+  try{const text=await callGenerate(reviewId,clientBiz.id);replies[reviewId]=text;logActivity('✍️','Reply generated',clientBiz?.name);toast('Reply generated!','success');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loadingIds.delete(reviewId);renderClientReviews();
+}
+
+async function clientPostReply(reviewId){
+  const rev=(allReviews[clientBiz.id]||[]).find(r=>r.id===reviewId);
+  const reply=replies[reviewId]||rev?.ai_reply;if(!rev||!reply)return;
+  if(rev.google_review_id&&googleAccessToken&&selectedLocation){
+    try{
+      const res=await fetch('/api/post-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name,review_id:rev.google_review_id,reply_text:reply})});
+      const d=await res.json();if(d.error){toast('Google error: '+JSON.stringify(d.error),'error');return;}
+      toast('✅ Posted to Google!','success');
+    }catch(e){toast('Error posting to Google','error');return;}
+  }
+  await sb.from('reviews').update({status:'responded',ai_reply:reply}).eq('id',reviewId);
+  rev.status='responded';rev.ai_reply=reply;
+  updateClientStats();renderClientDashboard();renderClientReviews();toast('Response saved!','success');
+}
+
+async function clientInstantReply(reviewId){await clientGenReply(reviewId);if(replies[reviewId])await clientPostReply(reviewId);}
+
+function checkOAuthCallback(){
+  const pending=localStorage.getItem('g_pending_google');
+  if(pending==='true'){
+    localStorage.removeItem('g_pending_google');
+    googleAccessToken=localStorage.getItem('g_access');
+    googleRefreshToken=localStorage.getItem('g_refresh')||'';
+    try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
+    if(googleAccessToken){toast('Google connected!','success');setTimeout(()=>{adminNav('google',document.querySelectorAll('#adminShell .nav-item')[3]);renderAdminGooglePage();showLocationSelector('admin');},300);}
+  }
+}
+
+function checkOAuthCallbackClient(){
+  const pending=localStorage.getItem('g_pending_google');
+  if(pending==='true'){
+    localStorage.removeItem('g_pending_google');
+    googleAccessToken=localStorage.getItem('g_access');
+    googleRefreshToken=localStorage.getItem('g_refresh')||'';
+    try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
+    if(googleAccessToken){toast('Google connected!','success');setTimeout(()=>{clientNav('google',document.querySelectorAll('#clientShell .nav-item')[2]);renderClientGooglePage();showLocationSelector('client');},300);}
+  }
+}
+
+async function connectGoogle(){
+  const btn=isAdmin?document.getElementById('connectGoogleBtn'):document.getElementById('clientConnectGoogleBtn');
+  btn.disabled=true;btn.innerHTML='Connecting...';
+  try{const res=await fetch('/api/google-auth-url');const {url}=await res.json();window.location.href=url;}
+  catch(e){toast('Error','error');btn.disabled=false;}
+}
+
+async function showLocationSelector(mode){
+  const wrapId=mode==='admin'?'locationSelectWrap':'clientLocationSelectWrap';
+  const wrap=document.getElementById(wrapId);
   wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">🔄 Finding your business locations...</div></div>`;
   let locations=[];
   const accountsToTry=googleAccounts.length>0?googleAccounts:[{name:'accounts/me'}];
   for(const acc of accountsToTry){
-    try{
-      const res=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
-      const d=await res.json();
-      if(d.locations)locations=[...locations,...d.locations.map(l=>({...l,accountName:acc.name}))];
-    }catch(e){}
+    try{const res=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});const d=await res.json();if(d.locations)locations=[...locations,...d.locations.map(l=>({...l,accountName:acc.name}))];}catch(e){}
   }
   if(!locations.length){
-    try{
-      const res=await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts',{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
-      const accs=(await res.json()).accounts||[];
-      for(const acc of accs){
-        try{
-          const r2=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
-          const d2=await r2.json();
-          if(d2.locations)locations=[...locations,...d2.locations.map(l=>({...l,accountName:acc.name}))];
-        }catch(e){}
-      }
-    }catch(e){}
+    try{const res=await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts',{headers:{'Authorization':`Bearer ${googleAccessToken}`}});const accs=(await res.json()).accounts||[];for(const acc of accs){try{const r2=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});const d2=await r2.json();if(d2.locations)locations=[...locations,...d2.locations.map(l=>({...l,accountName:acc.name}))];}catch(e){}}}catch(e){}
   }
-  if(!locations.length){
-    wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found yet</div><p style="font-size:13px;color:#78350f;line-height:1.6;margin-top:4px">Google Business Profile API access is still pending approval. Once approved (2-5 days), your locations will appear here automatically.</p></div>`;
-    return;
-  }
+  if(!locations.length){wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found yet</div><p style="font-size:13px;color:#78350f;line-height:1.6;margin-top:4px">Google Business Profile API approval is still pending (2-5 days). Once approved your locations will appear here.</p></div>`;return;}
   wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>${locations.map((l,i)=>`<div class="location-item" onclick="selectLocation(${i})"><div style="font-size:22px">🏢</div><div><div style="font-size:13px;font-weight:600">${l.title||l.name}</div><div style="font-size:12px;color:var(--text-secondary)">${l.storefrontAddress?.addressLines?.[0]||''}</div></div></div>`).join('')}</div>`;
   window._locations=locations;
 }
@@ -813,32 +951,36 @@ function selectLocation(idx){
   const loc=window._locations[idx];selectedLocation=loc;
   localStorage.setItem('g_location',JSON.stringify(loc));
   document.getElementById('locationSelectWrap').innerHTML='';
+  document.getElementById('clientLocationSelectWrap').innerHTML='';
   toast('✅ Location selected: '+(loc.title||loc.name),'success');
   logActivity('🔗','Google Business connected',loc.title||loc.name);
-  renderGooglePage();
+  renderAdminGooglePage();renderClientGooglePage();
 }
 
-function renderGooglePage(){
+const gIcon=`<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`;
+
+function renderAdminGooglePage(){
   const btn=document.getElementById('connectGoogleBtn'),autoCard=document.getElementById('autoReplyCard');
-  const gIcon=`<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`;
+  if(!btn)return;
   if(googleAccessToken&&selectedLocation){
-    btn.className='btn btn-google connected';
-    btn.innerHTML=gIcon+'✓ Connected: '+(selectedLocation.title||selectedLocation.name);
-    btn.onclick=disconnectGoogle;btn.disabled=false;
-    autoCard.style.display='block';
-    document.getElementById('connectedLocations').innerHTML=`<div style="background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:18px 20px;margin-top:16px">
-      <div style="font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:4px">✅ Connected to Google Business</div>
-      <div style="font-size:13px;color:var(--primary-dark);margin-bottom:14px">${selectedLocation.title||selectedLocation.name}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-sm btn-primary" onclick="fetchLiveReviews()">🔄 Sync reviews now</button>
-        <button class="btn btn-sm btn-danger" onclick="disconnectGoogle()">Disconnect</button>
-      </div>
-    </div>`;
+    btn.className='btn btn-google connected';btn.innerHTML=gIcon+'✓ Connected: '+(selectedLocation.title||selectedLocation.name);btn.onclick=disconnectGoogle;btn.disabled=false;
+    if(autoCard)autoCard.style.display='block';
+    document.getElementById('connectedLocations').innerHTML=`<div style="background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:18px;margin-top:16px"><div style="font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:12px">✅ Connected: ${selectedLocation.title||selectedLocation.name}</div><div style="display:flex;gap:8px"><button class="btn btn-sm btn-primary" onclick="fetchLiveReviews()">🔄 Sync reviews</button><button class="btn btn-sm btn-danger" onclick="disconnectGoogle()">Disconnect</button></div></div>`;
   }else{
-    btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;
-    btn.innerHTML=gIcon+'Connect Google Business';
-    autoCard.style.display='none';
+    btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;btn.innerHTML=gIcon+'Connect Google Business';
+    if(autoCard)autoCard.style.display='none';
     document.getElementById('connectedLocations').innerHTML='';
+  }
+}
+
+function renderClientGooglePage(){
+  const btn=document.getElementById('clientConnectGoogleBtn');if(!btn)return;
+  if(googleAccessToken&&selectedLocation){
+    btn.className='btn btn-google connected';btn.innerHTML=gIcon+'✓ Connected: '+(selectedLocation.title||selectedLocation.name);btn.onclick=disconnectGoogle;btn.disabled=false;
+    document.getElementById('clientConnectedLocations').innerHTML=`<div style="background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:18px;margin-top:16px"><div style="font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:12px">✅ Connected: ${selectedLocation.title||selectedLocation.name}</div><button class="btn btn-sm btn-primary" onclick="fetchLiveReviews()">🔄 Sync reviews now</button></div>`;
+  }else{
+    btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;btn.innerHTML=gIcon+'Connect Google Business';
+    document.getElementById('clientConnectedLocations').innerHTML='';
   }
 }
 
@@ -846,31 +988,30 @@ function disconnectGoogle(){
   if(!confirm('Disconnect Google Business?'))return;
   googleAccessToken=null;googleRefreshToken=null;googleAccounts=[];selectedLocation=null;
   localStorage.removeItem('g_access');localStorage.removeItem('g_refresh');localStorage.removeItem('g_accounts');localStorage.removeItem('g_location');
-  renderGooglePage();toast('Disconnected from Google','success');
+  renderAdminGooglePage();renderClientGooglePage();toast('Disconnected','success');
 }
 
 async function fetchLiveReviews(){
   if(!googleAccessToken||!selectedLocation){toast('Connect Google Business first','error');return;}
-  if(!selectedBizId&&businesses.length)selectedBizId=businesses[0].id;
-  if(!selectedBizId){toast('Add a client first','error');return;}
-  toast('Syncing reviews from Google...','info');
+  const bizId=isAdmin?selectedBizId:(clientBiz?.id);
+  if(!bizId){toast('No business to sync','error');return;}
+  toast('Syncing reviews...','info');
   try{
     const res=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name})});
-    const d=await res.json();
-    if(d.error){toast('Error: '+JSON.stringify(d.error),'error');return;}
+    const d=await res.json();if(d.error){toast('Error: '+JSON.stringify(d.error),'error');return;}
     const googleReviews=d.reviews||[];let newCount=0;
     for(const gr of googleReviews){
-      const existing=allReviews[selectedBizId]?.find(r=>r.google_review_id===gr.reviewId);
+      const existing=allReviews[bizId]?.find(r=>r.google_review_id===gr.reviewId);
       if(!existing){
         const stars=gr.starRating==='FIVE'?5:gr.starRating==='FOUR'?4:gr.starRating==='THREE'?3:gr.starRating==='TWO'?2:1;
-        const newRev={business_id:selectedBizId,author:gr.reviewer?.displayName||'Anonymous',stars,date:new Date(gr.createTime).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),text:gr.comment||'(No comment)',status:gr.reviewReply?'responded':'new',google_review_id:gr.reviewId,ai_reply:gr.reviewReply?.comment||null};
+        const newRev={business_id:bizId,author:gr.reviewer?.displayName||'Anonymous',stars,date:new Date(gr.createTime).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),text:gr.comment||'(No comment)',status:gr.reviewReply?'responded':'new',google_review_id:gr.reviewId,ai_reply:gr.reviewReply?.comment||null};
         const {data}=await sb.from('reviews').insert(newRev).select().single();
-        if(data){allReviews[selectedBizId]=[data,...(allReviews[selectedBizId]||[])];newCount++;}
+        if(data){allReviews[bizId]=[data,...(allReviews[bizId]||[])];newCount++;}
       }
     }
-    updateStats();renderReviews();
-    logActivity('🔄',`Synced ${newCount} new reviews from Google`,businesses.find(b=>b.id===selectedBizId)?.name);
-    toast(newCount>0?`✅ ${newCount} new reviews imported!`:'Already up to date','success');
+    if(isAdmin){updateAdminStats();renderAdminReviews();}else{updateClientStats();renderClientReviews();}
+    logActivity('🔄',`Synced ${newCount} reviews`,businesses.find(b=>b.id===bizId)?.name);
+    toast(newCount>0?`✅ ${newCount} new reviews!`:'Already up to date','success');
   }catch(e){toast('Error fetching reviews','error');}
 }
 
@@ -880,29 +1021,26 @@ function toggleAutoReply(){
   slider.style.background=on?'var(--primary)':'#cbd5e1';
   slider.querySelector('span').style.transform=on?'translateX(22px)':'translateX(0)';
   toast(on?'⚡ Auto-reply enabled':'Auto-reply disabled',on?'success':'info');
-  logActivity(on?'⚡':'⏸',on?'Auto-reply enabled':'Auto-reply disabled');
 }
 
 async function renderClientsPage(){
   const {data:users}=await sb.from('profiles').select('*');
-  const sel=document.getElementById('newBizOwner');
-  sel.innerHTML=`<option value="">— Admin managed —</option>`+(users||[]).map(u=>`<option value="${u.id}">${u.email} (${u.role})</option>`).join('');
-  document.getElementById('clientCountLabel').textContent=`(${businesses.length} total)`;
+  document.getElementById('newBizOwner').innerHTML=`<option value="">— Admin managed —</option>`+(users||[]).map(u=>`<option value="${u.id}">${u.email} (${u.role})</option>`).join('');
   const table=document.getElementById('clientsTable');
-  if(!businesses.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client above</div></div>`;return;}
+  if(!businesses.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div></div>`;return;}
   table.innerHTML=`<table class="data-table"><thead><tr><th>Business</th><th>Type</th><th>Fee</th><th>Reviews</th><th>Avg ★</th><th>Response %</th><th></th></tr></thead><tbody>`+
   businesses.map(b=>{
     const revs=allReviews[b.id]||[];
     const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
     const rr=revs.length?Math.round((revs.filter(r=>r.status==='responded').length/revs.length)*100):0;
     return`<tr>
-      <td><strong>${b.name}</strong>${b.notes?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${b.notes}</div>`:''}</td>
+      <td><strong>${b.name}</strong>${b.notes?`<div style="font-size:11px;color:var(--text-muted)">${b.notes}</div>`:''}</td>
       <td style="color:var(--text-secondary)">${b.type}</td>
-      <td><span style="font-weight:600;color:var(--primary)">${b.monthly_fee?'£'+b.monthly_fee+'/mo':'—'}</span></td>
+      <td style="font-weight:600;color:var(--primary)">${b.monthly_fee?'£'+b.monthly_fee+'/mo':'—'}</td>
       <td>${revs.length}</td>
       <td style="color:var(--amber)">${avg!=='—'?'★ '+avg:'—'}</td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:${rr}%"></div></div><span style="font-size:11px;color:var(--text-muted);white-space:nowrap">${rr}%</span></div></td>
-      <td style="display:flex;gap:6px"><button class="btn btn-xs" onclick="selectClientAndNav(${b.id})">View</button><button class="btn btn-xs btn-danger" onclick="removeClient(${b.id})">Remove</button></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:${rr}%"></div></div><span style="font-size:11px;color:var(--text-muted)">${rr}%</span></div></td>
+      <td style="display:flex;gap:6px"><button class="btn btn-xs" onclick="goToClientReviews(${b.id})">View</button><button class="btn btn-xs btn-danger" onclick="removeClient(${b.id})">Remove</button></td>
     </tr>`;
   }).join('')+`</tbody></table>`;
 }
@@ -910,34 +1048,30 @@ async function renderClientsPage(){
 async function addClient(){
   const name=document.getElementById('newBizName').value.trim(),type=document.getElementById('newBizType').value.trim(),tone=document.getElementById('newBizTone').value;
   const fee=parseFloat(document.getElementById('newBizFee').value)||0,owner=document.getElementById('newBizOwner').value||null,notes=document.getElementById('newBizNotes').value.trim();
-  if(!name||!type){toast('Fill in business name and type','error');return;}
+  if(!name||!type){toast('Fill in name and type','error');return;}
   const {data,error}=await sb.from('businesses').insert({name,type,tone,monthly_fee:fee,owner_id:owner,notes}).select().single();
   if(error){toast('Error: '+error.message,'error');return;}
   businesses.push(data);allReviews[data.id]=[];
   document.getElementById('newBizName').value='';document.getElementById('newBizType').value='';document.getElementById('newBizFee').value='';document.getElementById('newBizNotes').value='';
-  logActivity('🏢','New client added',name);
-  toast('✅ '+name+' added!','success');updateStats();renderClientsPage();
+  logActivity('🏢','New client added',name);toast('✅ '+name+' added!','success');updateAdminStats();renderClientsPage();
 }
 
 async function removeClient(id){
-  if(!confirm('Remove this client and all their reviews?'))return;
+  if(!confirm('Remove this client?'))return;
   await sb.from('businesses').delete().eq('id',id);
-  const biz=businesses.find(b=>b.id===id);
-  businesses=businesses.filter(b=>b.id!==id);delete allReviews[id];
-  if(selectedBizId===id)selectedBizId=null;
-  logActivity('🗑️','Client removed',biz?.name);
-  toast('Client removed','success');updateStats();renderClientsPage();
+  const biz=businesses.find(b=>b.id===id);businesses=businesses.filter(b=>b.id!==id);delete allReviews[id];
+  logActivity('🗑️','Client removed',biz?.name);toast('Removed','success');updateAdminStats();renderClientsPage();
 }
 
 function renderBilling(){
-  updateStats();
+  updateAdminStats();
   const table=document.getElementById('billingTable');
   if(!businesses.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">💳</span><div class="empty-state-title">No clients yet</div></div>`;return;}
   table.innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Monthly fee</th><th>Status</th><th>Annual value</th></tr></thead><tbody>`+
   businesses.map(b=>`<tr>
     <td><strong>${b.name}</strong><div style="font-size:11px;color:var(--text-muted)">${b.type}</div></td>
     <td style="font-weight:700;color:var(--primary)">${b.monthly_fee?'£'+b.monthly_fee:'—'}</td>
-    <td><span class="billing-status ${b.monthly_fee?'billing-active':'billing-trial'}">${b.monthly_fee?'Active':'No fee set'}</span></td>
+    <td><span class="role-badge ${b.monthly_fee?'billing-active':'billing-trial'}">${b.monthly_fee?'Active':'No fee'}</span></td>
     <td style="font-weight:600">${b.monthly_fee?'£'+(b.monthly_fee*12):'—'}</td>
   </tr>`).join('')+`</tbody></table>`;
 }
@@ -947,7 +1081,7 @@ async function renderUsersPage(){
   const table=document.getElementById('usersTable');
   if(!users?.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">👥</span><div class="empty-state-title">No users yet</div></div>`;return;}
   table.innerHTML=`<table class="data-table"><thead><tr><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>`+
-  users.map(u=>`<tr><td>${u.email}</td><td><span class="role-badge role-${u.role}">${u.role}</span></td><td>${u.id!==currentUser?.id?`<button class="btn btn-xs" onclick="toggleRole('${u.id}','${u.role}')">${u.role==='admin'?'Make client':'Make admin'}</button>`:'<span style="color:var(--text-muted);font-size:12px">You</span>'}</td></tr>`).join('')+`</tbody></table>`;
+  users.map(u=>`<tr><td>${u.email}</td><td><span class="role-badge role-${u.role}">${u.role}</span></td><td>${u.id!==currentUser?.id?`<button class="btn btn-xs" onclick="toggleRole('${u.id}','${u.role}')">${u.role==='admin'?'Make client':'Make admin'}</button>`:'<span style="font-size:12px;color:var(--text-muted)">You</span>'}</td></tr>`).join('')+`</tbody></table>`;
 }
 
 async function toggleRole(id,current){
@@ -957,9 +1091,19 @@ async function toggleRole(id,current){
 }
 
 function onApiKey(){
-  const k=getKey(),bar=document.getElementById('apiKeyBar'),badge=document.getElementById('apiConnected');
+  const input=document.getElementById('apiKeyInput');if(!input)return;
+  const k=input.value.trim(),bar=document.getElementById('apiKeyBar'),badge=document.getElementById('apiConnected');
   if(k.startsWith('sk-ant')){badge.style.display='flex';bar.classList.add('connected');localStorage.setItem('rb_key',k);}
   else{badge.style.display='none';bar.classList.remove('connected');}
+  const si=document.getElementById('settingsApiKey');if(si)si.value=k;
+}
+
+function saveApiKey(){
+  const k=document.getElementById('settingsApiKey').value.trim();
+  if(!k){toast('Enter a key first','error');return;}
+  localStorage.setItem('rb_key',k);
+  const ai=document.getElementById('apiKeyInput');if(ai){ai.value=k;onApiKey();}
+  toast('API key saved!','success');
 }
 
 function toast(msg,type='success'){
