@@ -358,7 +358,9 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 
 async function loadProfile(){
   try{
-    const {data}=await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000));
+    const query=sb.from('profiles').select('*').eq('id',currentUser.id).single();
+    const {data}=await Promise.race([query,timeout]);
     if(!data){const p={id:currentUser.id,email:currentUser.email,role:'client'};await sb.from('profiles').upsert(p,{onConflict:'id'});currentProfile=p;}
     else{currentProfile=data;}
   }catch(e){currentProfile={id:currentUser.id,email:currentUser.email,role:'client'};}
@@ -541,7 +543,7 @@ function renderGooglePage(){
     const connLoc=document.getElementById('connectedLocations');
     connLoc.classList.remove('hidden');
     connLoc.innerHTML=`<div style="background:var(--primary-light);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:16px 20px"><div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">✓ Connected to Google Business</div><div style="font-size:12px;color:var(--primary-dark);margin-bottom:12px">${selectedLocation.title||selectedLocation.name}</div><button class="btn btn-sm" style="border-color:var(--primary);color:var(--primary)" onclick="fetchLiveReviews()">🔄 Fetch latest reviews now</button></div>`;
-  } else {
+  }else{
     btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;
     btn.innerHTML=gIcon+'Connect Google Business';
     autoCard.style.display='none';
