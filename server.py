@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
+import os
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -36,10 +37,6 @@ def generate():
     return jsonify(response.json()), response.status_code
 
 if __name__ == '__main__':
-    print("")
-    print("  ReviewBot is running!")
-    print("  Open your browser and go to: http://localhost:5000")
-    print("")
-    import os
-port = int(os.environ.get('PORT', 5000))
-app.run(debug=False, host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', 5000))
+    print(f"\n  ReviewBot is running on port {port}!\n")
+    app.run(debug=False, host='0.0.0.0', port=port)
