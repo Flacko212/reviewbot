@@ -4,16 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReviewBot</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--green:#b8f57a;--amber:#f5c842;--bg:#0a0a0a;--surface:#131313;--border:#222;--text:#f0ede8;--muted:#555}
+:root{--green:#b8f57a;--amber:#f5c842;--red:#f55a42;--bg:#0a0a0a;--surface:#131313;--border:#222;--text:#f0ede8;--muted:#555}
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh}
-.app{max-width:900px;margin:0 auto;padding:40px 24px}
+.app{max-width:960px;margin:0 auto;padding:40px 24px}
 .header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px;border-bottom:1px solid var(--border);padding-bottom:24px;flex-wrap:wrap;gap:16px}
 .logo{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-1px;color:var(--green)}
 .logo span{color:var(--text)}
 .tagline{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.nav{display:flex;gap:4px}
+.nav-btn{font-size:11px;padding:8px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
+.nav-btn:hover{border-color:var(--green);color:var(--green)}
+.nav-btn.active{background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600}
 .api-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);margin-bottom:28px;flex-wrap:wrap}
 .api-bar.ok{border-color:#2a4a10;background:#0d1a07}
 .api-bar label{font-size:12px;color:var(--muted);white-space:nowrap;letter-spacing:1px}
@@ -28,10 +32,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-
 .tab{font-size:12px;padding:8px 16px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.15s;letter-spacing:0.5px}
 .tab:hover{border-color:var(--green);color:var(--green)}
 .tab.active{background:var(--green);color:#0a0a0a;border-color:var(--green);font-weight:600}
-.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
 .section-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.btn-auto{font-size:11px;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
-.btn-auto:hover{border-color:var(--green);color:var(--green)}
+.btn{font-size:11px;padding:7px 14px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
+.btn:hover{border-color:var(--green);color:var(--green)}
+.btn-green{border-color:var(--green);color:var(--green)}
+.btn-green:hover{background:var(--green);color:#0a0a0a}
+.btn-red{border-color:var(--red);color:var(--red)}
+.btn-red:hover{background:var(--red);color:#0a0a0a}
 .reviews{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border)}
 .rcard{background:var(--surface);padding:18px 20px;transition:background 0.15s}
 .rcard:hover{background:#161616}
@@ -59,7 +67,29 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-
 .dot:nth-child(2){animation-delay:0.2s}
 .dot:nth-child(3){animation-delay:0.4s}
 @keyframes dp{0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#0a0a0a;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;padding:10px 18px;letter-spacing:1px;display:none;z-index:99}
+.toast{position:fixed;bottom:24px;right:24px;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;padding:10px 18px;letter-spacing:1px;display:none;z-index:99}
+.toast.success{background:var(--green);color:#0a0a0a}
+.toast.error{background:var(--red);color:#0a0a0a}
+.page{display:none}
+.page.active{display:block}
+.admin-grid{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:24px}
+.admin-row{background:var(--surface);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.admin-row:hover{background:#161616}
+.biz-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:2px}
+.biz-meta{font-size:11px;color:var(--muted);letter-spacing:0.5px}
+.admin-actions{display:flex;gap:8px}
+.add-form{border:1px solid var(--border);background:var(--surface);padding:24px;margin-bottom:24px}
+.add-form h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:20px;letter-spacing:1px;text-transform:uppercase;color:var(--green)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.form-input{background:#0a0a0a;border:1px solid #333;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:10px 12px;outline:none;width:100%}
+.form-input:focus{border-color:var(--green)}
+.form-select{background:#0a0a0a;border:1px solid #333;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:10px 12px;outline:none;width:100%;cursor:pointer}
+.form-select:focus{border-color:var(--green)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end}
+.empty-state{padding:48px;text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;background:var(--surface);border:1px solid var(--border)}
 </style>
 </head>
 <body>
@@ -69,7 +99,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-
       <div class="logo">REVIEW<span>BOT</span></div>
       <div class="tagline">AI-powered Google review management</div>
     </div>
-    <button class="btn-auto" onclick="autoAll()">Auto-respond all</button>
+    <div class="nav">
+      <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
+      <button class="nav-btn" onclick="showPage('admin',this)">+ Clients</button>
+    </div>
   </div>
 
   <div class="api-bar" id="apiBar">
@@ -78,30 +111,64 @@ body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-
     <span class="api-ok" id="apiOk">✓ CONNECTED</span>
   </div>
 
-  <div class="stats">
-    <div class="stat"><div class="stat-n" id="sNew">0</div><div class="stat-l">Awaiting reply</div></div>
-    <div class="stat"><div class="stat-n" id="sDone">0</div><div class="stat-l">Responded</div></div>
-    <div class="stat"><div class="stat-n" id="sAll">0</div><div class="stat-l">Total reviews</div></div>
+  <div class="page active" id="page-dashboard">
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="sNew">0</div><div class="stat-l">Awaiting reply</div></div>
+      <div class="stat"><div class="stat-n" id="sDone">0</div><div class="stat-l">Responded</div></div>
+      <div class="stat"><div class="stat-n" id="sAll">0</div><div class="stat-l">Total reviews</div></div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="section-row">
+      <span class="section-label" id="bizLabel">Reviews</span>
+      <button class="btn btn-green" onclick="autoAll()">Auto-respond all</button>
+    </div>
+    <div id="grid"></div>
   </div>
 
-  <div class="tabs" id="tabs"></div>
-
-  <div class="section-row">
-    <span class="section-label" id="bizLabel">Reviews</span>
+  <div class="page" id="page-admin">
+    <div class="add-form">
+      <h3>Add New Client</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Business Name</label>
+          <input class="form-input" id="newName" placeholder="e.g. Oakwood Plumbing">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Type</label>
+          <input class="form-input" id="newType" placeholder="e.g. plumbing contractor">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Reply Tone</label>
+          <select class="form-select" id="newTone">
+            <option value="professional and reassuring">Professional & Reassuring — trades, contractors</option>
+            <option value="warm, hospitable and genuine">Warm & Hospitable — restaurants, cafes</option>
+            <option value="friendly and personal">Friendly & Personal — salons, local shops</option>
+            <option value="confident and expert">Confident & Expert — professional services</option>
+            <option value="enthusiastic and energetic">Enthusiastic & Energetic — gyms, sports</option>
+            <option value="calm and trustworthy">Calm & Trustworthy — healthcare, wellness</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-green" onclick="addBusiness()">Add Client</button>
+      </div>
+    </div>
+    <div class="section-row">
+      <span class="section-label">Current Clients (<span id="clientCount">0</span>)</span>
+    </div>
+    <div id="adminGrid"></div>
   </div>
-
-  <div class="reviews" id="grid"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const BIZ=[
+let BIZ=JSON.parse(localStorage.getItem('rb_biz')||'null')||[
   {id:1,name:"Oakwood Plumbing",type:"plumbing contractor",tone:"professional and reassuring"},
   {id:2,name:"The Fig & Vine",type:"restaurant and wine bar",tone:"warm, hospitable and genuine"},
   {id:3,name:"Bloom Hair Studio",type:"hair salon",tone:"friendly and personal"},
 ];
-const DATA={
+let REVIEWS=JSON.parse(localStorage.getItem('rb_reviews')||'null')||{
   1:[
     {id:1,author:"Sarah M.",stars:5,date:"2 days ago",text:"Brilliant service. Fixed our burst pipe at 11pm on a Sunday — no fuss, fair price. Will definitely use again.",status:"new"},
     {id:2,author:"James P.",stars:2,date:"5 days ago",text:"Booked for 9am, didn't show until noon with no call. Work was fine once done but the communication was really poor.",status:"new"},
@@ -115,54 +182,94 @@ const DATA={
     {id:6,author:"Charlotte B.",stars:5,date:"Today",text:"Amy is an absolute artist. I showed her a vague Pinterest board and she completely understood the vision. Best hair I've ever had!",status:"new"},
   ],
 };
-let sel=1,replies={},loading=new Set();
+let sel=BIZ[0]?.id||null,replies={},loading=new Set();
+let nextId=Math.max(...BIZ.map(b=>b.id),0)+1;
+
+function save(){localStorage.setItem('rb_biz',JSON.stringify(BIZ));localStorage.setItem('rb_reviews',JSON.stringify(REVIEWS));}
 function getKey(){return document.getElementById('apiKey').value.trim()||localStorage.getItem('rb_key')||'';}
-function onKey(){
-  const k=getKey(),ok=document.getElementById('apiOk'),bar=document.getElementById('apiBar');
-  if(k.startsWith('sk-ant')){ok.style.display='block';bar.classList.add('ok');localStorage.setItem('rb_key',k);}
-  else{ok.style.display='none';bar.classList.remove('ok');}
+function onKey(){const k=getKey(),ok=document.getElementById('apiOk'),bar=document.getElementById('apiBar');if(k.startsWith('sk-ant')){ok.style.display='block';bar.classList.add('ok');localStorage.setItem('rb_key',k);}else{ok.style.display='none';bar.classList.remove('ok');}}
+
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='admin')renderAdmin();
+  if(name==='dashboard')renderDashboard();
 }
-function stars(n){return[1,2,3,4,5].map(i=>`<span style="color:${i<=n?'#f5c842':'#333'}">★</span>`).join('');}
-function renderTabs(){document.getElementById('tabs').innerHTML=BIZ.map(b=>`<button class="tab ${b.id===sel?'active':''}" onclick="pick(${b.id})">${b.name}</button>`).join('');}
+
+function updateStats(){const all=Object.values(REVIEWS).flat();document.getElementById('sNew').textContent=all.filter(r=>r.status==='new').length;document.getElementById('sDone').textContent=all.filter(r=>r.status==='responded').length;document.getElementById('sAll').textContent=all.length;}
+function renderTabs(){const el=document.getElementById('tabs');if(!BIZ.length){el.innerHTML='';return;}el.innerHTML=BIZ.map(b=>`<button class="tab ${b.id===sel?'active':''}" onclick="pick(${b.id})">${b.name}</button>`).join('');}
 function pick(id){sel=id;renderTabs();renderGrid();}
-function updateStats(){const all=Object.values(DATA).flat();document.getElementById('sNew').textContent=all.filter(r=>r.status==='new').length;document.getElementById('sDone').textContent=all.filter(r=>r.status==='responded').length;document.getElementById('sAll').textContent=all.length;}
-function renderGrid(){
-  const biz=BIZ.find(b=>b.id===sel);
-  document.getElementById('bizLabel').textContent=biz.name+' — reviews';
-  document.getElementById('grid').innerHTML=(DATA[sel]||[]).map(r=>{
-    const isLoad=loading.has(r.id),reply=replies[r.id];
-    const actions=r.status==='responded'&&!reply
-      ?`<span class="already">✓ Already responded</span>`
-      :`<button class="btn-gen" onclick="gen(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate AI reply'}</button>${reply?`<button class="btn-post" onclick="post(${r.id})">Post response</button>`:''}`;
-    const replyBox=reply?`<div class="reply-box"><div class="reply-label"><span>AI generated reply</span><span style="opacity:0.6">${biz.tone}</span></div><textarea class="reply-ta" oninput="replies[${r.id}]=this.value">${reply}</textarea></div>`:'';
-    return`<div class="rcard"><div class="rmeta"><span class="rauthor">${r.author}</span><div class="rmeta-right"><span class="rdate">${r.date}</span><span class="badge badge-${r.status}">${r.status}</span></div></div><div class="stars">${stars(r.stars)}</div><div class="rtext">${r.text}</div><div class="ractions">${actions}</div>${replyBox}</div>`;
-  }).join('');
+
+function renderDashboard(){
+  if(!BIZ.length){sel=null;}else if(!sel||!BIZ.find(b=>b.id===sel)){sel=BIZ[0].id;}
+  renderTabs();renderGrid();updateStats();
 }
+
+function renderGrid(){
+  const grid=document.getElementById('grid');
+  if(!BIZ.length){grid.innerHTML=`<div class="empty-state">No clients yet — go to "+ Clients" to add your first one</div>`;document.getElementById('bizLabel').textContent='Reviews';return;}
+  const biz=BIZ.find(b=>b.id===sel);if(!biz)return;
+  document.getElementById('bizLabel').textContent=biz.name+' — reviews';
+  const revs=REVIEWS[sel]||[];
+  if(!revs.length){grid.innerHTML=`<div class="empty-state">No reviews yet for this client</div>`;return;}
+  grid.innerHTML=`<div class="reviews">`+revs.map(r=>{
+    const isLoad=loading.has(r.id),reply=replies[r.id];
+    const actions=r.status==='responded'&&!reply?`<span class="already">✓ Already responded</span>`:`<button class="btn-gen" onclick="gen(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate AI reply'}</button>${reply?`<button class="btn-post" onclick="post(${r.id})">Post response</button>`:''}`;
+    const replyBox=reply?`<div class="reply-box"><div class="reply-label"><span>AI generated reply</span><span style="opacity:0.6">${biz.tone}</span></div><textarea class="reply-ta" oninput="replies[${r.id}]=this.value">${reply}</textarea></div>`:'';
+    return`<div class="rcard"><div class="rmeta"><span class="rauthor">${r.author}</span><div class="rmeta-right"><span class="rdate">${r.date}</span><span class="badge badge-${r.status}">${r.status}</span></div></div><div class="stars">${[1,2,3,4,5].map(i=>`<span style="color:${i<=r.stars?'#f5c842':'#333'}">★</span>`).join('')}</div><div class="rtext">${r.text}</div><div class="ractions">${actions}</div>${replyBox}</div>`;
+  }).join('')+`</div>`;
+}
+
 async function gen(id){
-  const key=getKey();
-  if(!key){toast('Add your API key first');return;}
-  const biz=BIZ.find(b=>b.id===sel),rev=DATA[sel].find(r=>r.id===id);
+  const key=getKey();if(!key){toast('Add your API key first','error');return;}
+  const biz=BIZ.find(b=>b.id===sel),rev=(REVIEWS[sel]||[]).find(r=>r.id===id);
   loading.add(id);renderGrid();
   try{
-    const res=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        apiKey:key,
-        prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human, address their specifics. No hashtags or emojis.`
-      })
-    });
-    const d=await res.json();
-    if(d.error)throw new Error(JSON.stringify(d.error));
-    replies[id]=d.content?.find(b=>b.type==='text')?.text||'No response received';
-    toast('Reply generated');
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human, address their specifics. No hashtags or emojis.`})});
+    const d=await res.json();if(d.error)throw new Error(JSON.stringify(d.error));
+    replies[id]=d.content?.find(b=>b.type==='text')?.text||'';toast('Reply generated','success');
   }catch(e){replies[id]='Error: '+e.message;}
   loading.delete(id);renderGrid();
 }
-function post(id){DATA[sel].find(r=>r.id===id).status='responded';toast('Response posted');updateStats();renderGrid();}
-async function autoAll(){const p=DATA[sel].filter(r=>r.status==='new');if(!p.length){toast('No pending reviews');return;}for(const r of p)await gen(r.id);}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>{t.style.display='none';},3000);}
-window.onload=()=>{const s=localStorage.getItem('rb_key');if(s){document.getElementById('apiKey').value=s;onKey();}renderTabs();renderGrid();updateStats();};
+
+function post(id){const rev=(REVIEWS[sel]||[]).find(r=>r.id===id);if(rev)rev.status='responded';save();toast('Response posted','success');updateStats();renderGrid();}
+async function autoAll(){const p=(REVIEWS[sel]||[]).filter(r=>r.status==='new');if(!p.length){toast('No pending reviews','error');return;}for(const r of p)await gen(r.id);}
+
+function renderAdmin(){
+  document.getElementById('clientCount').textContent=BIZ.length;
+  const grid=document.getElementById('adminGrid');
+  if(!BIZ.length){grid.innerHTML=`<div class="empty-state">No clients yet — add your first one above</div>`;return;}
+  grid.innerHTML=`<div class="admin-grid">`+BIZ.map(b=>`<div class="admin-row"><div><div class="biz-name">${b.name}</div><div class="biz-meta">${b.type} · ${b.tone} · ${(REVIEWS[b.id]||[]).length} reviews</div></div><div class="admin-actions"><button class="btn btn-green" onclick="switchTo(${b.id})">View Reviews</button><button class="btn btn-red" onclick="removeBiz(${b.id})">Remove</button></div></div>`).join('')+`</div>`;
+}
+
+function addBusiness(){
+  const name=document.getElementById('newName').value.trim(),type=document.getElementById('newType').value.trim(),tone=document.getElementById('newTone').value;
+  if(!name||!type){toast('Fill in business name and type','error');return;}
+  const biz={id:nextId++,name,type,tone};BIZ.push(biz);REVIEWS[biz.id]=[];save();
+  document.getElementById('newName').value='';document.getElementById('newType').value='';
+  renderAdmin();toast(name+' added!','success');
+}
+
+function removeBiz(id){
+  if(!confirm('Remove this client and all their reviews?'))return;
+  BIZ=BIZ.filter(b=>b.id!==id);delete REVIEWS[id];if(sel===id)sel=BIZ[0]?.id||null;
+  save();renderAdmin();toast('Client removed','success');
+}
+
+function switchTo(id){
+  sel=id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  renderDashboard();
+}
+
+function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;t.style.display='block';setTimeout(()=>{t.style.display='none';},3000);}
+
+window.onload=()=>{const s=localStorage.getItem('rb_key');if(s){document.getElementById('apiKey').value=s;onKey();}renderDashboard();};
 </script>
 </body>
 </html>
