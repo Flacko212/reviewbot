@@ -304,21 +304,33 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let currentUser=null,currentProfile=null,businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
 let googleAccessToken=null,googleRefreshToken=null,googleAccounts=[],selectedLocation=null;
 
+// Check immediately on page load before anything else
+(function(){
+  if(localStorage.getItem('g_just_connected')==='true'){
+    localStorage.removeItem('g_just_connected');
+    localStorage.setItem('g_pending_google','true');
+  }
+})();
+
 function checkOAuthCallback(){
-  const hash=window.location.hash;
-  if(hash.includes('google_connected=true')){
-    const params=new URLSearchParams(hash.substring(1));
-    googleAccessToken=params.get('access_token');
-    googleRefreshToken=params.get('refresh_token');
-    try{googleAccounts=JSON.parse(params.get('accounts')||'[]');}catch(e){googleAccounts=[];}
+  const pending=localStorage.getItem('g_pending_google');
+  if(pending==='true'){
+    localStorage.removeItem('g_pending_google');
+    googleAccessToken=localStorage.getItem('g_access');
+    googleRefreshToken=localStorage.getItem('g_refresh')||'';
+    try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
     if(googleAccessToken){
-      localStorage.setItem('g_access',googleAccessToken);
-      localStorage.setItem('g_refresh',googleRefreshToken||'');
-      localStorage.setItem('g_accounts',JSON.stringify(googleAccounts));
-      toast('Google Business connected!','success');
-      showLocationSelector();
+      toast('Google Business connected! Select your location.','success');
+      setTimeout(()=>{
+        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[2].classList.add('active');
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById('page-google').classList.add('active');
+        document.getElementById('topbarTitle').textContent='Google Business';
+        renderGooglePage();
+        showLocationSelector();
+      },300);
     }
-    window.history.replaceState(null,null,window.location.pathname);
   }
 }
 
@@ -347,7 +359,7 @@ async function doSignup(){
 }
 
 async function doLogout(){
-  localStorage.removeItem('g_access');localStorage.removeItem('g_refresh');localStorage.removeItem('g_accounts');localStorage.removeItem('g_location');
+  localStorage.removeItem('g_access');localStorage.removeItem('g_refresh');localStorage.removeItem('g_accounts');localStorage.removeItem('g_location');localStorage.removeItem('g_pending_google');
   await sb.auth.signOut();
 }
 
@@ -380,12 +392,16 @@ async function showApp(){
   if(saved){document.getElementById('apiKeyInput').value=saved;onApiKey();}
   const ga=localStorage.getItem('g_access');
   if(ga){
-    googleAccessToken=ga;googleRefreshToken=localStorage.getItem('g_refresh')||'';
+    googleAccessToken=ga;
+    googleRefreshToken=localStorage.getItem('g_refresh')||'';
     try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
     const loc=localStorage.getItem('g_location');
     if(loc){try{selectedLocation=JSON.parse(loc);}catch(e){}}
   }
-  await loadData();renderDashboard();checkOAuthCallback();renderGooglePage();
+  await loadData();
+  renderDashboard();
+  renderGooglePage();
+  checkOAuthCallback();
 }
 
 async function loadData(){
@@ -547,6 +563,7 @@ function renderGooglePage(){
     btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;
     btn.innerHTML=gIcon+'Connect Google Business';
     autoCard.style.display='none';
+    document.getElementById('connectedLocations').classList.add('hidden');
   }
 }
 
