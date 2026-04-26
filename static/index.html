@@ -5,265 +5,383 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReviewBot</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;
-  --bg:#f8fafc;--white:#fff;--border:#e2e8f0;--border-strong:#cbd5e1;
-  --text:#0f172a;--text-secondary:#64748b;--text-muted:#94a3b8;
+  --primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;--primary-50:#f0fdf4;
+  --bg:#f1f5f9;--white:#fff;--border:#e2e8f0;--border-strong:#cbd5e1;
+  --text:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
   --red:#ef4444;--red-light:#fef2f2;--amber:#f59e0b;--amber-light:#fffbeb;
-  --blue:#3b82f6;--blue-light:#eff6ff;
-  --shadow:0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md:0 4px 6px rgba(0,0,0,0.07);
-  --shadow-lg:0 10px 15px rgba(0,0,0,0.1);
-  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --blue:#3b82f6;--blue-light:#eff6ff;--purple:#8b5cf6;--purple-light:#f5f3ff;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.05);
+  --shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,0.07),0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg:0 10px 15px rgba(0,0,0,0.1),0 4px 6px rgba(0,0,0,0.05);
+  --shadow-xl:0 20px 25px rgba(0,0,0,0.1),0 10px 10px rgba(0,0,0,0.04);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;--radius-2xl:20px;
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
 .hidden{display:none!important}
-.loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+.loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f0fdf4,#f8fafc)}
+.loading-inner{text-align:center}
+.loading-logo{font-size:32px;font-weight:800;color:var(--primary);margin-bottom:8px;letter-spacing:-1px}
+.loading-logo span{color:var(--text)}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:16px auto 0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#f0fdf4 0%,#f8fafc 50%,#f0f9ff 100%)}
-.auth-card{background:var(--white);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);padding:40px;width:100%;max-width:420px}
-.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.auth-logo-icon{width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
-.auth-logo-text{font-size:20px;font-weight:700}.auth-logo-text span{color:var(--primary)}
-.auth-title{font-size:22px;font-weight:700;margin-bottom:6px}
-.auth-sub{color:var(--text-secondary);font-size:14px;margin-bottom:28px}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#f0fdf4 0%,#f8fafc 60%,#eff6ff 100%)}
+.auth-card{background:var(--white);border-radius:var(--radius-2xl);box-shadow:var(--shadow-xl);padding:44px;width:100%;max-width:440px;border:1px solid var(--border)}
+.auth-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px}
+.auth-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;box-shadow:0 4px 12px rgba(22,163,74,0.3)}
+.auth-logo-text{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.auth-logo-text span{color:var(--primary)}
+.auth-title{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px}
+.auth-sub{color:var(--text-secondary);font-size:14px;margin-bottom:28px;line-height:1.5}
 .form-group{margin-bottom:16px}
-.form-label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
-.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border-color 0.15s}
-.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,0.1)}
-.auth-btn{width:100%;padding:11px;background:var(--primary);color:white;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s;margin-top:4px}
-.auth-btn:hover{background:var(--primary-dark)}
-.auth-btn:disabled{opacity:0.6;cursor:not-allowed}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:all 0.15s}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,0.12)}
+.auth-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;margin-top:6px;box-shadow:0 4px 12px rgba(22,163,74,0.25)}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(22,163,74,0.3)}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
 .auth-switch{text-align:center;margin-top:20px;font-size:13px;color:var(--text-secondary)}
-.auth-switch a{color:var(--primary);font-weight:500;cursor:pointer}
-.auth-error{background:var(--red-light);color:var(--red);padding:10px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:none}
+.auth-switch a{color:var(--primary);font-weight:600;cursor:pointer}
+.auth-error{background:var(--red-light);color:var(--red);padding:10px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:none;border:1px solid #fecaca}
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:240px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;left:0;top:0}
-.sidebar-logo{padding:20px;border-bottom:1px solid var(--border)}
+.sidebar{width:256px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;left:0;top:0;z-index:50}
+.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
 .sidebar-logo-inner{display:flex;align-items:center;gap:10px}
-.sidebar-logo-icon{width:34px;height:34px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0}
-.sidebar-logo-text{font-size:16px;font-weight:700}.sidebar-logo-text span{color:var(--primary)}
-.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
-.nav-section{margin-bottom:20px}
-.nav-section-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;padding:0 10px;margin-bottom:4px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:500;transition:all 0.15s;margin-bottom:1px}
+.sidebar-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0}
+.sidebar-logo-text{font-size:17px;font-weight:800;letter-spacing:-0.5px}
+.sidebar-logo-text span{color:var(--primary)}
+.sidebar-nav{flex:1;padding:14px 12px;overflow-y:auto}
+.nav-section{margin-bottom:24px}
+.nav-section-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;padding:0 10px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:500;transition:all 0.15s;margin-bottom:2px;position:relative}
 .nav-item:hover{background:var(--bg);color:var(--text)}
-.nav-item.active{background:var(--primary-light);color:var(--primary-dark);font-weight:600}
-.nav-item-icon{font-size:15px;width:20px;text-align:center}
-.nav-item-badge{margin-left:auto;background:var(--primary);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
-.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius)}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-size:13px;font-weight:700;flex-shrink:0}
+.nav-item.active{background:var(--primary-50);color:var(--primary-dark);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--primary);border-radius:0 2px 2px 0}
+.nav-item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-item-badge{margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+.sidebar-footer{padding:14px 12px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-lg);cursor:pointer;transition:background 0.15s}
+.user-card:hover{background:var(--bg)}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),#bbf7d0);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-size:13px;font-weight:700;flex-shrink:0;border:2px solid var(--primary-light)}
 .user-info{flex:1;min-width:0}
 .user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-role{font-size:11px;color:var(--text-muted)}
-.logout-btn{font-size:16px;color:var(--text-muted);cursor:pointer;padding:4px}
-.logout-btn:hover{color:var(--red)}
-.main{margin-left:240px;flex:1;min-height:100vh}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.topbar-title{font-size:16px;font-weight:700}
-.topbar-actions{display:flex;gap:10px;align-items:center}
-.content{padding:28px}
+.logout-btn{color:var(--text-muted);cursor:pointer;padding:4px;border-radius:6px;font-size:14px;transition:all 0.15s}
+.logout-btn:hover{color:var(--red);background:var(--red-light)}
+.main{margin-left:256px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:var(--shadow-sm)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:16px;font-weight:700;letter-spacing:-0.3px}
+.topbar-sub{font-size:12px;color:var(--text-muted);margin-top:1px}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.content{padding:28px;flex:1}
 .page{display:none}.page.active{display:block}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.stat-card-label{font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px}
-.stat-card-value{font-size:28px;font-weight:700;line-height:1}
-.stat-card-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
-.stat-card.green .stat-card-value{color:var(--primary)}
-.client-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.client-tab{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--white);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:box-shadow 0.15s;position:relative;overflow:hidden}
+.stat-card:hover{box-shadow:var(--shadow-md)}
+.stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:12px}
+.stat-icon.green{background:var(--primary-light)}
+.stat-icon.red{background:var(--red-light)}
+.stat-icon.amber{background:var(--amber-light)}
+.stat-icon.blue{background:var(--blue-light)}
+.stat-value{font-size:30px;font-weight:800;line-height:1;letter-spacing:-1px;margin-bottom:4px}
+.stat-label{font-size:12px;font-weight:500;color:var(--text-secondary)}
+.stat-trend{font-size:11px;color:var(--text-muted);margin-top:4px}
+.btn{padding:8px 16px;border-radius:var(--radius);border:1.5px solid var(--border-strong);background:var(--white);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:white;box-shadow:0 2px 8px rgba(22,163,74,0.2)}
+.btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);color:white;box-shadow:0 4px 12px rgba(22,163,74,0.3);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-danger{background:var(--red-light);border-color:#fca5a5;color:var(--red)}
+.btn-danger:hover{background:var(--red);color:white;border-color:var(--red)}
+.btn-ghost{border-color:transparent;background:transparent}
+.btn-ghost:hover{background:var(--bg);border-color:var(--border)}
+.btn-google{background:var(--white);border-color:var(--border-strong);color:var(--text);gap:8px}
+.btn-google:hover{border-color:var(--blue);color:var(--blue)}
+.btn-google.connected{background:var(--primary-50);border-color:var(--primary);color:var(--primary-dark)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
+.btn-instant{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-color:#7c3aed;color:white;box-shadow:0 2px 8px rgba(124,58,237,0.25)}
+.btn-instant:hover{background:linear-gradient(135deg,#6d28d9,#5b21b6);box-shadow:0 4px 12px rgba(124,58,237,0.35);transform:translateY(-1px);color:white;border-color:#6d28d9}
+.client-tabs-wrap{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.client-tab{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--white);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px}
 .client-tab:hover{border-color:var(--primary);color:var(--primary)}
 .client-tab.active{background:var(--primary);border-color:var(--primary);color:white}
-.btn{padding:8px 16px;border-radius:var(--radius);border:1.5px solid var(--border-strong);background:var(--white);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
-.btn:hover{border-color:var(--primary);color:var(--primary)}
-.btn-primary{background:var(--primary);border-color:var(--primary);color:white}
-.btn-primary:hover{background:var(--primary-dark);color:white}
-.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
-.btn-danger{background:var(--red-light);border-color:var(--red);color:var(--red)}
-.btn-danger:hover{background:var(--red);color:white}
-.btn-google{background:var(--white);border-color:var(--border-strong);color:var(--text);display:flex;align-items:center;gap:8px}
-.btn-google:hover{border-color:var(--blue);color:var(--blue)}
-.btn-google.connected{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark)}
-.btn-sm{padding:6px 12px;font-size:12px}
-.review-list{display:flex;flex-direction:column;gap:12px}
-.review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.review-card:hover{box-shadow:var(--shadow-md)}
-.review-card-header{display:flex;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.client-tab-count{font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;background:rgba(255,255,255,0.3)}
+.client-tab:not(.active) .client-tab-count{background:var(--red-light);color:var(--red)}
+.reviews-wrap{display:flex;flex-direction:column;gap:12px}
+.review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all 0.15s}
+.review-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-strong)}
+.review-card.priority{border-left:3px solid var(--red)}
+.review-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px}
+.review-author-wrap{display:flex;align-items:center;gap:10px}
+.review-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue-light),#dbeafe);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--blue);flex-shrink:0}
 .review-author{font-size:14px;font-weight:600}
-.review-meta-right{display:flex;align-items:center;gap:8px}
+.review-source{font-size:11px;color:var(--text-muted);margin-top:1px}
+.review-meta-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .review-date{font-size:12px;color:var(--text-muted)}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
 .badge-new{background:#f1f5f9;color:#64748b}
 .badge-responded{background:var(--primary-light);color:var(--primary-dark)}
-.stars-row{display:flex;gap:2px;margin-bottom:10px}
-.review-text{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px}
+.stars-row{display:flex;gap:1px;margin-bottom:10px}
+.star{font-size:14px}
+.review-text{font-size:13px;color:var(--text-secondary);line-height:1.65;margin-bottom:14px}
 .review-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .already-responded{font-size:12px;color:var(--primary);font-weight:500}
-.reply-box{margin-top:14px;border:1.5px solid var(--primary-light);border-radius:var(--radius-lg);overflow:hidden}
-.reply-box-header{background:var(--primary-light);padding:8px 14px;display:flex;justify-content:space-between}
-.reply-box-label{font-size:11px;font-weight:600;color:var(--primary-dark);text-transform:uppercase}
-.reply-textarea{width:100%;border:none;padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);line-height:1.6;resize:vertical;min-height:90px;outline:none}
+.reply-box{margin-top:14px;border:1.5px solid #bbf7d0;border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 2px 8px rgba(22,163,74,0.08)}
+.reply-box-header{background:linear-gradient(135deg,var(--primary-light),#bbf7d0);padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.reply-box-label{font-size:11px;font-weight:700;color:var(--primary-dark);text-transform:uppercase;letter-spacing:0.5px}
+.reply-textarea{width:100%;border:none;padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);line-height:1.65;resize:vertical;min-height:90px;outline:none;background:white}
+.reply-actions{padding:10px 14px;background:#f8fffe;border-top:1px solid #bbf7d0;display:flex;justify-content:flex-end;gap:8px}
 .dots{display:inline-flex;gap:3px;align-items:center}
 .dot{width:4px;height:4px;background:currentColor;border-radius:50%;animation:dp 1.2s infinite}
 .dot:nth-child(2){animation-delay:0.2s}.dot:nth-child(3){animation-delay:0.4s}
 @keyframes dp{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
 .section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px}
-.section-card-title{font-size:15px;font-weight:700;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.section-card-title{font-size:15px;font-weight:700;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-group-inner{display:flex;flex-direction:column;gap:6px}
 .form-group-inner.full{grid-column:1/-1}
-.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer}
+.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer;transition:border-color 0.15s}
 .form-select:focus{border-color:var(--primary)}
 .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
-.clients-table{width:100%;border-collapse:collapse}
-.clients-table th{text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;border-bottom:1px solid var(--border)}
-.clients-table td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
-.clients-table tr:last-child td{border-bottom:none}
-.clients-table tr:hover td{background:#fafafa}
-.api-key-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
-.api-key-bar.connected{border-color:var(--primary);background:var(--primary-light)}
-.api-key-label{font-size:13px;font-weight:600;white-space:nowrap}
-.api-key-input{flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:monospace;font-size:12px;color:var(--text);outline:none;background:white}
-.api-connected-badge{font-size:12px;font-weight:600;color:var(--primary-dark);display:none}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;padding:10px 14px;border-bottom:1.5px solid var(--border);background:var(--bg)}
+.data-table td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tbody tr:hover td{background:#fafbfc}
+.api-key-bar{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;transition:all 0.15s}
+.api-key-bar.connected{border-color:var(--primary);background:var(--primary-50)}
+.api-key-label{font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.api-key-input{flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:monospace;font-size:12px;color:var(--text);outline:none;background:white;transition:border-color 0.15s}
+.api-key-input:focus{border-color:var(--primary)}
+.api-connected-badge{font-size:12px;font-weight:600;color:var(--primary-dark);display:none;align-items:center;gap:4px}
 .google-icon{width:18px;height:18px}
-.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;display:none;z-index:999;box-shadow:var(--shadow-lg)}
+.location-select-wrap{background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-lg);padding:16px 20px;margin-top:16px}
+.location-select-title{font-size:13px;font-weight:600;color:#92400e;margin-bottom:10px}
+.location-item{display:flex;align-items:center;gap:10px;padding:12px;background:white;border-radius:var(--radius);margin-bottom:8px;cursor:pointer;border:1.5px solid transparent;transition:all 0.15s}
+.location-item:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(22,163,74,0.1)}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;display:none;z-index:999;box-shadow:var(--shadow-lg);max-width:360px}
 .toast.success{background:var(--primary);color:white}
 .toast.error{background:var(--red);color:white}
-.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
-.empty-state-icon{font-size:40px;margin-bottom:12px}
-.empty-state-title{font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.toast.info{background:var(--blue);color:white}
+.empty-state{text-align:center;padding:60px 20px}
+.empty-state-icon{font-size:48px;margin-bottom:16px;display:block}
+.empty-state-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.empty-state-text{font-size:13px;color:var(--text-muted);line-height:1.6;max-width:340px;margin:0 auto 20px}
 .role-badge{display:inline-flex;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
-.role-admin{background:#faf5ff;color:#7c3aed}
+.role-admin{background:var(--purple-light);color:var(--purple)}
 .role-client{background:var(--primary-light);color:var(--primary-dark)}
-.live-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600;background:var(--blue-light);color:var(--blue)}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
+.live-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:var(--blue-light);color:var(--blue)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.location-select-wrap{background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px}
-.location-select-title{font-size:13px;font-weight:600;color:#92400e;margin-bottom:10px}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
+.activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.activity-content{flex:1;min-width:0}
+.activity-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.activity-time{font-size:11px;color:var(--text-muted)}
+.client-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:24px}
+.client-overview-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;transition:all 0.15s}
+.client-overview-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-strong);transform:translateY(-1px)}
+.client-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.client-card-name{font-size:15px;font-weight:700;margin-bottom:2px}
+.client-card-type{font-size:12px;color:var(--text-muted)}
+.client-card-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.client-card-stat{text-align:center}
+.client-card-stat-value{font-size:18px;font-weight:700;line-height:1}
+.client-card-stat-label{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+.progress-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#22c55e);border-radius:99px;transition:width 0.5s ease}
+.billing-status{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.billing-active{background:var(--primary-light);color:var(--primary-dark)}
+.billing-trial{background:var(--amber-light);color:#92400e}
+.mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--text);font-size:18px}
+@media(max-width:1024px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s ease}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mobile-menu-btn{display:flex}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){.stats-grid{grid-template-columns:1fr}.content{padding:16px}.topbar{padding:0 16px}}
 </style>
 </head>
 <body>
 
 <div id="loadingScreen" class="loading-screen">
-  <div style="text-align:center;color:var(--text-secondary)"><div class="spinner"></div>Loading ReviewBot...</div>
+  <div class="loading-inner">
+    <div class="loading-logo">Review<span>Bot</span></div>
+    <div style="font-size:13px;color:var(--text-muted)">Loading your dashboard...</div>
+    <div class="spinner"></div>
+  </div>
 </div>
 
 <div id="authWrap" class="auth-wrap hidden">
   <div class="auth-card" id="loginCard">
     <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
     <div class="auth-title">Welcome back</div>
-    <div class="auth-sub">Sign in to manage your Google reviews</div>
+    <div class="auth-sub">Sign in to manage your clients' Google reviews</div>
     <div class="auth-error" id="loginError"></div>
-    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in</button>
-    <div class="auth-switch">Don't have an account? <a onclick="showSignup()">Create one</a></div>
+    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password"></div>
+    <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in →</button>
+    <div class="auth-switch">New to ReviewBot? <a onclick="showSignup()">Create an account</a></div>
   </div>
   <div class="auth-card hidden" id="signupCard">
     <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
-    <div class="auth-title">Create account</div>
-    <div class="auth-sub">Get started with ReviewBot</div>
+    <div class="auth-title">Create your account</div>
+    <div class="auth-sub">Start managing reviews for your clients today</div>
     <div class="auth-error" id="signupError"></div>
-    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" type="text" placeholder="Your name"></div>
-    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="signupEmail" type="email" placeholder="you@example.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPassword" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()"></div>
-    <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create account</button>
+    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" type="text" placeholder="Nathan Gale" autocomplete="name"></div>
+    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPassword" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()" autocomplete="new-password"></div>
+    <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create account →</button>
     <div class="auth-switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
   </div>
 </div>
 
 <div id="appShell" class="app-shell hidden">
-  <aside class="sidebar">
-    <div class="sidebar-logo"><div class="sidebar-logo-inner"><div class="sidebar-logo-icon">⭐</div><div class="sidebar-logo-text">Review<span>Bot</span></div></div></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-inner">
+        <div class="sidebar-logo-icon">⭐</div>
+        <div class="sidebar-logo-text">Review<span>Bot</span></div>
+      </div>
+    </div>
     <nav class="sidebar-nav">
       <div class="nav-section">
         <div class="nav-section-label">Main</div>
         <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-item-icon">📊</span>Dashboard<span class="nav-item-badge hidden" id="pendingBadge">0</span></div>
-        <div class="nav-item" onclick="nav('reviews',this)"><span class="nav-item-icon">⭐</span>Reviews</div>
+        <div class="nav-item" onclick="nav('reviews',this)"><span class="nav-item-icon">⭐</span>All Reviews</div>
+        <div class="nav-item" onclick="nav('activity',this)"><span class="nav-item-icon">⚡</span>Activity Feed</div>
         <div class="nav-item" onclick="nav('google',this)"><span class="nav-item-icon">🔗</span>Google Business</div>
       </div>
       <div class="nav-section hidden" id="adminNav">
         <div class="nav-section-label">Admin</div>
         <div class="nav-item" onclick="nav('clients',this)"><span class="nav-item-icon">🏢</span>Clients</div>
+        <div class="nav-item" onclick="nav('billing',this)"><span class="nav-item-icon">💳</span>Billing</div>
         <div class="nav-item" onclick="nav('users',this)"><span class="nav-item-icon">👥</span>Users</div>
       </div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
-        <div class="user-avatar" id="userAvatar">?</div>
+        <div class="user-avatar" id="userAvatar">N</div>
         <div class="user-info"><div class="user-name" id="userName">Loading...</div><div class="user-role" id="userRole">—</div></div>
         <div class="logout-btn" onclick="doLogout()" title="Sign out">↪</div>
       </div>
     </div>
   </aside>
+
   <main class="main">
     <div class="topbar">
-      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <div>
+          <div class="topbar-title" id="topbarTitle">Dashboard</div>
+          <div class="topbar-sub" id="topbarSub"></div>
+        </div>
+      </div>
       <div class="topbar-actions">
-        <button class="btn btn-primary btn-sm" onclick="autoRespondAll()" id="autoBtn" style="display:none">Auto-respond all</button>
+        <button class="btn btn-sm btn-ghost" onclick="refreshData()">🔄 Refresh</button>
+        <button class="btn btn-sm btn-primary" onclick="autoRespondAll()" id="autoBtn" style="display:none">⚡ Auto-respond all</button>
       </div>
     </div>
+
     <div class="content">
       <div class="api-key-bar" id="apiKeyBar">
         <span class="api-key-label">🔑 Anthropic API Key</span>
         <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." oninput="onApiKey()">
-        <span class="api-connected-badge" id="apiConnected">✓ Connected</span>
+        <span class="api-connected-badge" id="apiConnected" style="display:flex">✓ Connected</span>
       </div>
 
+      <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="stats-grid">
-          <div class="stat-card green"><div class="stat-card-label">Pending replies</div><div class="stat-card-value" id="statPending">0</div><div class="stat-card-sub">Need attention</div></div>
-          <div class="stat-card"><div class="stat-card-label">Responded</div><div class="stat-card-value" id="statResponded">0</div><div class="stat-card-sub">All time</div></div>
-          <div class="stat-card"><div class="stat-card-label">Total reviews</div><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-sub">All time</div></div>
-          <div class="stat-card"><div class="stat-card-label">Clients</div><div class="stat-card-value" id="statClients">0</div><div class="stat-card-sub">Active</div></div>
+          <div class="stat-card"><div class="stat-icon red">🔔</div><div class="stat-value" id="statPending" style="color:var(--red)">0</div><div class="stat-label">Pending replies</div><div class="stat-trend">Need attention now</div></div>
+          <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-value" id="statResponded" style="color:var(--primary)">0</div><div class="stat-label">Responded</div><div class="stat-trend">All time</div></div>
+          <div class="stat-card"><div class="stat-icon blue">⭐</div><div class="stat-value" id="statTotal" style="color:var(--blue)">0</div><div class="stat-label">Total reviews</div><div class="stat-trend" id="statAvgRating">Avg rating —</div></div>
+          <div class="stat-card"><div class="stat-icon amber">🏢</div><div class="stat-value" id="statClients" style="color:var(--amber)">0</div><div class="stat-label">Active clients</div><div class="stat-trend" id="statMonthly">£0/mo revenue</div></div>
         </div>
-        <div id="dashRecentWrap"></div>
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+          <div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between"><span>Client Overview</span><button class="btn btn-xs btn-ghost" onclick="nav('clients',document.querySelectorAll('.nav-item')[4])">View all →</button></div>
+            <div class="client-overview-grid" id="clientOverviewGrid"></div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between"><span>🔔 Needs attention</span><span class="badge badge-new" id="pendingCount">0 pending</span></div>
+            <div id="dashRecentWrap"></div>
+          </div>
+          <div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">⚡ Recent activity</div>
+            <div class="section-card" style="padding:16px"><div id="activityFeedDash"></div></div>
+          </div>
+        </div>
       </div>
 
+      <!-- REVIEWS -->
       <div class="page" id="page-reviews">
-        <div class="client-tabs" id="clientTabs"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <div style="font-size:15px;font-weight:600" id="reviewsTitle">Reviews</div>
-          <button class="btn btn-sm" onclick="fetchLiveReviews()" id="fetchBtn" style="display:none">🔄 Fetch live reviews</button>
+        <div class="client-tabs-wrap" id="clientTabs"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div><div style="font-size:15px;font-weight:700" id="reviewsTitle">Reviews</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="reviewsSubtitle"></div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select class="form-select" style="width:auto;padding:6px 10px;font-size:12px" id="reviewFilter" onchange="renderReviews()">
+              <option value="all">All reviews</option>
+              <option value="new">Pending only</option>
+              <option value="responded">Responded</option>
+              <option value="1">⭐ 1 star</option>
+              <option value="2">⭐⭐ 2 stars</option>
+              <option value="3">⭐⭐⭐ 3 stars</option>
+              <option value="4">⭐⭐⭐⭐ 4 stars</option>
+              <option value="5">⭐⭐⭐⭐⭐ 5 stars</option>
+            </select>
+            <button class="btn btn-sm" onclick="fetchLiveReviews()" id="fetchBtn" style="display:none">🔄 Sync Google</button>
+          </div>
         </div>
         <div id="reviewsList"></div>
       </div>
 
+      <!-- ACTIVITY -->
+      <div class="page" id="page-activity">
+        <div class="section-card"><div class="section-card-title">Activity Feed</div><div id="activityFeedFull"></div></div>
+      </div>
+
+      <!-- GOOGLE -->
       <div class="page" id="page-google">
         <div class="section-card">
           <div class="section-card-title">Connect Google Business Profile</div>
           <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Connect your Google Business Profile to automatically pull in real reviews and post AI-generated replies directly to Google.</p>
-          <div id="googleStatusWrap">
-            <button class="btn btn-google" onclick="connectGoogle()" id="connectGoogleBtn">
-              <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-              Connect Google Business
-            </button>
-          </div>
-          <div id="locationSelectWrap" class="hidden"></div>
-          <div id="connectedLocations" class="hidden" style="margin-top:20px"></div>
+          <button class="btn btn-google" onclick="connectGoogle()" id="connectGoogleBtn">
+            <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Connect Google Business
+          </button>
+          <div id="locationSelectWrap"></div>
+          <div id="connectedLocations"></div>
         </div>
         <div class="section-card" id="autoReplyCard" style="display:none">
           <div class="section-card-title">Auto-reply Settings</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
-            <div>
-              <div style="font-size:13px;font-weight:600">Auto-respond to new reviews</div>
-              <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">Automatically generate and post replies when new reviews come in</div>
-            </div>
-            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)">
+            <div><div style="font-size:14px;font-weight:600">⚡ Instant auto-reply</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically generate and post replies to new reviews within minutes</div></div>
+            <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer">
               <input type="checkbox" id="autoReplyToggle" style="opacity:0;width:0;height:0" onchange="toggleAutoReply()">
-              <span id="toggleSlider" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:24px;transition:0.3s"><span style="position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s"></span></span>
+              <span id="toggleSlider" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:26px;transition:0.3s"><span style="position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></span></span>
             </label>
           </div>
-          <div style="padding:12px 0;font-size:13px;color:var(--text-secondary)">When enabled, ReviewBot checks for new reviews every hour and responds automatically using AI.</div>
+          <div style="padding:14px 0;font-size:13px;color:var(--text-secondary);line-height:1.6">When enabled, ReviewBot monitors for new reviews and posts AI replies automatically.</div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">API Access Status</div>
+          <div style="background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-lg);padding:16px 20px">
+            <div style="font-size:13px;font-weight:600;color:#92400e;margin-bottom:6px">⏳ Google Business Profile API approval pending</div>
+            <div style="font-size:13px;color:#78350f;line-height:1.6">Google requires manual approval to access Business Profile data via API. This can take 2-5 business days. Once approved, live review syncing will work automatically.</div>
+          </div>
         </div>
       </div>
 
+      <!-- CLIENTS -->
       <div class="page" id="page-clients">
         <div class="section-card">
           <div class="section-card-title">Add New Client</div>
@@ -280,13 +398,29 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
                 <option value="calm and trustworthy">Calm & Trustworthy — healthcare, wellness</option>
               </select>
             </div>
-            <div class="form-group-inner full"><label class="form-label">Assign to User (optional)</label><select class="form-select" id="newBizOwner"><option value="">— Admin managed —</option></select></div>
+            <div class="form-group-inner"><label class="form-label">Monthly Fee (£)</label><input class="form-input" id="newBizFee" type="number" placeholder="99"></div>
+            <div class="form-group-inner"><label class="form-label">Assign to User</label><select class="form-select" id="newBizOwner"><option value="">— Admin managed —</option></select></div>
+            <div class="form-group-inner full"><label class="form-label">Notes (private)</label><input class="form-input" id="newBizNotes" placeholder="Any notes about this client..."></div>
           </div>
-          <div class="form-actions"><button class="btn btn-primary" onclick="addClient()">Add Client</button></div>
+          <div class="form-actions"><button class="btn btn-primary" onclick="addClient()">➕ Add Client</button></div>
         </div>
-        <div class="section-card"><div class="section-card-title">All Clients</div><div id="clientsTable"></div></div>
+        <div class="section-card">
+          <div class="section-card-title">All Clients <span style="font-size:12px;color:var(--text-muted);font-weight:400" id="clientCountLabel"></span></div>
+          <div id="clientsTable"></div>
+        </div>
       </div>
 
+      <!-- BILLING -->
+      <div class="page" id="page-billing">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card"><div class="stat-icon green">💰</div><div class="stat-value" id="billingMRR" style="color:var(--primary)">£0</div><div class="stat-label">Monthly recurring revenue</div></div>
+          <div class="stat-card"><div class="stat-icon blue">📊</div><div class="stat-value" id="billingClients" style="color:var(--blue)">0</div><div class="stat-label">Paying clients</div></div>
+          <div class="stat-card"><div class="stat-icon amber">📈</div><div class="stat-value" id="billingARR" style="color:var(--amber)">£0</div><div class="stat-label">Annual run rate</div></div>
+        </div>
+        <div class="section-card"><div class="section-card-title">Client Billing</div><div id="billingTable"></div></div>
+      </div>
+
+      <!-- USERS -->
       <div class="page" id="page-users">
         <div class="section-card"><div class="section-card-title">All Users</div><div id="usersTable"></div></div>
       </div>
@@ -303,13 +437,20 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 let currentUser=null,currentProfile=null,businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
 let googleAccessToken=null,googleRefreshToken=null,googleAccounts=[],selectedLocation=null;
+let activityLog=JSON.parse(localStorage.getItem('rb_activity')||'[]');
 
-(function(){
-  if(localStorage.getItem('g_just_connected')==='true'){
-    localStorage.removeItem('g_just_connected');
-    localStorage.setItem('g_pending_google','true');
-  }
-})();
+(function(){if(localStorage.getItem('g_just_connected')==='true'){localStorage.removeItem('g_just_connected');localStorage.setItem('g_pending_google','true');}})();
+
+function logActivity(icon,title,bizName){
+  const entry={icon,title,bizName,time:Date.now()};
+  activityLog.unshift(entry);if(activityLog.length>50)activityLog=activityLog.slice(0,50);
+  localStorage.setItem('rb_activity',JSON.stringify(activityLog));
+}
+
+function timeAgo(ts){
+  const d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000),dy=Math.floor(d/86400000);
+  if(d<60000)return'just now';if(m<60)return m+'m ago';if(h<24)return h+'h ago';return dy+'d ago';
+}
 
 function checkOAuthCallback(){
   const pending=localStorage.getItem('g_pending_google');
@@ -322,12 +463,11 @@ function checkOAuthCallback(){
       toast('Google Business connected! Select your location.','success');
       setTimeout(()=>{
         document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-        document.querySelectorAll('.nav-item')[2].classList.add('active');
+        document.querySelectorAll('.nav-item')[3].classList.add('active');
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
         document.getElementById('page-google').classList.add('active');
         document.getElementById('topbarTitle').textContent='Google Business';
-        renderGooglePage();
-        showLocationSelector();
+        renderGooglePage();showLocationSelector();
       },300);
     }
   }
@@ -341,7 +481,7 @@ async function doLogin(){
   const btn=document.getElementById('loginBtn'),err=document.getElementById('loginError');
   err.style.display='none';btn.disabled=true;btn.textContent='Signing in...';
   const {error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Sign in';}
+  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Sign in →';}
 }
 
 async function doSignup(){
@@ -349,12 +489,8 @@ async function doSignup(){
   const btn=document.getElementById('signupBtn'),err=document.getElementById('signupError');
   err.style.display='none';btn.disabled=true;btn.textContent='Creating account...';
   const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
-  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Create account';return;}
-  if(data.user){
-    await sb.from('profiles').upsert({id:data.user.id,email,role:'client'},{onConflict:'id'});
-    toast('Account created! Signing you in...','success');
-    btn.disabled=false;btn.textContent='Create account';
-  }
+  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Create account →';return;}
+  if(data.user){await sb.from('profiles').upsert({id:data.user.id,email,role:'client'},{onConflict:'id'});toast('Account created!','success');btn.disabled=false;btn.textContent='Create account →';}
 }
 
 async function doLogout(){
@@ -370,8 +506,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 async function loadProfile(){
   try{
     const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000));
-    const query=sb.from('profiles').select('*').eq('id',currentUser.id).single();
-    const {data}=await Promise.race([query,timeout]);
+    const {data}=await Promise.race([sb.from('profiles').select('*').eq('id',currentUser.id).single(),timeout]);
     if(!data){const p={id:currentUser.id,email:currentUser.email,role:'client'};await sb.from('profiles').upsert(p,{onConflict:'id'});currentProfile=p;}
     else{currentProfile=data;}
   }catch(e){currentProfile={id:currentUser.id,email:currentUser.email,role:'client'};}
@@ -386,21 +521,17 @@ async function showApp(){
   document.getElementById('userAvatar').textContent=name[0].toUpperCase();
   const isAdmin=currentProfile?.role==='admin';
   document.getElementById('userRole').textContent=isAdmin?'Administrator':'Client';
-  if(isAdmin){document.getElementById('adminNav').classList.remove('hidden');document.getElementById('autoBtn').style.display='block';}
+  if(isAdmin){document.getElementById('adminNav').classList.remove('hidden');document.getElementById('autoBtn').style.display='flex';}
   const saved=localStorage.getItem('rb_key');
   if(saved){document.getElementById('apiKeyInput').value=saved;onApiKey();}
   const ga=localStorage.getItem('g_access');
   if(ga){
-    googleAccessToken=ga;
-    googleRefreshToken=localStorage.getItem('g_refresh')||'';
+    googleAccessToken=ga;googleRefreshToken=localStorage.getItem('g_refresh')||'';
     try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
     const loc=localStorage.getItem('g_location');
     if(loc){try{selectedLocation=JSON.parse(loc);}catch(e){}}
   }
-  await loadData();
-  renderDashboard();
-  renderGooglePage();
-  checkOAuthCallback();
+  await loadData();renderDashboard();renderGooglePage();checkOAuthCallback();
 }
 
 async function loadData(){
@@ -414,118 +545,239 @@ async function loadData(){
   }catch(e){console.error(e);}
 }
 
+async function refreshData(){await loadData();const p=document.querySelector('.page.active')?.id?.replace('page-','');if(p==='dashboard')renderDashboard();else if(p==='reviews')renderReviewsPage();toast('Refreshed','success');}
+
 function updateStats(){
-  const all=Object.values(allReviews).flat(),pending=all.filter(r=>r.status==='new').length;
+  const all=Object.values(allReviews).flat();
+  const pending=all.filter(r=>r.status==='new').length;
+  const avg=all.length?(all.reduce((s,r)=>s+r.stars,0)/all.length).toFixed(1):'—';
+  const mrr=businesses.reduce((s,b)=>s+(b.monthly_fee||0),0);
   document.getElementById('statPending').textContent=pending;
   document.getElementById('statResponded').textContent=all.filter(r=>r.status==='responded').length;
   document.getElementById('statTotal').textContent=all.length;
   document.getElementById('statClients').textContent=businesses.length;
+  document.getElementById('statAvgRating').textContent=avg!=='—'?`★ ${avg} avg rating`:'No reviews yet';
+  document.getElementById('statMonthly').textContent=`£${mrr}/mo revenue`;
   const badge=document.getElementById('pendingBadge');
   if(pending>0){badge.textContent=pending;badge.classList.remove('hidden');}else{badge.classList.add('hidden');}
+  document.getElementById('pendingCount').textContent=pending+' pending';
+  const bMRR=document.getElementById('billingMRR');
+  if(bMRR){bMRR.textContent='£'+mrr;document.getElementById('billingClients').textContent=businesses.filter(b=>b.monthly_fee>0).length;document.getElementById('billingARR').textContent='£'+(mrr*12);}
 }
 
 function nav(page,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  el.classList.add('active');
+  if(el)el.classList.add('active');
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  const titles={dashboard:'Dashboard',reviews:'Reviews',google:'Google Business',clients:'Clients',users:'Users'};
+  const titles={dashboard:'Dashboard',reviews:'All Reviews',activity:'Activity Feed',google:'Google Business',clients:'Clients',billing:'Billing',users:'Users'};
   document.getElementById('topbarTitle').textContent=titles[page]||page;
+  document.getElementById('topbarSub').textContent='';
   if(page==='reviews')renderReviewsPage();
   if(page==='clients')renderClientsPage();
   if(page==='users')renderUsersPage();
   if(page==='dashboard')renderDashboard();
   if(page==='google')renderGooglePage();
+  if(page==='activity')renderActivityFull();
+  if(page==='billing')renderBilling();
+  document.getElementById('sidebar').classList.remove('open');
 }
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
 
 function renderDashboard(){
+  const grid=document.getElementById('clientOverviewGrid');
+  if(!businesses.length){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:40px 20px"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client to get started</div><button class="btn btn-primary" onclick="nav('clients',document.querySelectorAll('.nav-item')[4])">Add first client</button></div>`;
+  }else{
+    grid.innerHTML=businesses.map(b=>{
+      const revs=allReviews[b.id]||[];
+      const pending=revs.filter(r=>r.status==='new').length;
+      const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
+      const rr=revs.length?Math.round((revs.filter(r=>r.status==='responded').length/revs.length)*100):0;
+      return`<div class="client-overview-card" onclick="selectClientAndNav(${b.id})">
+        <div class="client-card-header">
+          <div><div class="client-card-name">${b.name}</div><div class="client-card-type">${b.type}</div></div>
+          ${pending>0?`<span class="badge" style="background:var(--red-light);color:var(--red)">${pending} new</span>`:'<span class="badge badge-responded">✓ Up to date</span>'}
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${rr}%"></div></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">${rr}% response rate</div>
+        <div class="client-card-stats">
+          <div class="client-card-stat"><div class="client-card-stat-value">${revs.length}</div><div class="client-card-stat-label">Reviews</div></div>
+          <div class="client-card-stat"><div class="client-card-stat-value" style="color:var(--amber)">${avg}</div><div class="client-card-stat-label">Avg ★</div></div>
+          <div class="client-card-stat"><div class="client-card-stat-value" style="color:var(--red)">${pending}</div><div class="client-card-stat-label">Pending</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
   const pending=Object.values(allReviews).flat().filter(r=>r.status==='new');
   const wrap=document.getElementById('dashRecentWrap');
-  if(!pending.length){wrap.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-title">All caught up!</div><div style="font-size:13px;color:var(--text-muted)">No pending reviews.</div></div>`;return;}
-  wrap.innerHTML=`<div style="font-size:15px;font-weight:600;margin-bottom:14px">Needs attention</div><div class="review-list">`+
-  pending.slice(0,5).map(r=>{const biz=businesses.find(b=>b.id===r.business_id);return`<div class="review-card"><div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">${biz?.name||''}</div><div class="review-card-header"><span class="review-author">${r.author}</span><span class="review-date">${r.date}</span></div><div class="stars-row">${[1,2,3,4,5].map(i=>`<span style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div><div class="review-text">${r.text}</div><div class="review-actions"><button class="btn btn-primary btn-sm" onclick="quickGen(${r.id},${r.business_id})">Generate AI reply</button></div></div>`;}).join('')+`</div>`;
+  if(!pending.length){
+    wrap.innerHTML=`<div class="empty-state" style="padding:40px 20px"><span class="empty-state-icon">🎉</span><div class="empty-state-title">All caught up!</div><div class="empty-state-text">No pending reviews. Great work!</div></div>`;
+  }else{
+    wrap.innerHTML=`<div class="reviews-wrap">`+pending.slice(0,5).map(r=>{
+      const biz=businesses.find(b=>b.id===r.business_id);
+      return`<div class="review-card${r.stars<=2?' priority':''}">
+        <div style="font-size:11px;font-weight:600;color:var(--primary-dark);background:var(--primary-light);padding:3px 10px;border-radius:99px;display:inline-block;margin-bottom:10px">${biz?.name||''}</div>
+        <div class="review-card-header">
+          <div class="review-author-wrap">
+            <div class="review-avatar">${r.author[0]||'?'}</div>
+            <div><div class="review-author">${r.author}</div><div class="review-source">${r.date}</div></div>
+          </div>
+        </div>
+        <div class="stars-row">${[1,2,3,4,5].map(i=>`<span class="star" style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div>
+        <div class="review-text">${r.text}</div>
+        <div class="review-actions">
+          <button class="btn btn-sm btn-primary" onclick="quickGen(${r.id},${r.business_id})">Generate reply</button>
+          <button class="btn btn-sm btn-instant" onclick="instantReply(${r.id},${r.business_id})">⚡ Instant reply</button>
+        </div>
+      </div>`;
+    }).join('')+`</div>`;
+  }
+  renderActivityDash();
 }
 
+function renderActivityDash(){
+  const feed=document.getElementById('activityFeedDash');
+  if(!activityLog.length){feed.innerHTML=`<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">No activity yet</div>`;return;}
+  feed.innerHTML=activityLog.slice(0,8).map(a=>`<div class="activity-item"><div class="activity-icon" style="background:var(--primary-light)">${a.icon}</div><div class="activity-content"><div class="activity-title">${a.title}${a.bizName?` <span style="color:var(--text-muted)">· ${a.bizName}</span>`:''}</div><div class="activity-time">${timeAgo(a.time)}</div></div></div>`).join('');
+}
+
+function renderActivityFull(){
+  const feed=document.getElementById('activityFeedFull');
+  if(!activityLog.length){feed.innerHTML=`<div class="empty-state"><span class="empty-state-icon">⚡</span><div class="empty-state-title">No activity yet</div></div>`;return;}
+  feed.innerHTML=activityLog.map(a=>`<div class="activity-item"><div class="activity-icon" style="background:var(--primary-light)">${a.icon}</div><div class="activity-content"><div class="activity-title">${a.title}${a.bizName?` <span style="color:var(--text-muted)">· ${a.bizName}</span>`:''}</div><div class="activity-time">${timeAgo(a.time)}</div></div></div>`).join('');
+}
+
+function selectClientAndNav(bizId){selectedBizId=bizId;nav('reviews',document.querySelectorAll('.nav-item')[1]);renderReviewsPage();}
+
 function renderReviewsPage(){
-  if(!businesses.length){document.getElementById('clientTabs').innerHTML='';document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No clients yet</div></div>`;return;}
+  if(!businesses.length){document.getElementById('clientTabs').innerHTML='';document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div></div>`;return;}
   if(!selectedBizId||!businesses.find(b=>b.id===selectedBizId))selectedBizId=businesses[0].id;
   const fetchBtn=document.getElementById('fetchBtn');
-  if(googleAccessToken&&selectedLocation)fetchBtn.style.display='block';else fetchBtn.style.display='none';
+  if(googleAccessToken&&selectedLocation)fetchBtn.style.display='flex';else fetchBtn.style.display='none';
   renderClientTabs();renderReviews();
 }
 
-function renderClientTabs(){document.getElementById('clientTabs').innerHTML=businesses.map(b=>`<button class="client-tab ${b.id===selectedBizId?'active':''}" onclick="selectBiz(${b.id})">${b.name}</button>`).join('');}
+function renderClientTabs(){
+  document.getElementById('clientTabs').innerHTML=businesses.map(b=>{
+    const pending=(allReviews[b.id]||[]).filter(r=>r.status==='new').length;
+    return`<button class="client-tab ${b.id===selectedBizId?'active':''}" onclick="selectBiz(${b.id})">${b.name}${pending>0?`<span class="client-tab-count">${pending}</span>`:''}`;
+  }).join('');
+}
+
 function selectBiz(id){selectedBizId=id;renderClientTabs();renderReviews();}
 
 function renderReviews(){
   const biz=businesses.find(b=>b.id===selectedBizId);if(!biz)return;
-  document.getElementById('reviewsTitle').textContent=biz.name+' — Reviews';
-  const revs=allReviews[biz.id]||[];
-  if(!revs.length){document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><div class="empty-state-icon">⭐</div><div class="empty-state-title">No reviews yet</div><div style="font-size:13px;color:var(--text-muted);margin-top:8px">Connect Google Business to fetch live reviews</div></div>`;return;}
-  document.getElementById('reviewsList').innerHTML=`<div class="review-list">`+revs.map(r=>{
+  const filter=document.getElementById('reviewFilter')?.value||'all';
+  let revs=allReviews[biz.id]||[];
+  if(filter==='new')revs=revs.filter(r=>r.status==='new');
+  else if(filter==='responded')revs=revs.filter(r=>r.status==='responded');
+  else if(['1','2','3','4','5'].includes(filter))revs=revs.filter(r=>r.stars===parseInt(filter));
+  const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
+  document.getElementById('reviewsTitle').textContent=biz.name;
+  document.getElementById('reviewsSubtitle').textContent=`${revs.length} reviews · ★ ${avg} avg · ${biz.tone}`;
+  if(!revs.length){document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-title">No reviews found</div><div class="empty-state-text">No reviews match this filter.</div></div>`;return;}
+  document.getElementById('reviewsList').innerHTML=`<div class="reviews-wrap">`+revs.map(r=>{
     const isLoad=loadingIds.has(r.id),reply=replies[r.id]||r.ai_reply,isLive=r.google_review_id;
-    const actions=r.status==='responded'&&!reply?`<span class="already-responded">✓ Already responded</span>`:`<button class="btn btn-primary btn-sm" onclick="genReply(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate AI reply'}</button>${reply?`<button class="btn btn-sm" onclick="postReply(${r.id})" style="border-color:var(--primary);color:var(--primary)">${isLive?'Post to Google':'Mark responded'}</button>`:''}`;
-    const replyBox=reply?`<div class="reply-box"><div class="reply-box-header"><span class="reply-box-label">✨ AI generated reply</span><span style="font-size:11px;color:var(--primary-dark)">${biz.tone}</span></div><textarea class="reply-textarea" oninput="replies[${r.id}]=this.value">${reply}</textarea></div>`:'';
-    return`<div class="review-card"><div class="review-card-header"><span class="review-author">${r.author}${isLive?` <span class="live-badge"><span class="live-dot"></span>Live</span>`:''}</span><div class="review-meta-right"><span class="review-date">${r.date}</span><span class="badge badge-${r.status}">${r.status}</span></div></div><div class="stars-row">${[1,2,3,4,5].map(i=>`<span style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div><div class="review-text">${r.text}</div><div class="review-actions">${actions}</div>${replyBox}</div>`;
+    const actions=r.status==='responded'&&!reply
+      ?`<span class="already-responded">✅ Responded</span>`
+      :`<button class="btn btn-sm btn-primary" onclick="genReply(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate reply'}</button>
+        <button class="btn btn-sm btn-instant" onclick="instantReply(${r.id},${biz.id})" ${isLoad?'disabled':''}>⚡ Instant reply</button>
+        ${reply?`<button class="btn btn-sm" onclick="postReply(${r.id})" style="border-color:var(--primary);color:var(--primary)">${isLive?'📤 Post to Google':'✓ Mark done'}</button>`:''}`;
+    const replyBox=reply?`<div class="reply-box">
+      <div class="reply-box-header"><span class="reply-box-label">✨ AI generated reply</span><span style="font-size:11px;color:var(--primary-dark);font-weight:500">${biz.tone}</span></div>
+      <textarea class="reply-textarea" oninput="replies[${r.id}]=this.value">${reply}</textarea>
+      <div class="reply-actions">
+        <button class="btn btn-xs btn-ghost" onclick="genReply(${r.id})">🔄 Regenerate</button>
+        ${isLive?`<button class="btn btn-xs btn-instant" onclick="postReply(${r.id})">📤 Post to Google now</button>`:`<button class="btn btn-xs btn-primary" onclick="postReply(${r.id})">✓ Mark as responded</button>`}
+      </div>
+    </div>`:'';
+    return`<div class="review-card${r.stars<=2?' priority':''}">
+      <div class="review-card-header">
+        <div class="review-author-wrap">
+          <div class="review-avatar">${r.author[0]||'?'}</div>
+          <div><div class="review-author">${r.author}${isLive?` <span class="live-badge"><span class="live-dot"></span>Live</span>`:''}</div><div class="review-source">🗓 ${r.date}</div></div>
+        </div>
+        <div class="review-meta-right"><span class="badge badge-${r.status}">${r.status==='responded'?'✅ responded':'🔔 new'}</span></div>
+      </div>
+      <div class="stars-row">${[1,2,3,4,5].map(i=>`<span class="star" style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div>
+      <div class="review-text">${r.text}</div>
+      <div class="review-actions">${actions}</div>
+      ${replyBox}
+    </div>`;
   }).join('')+`</div>`;
 }
 
 function getKey(){return document.getElementById('apiKeyInput').value.trim()||localStorage.getItem('rb_key')||'';}
 
 async function genReply(reviewId){
-  const key=getKey();if(!key){toast('Add your API key first','error');return;}
+  const key=getKey();if(!key){toast('Add your Anthropic API key first','error');return;}
   const biz=businesses.find(b=>b.id===selectedBizId),rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId);
+  if(!biz||!rev)return;
   loadingIds.add(reviewId);renderReviews();
   try{
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human, address their specifics. No hashtags or emojis.`})});
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human and genuine, address their specific points. No hashtags or emojis.`})});
     const d=await res.json();if(d.error)throw new Error(JSON.stringify(d.error));
-    replies[reviewId]=d.content?.find(b=>b.type==='text')?.text||'';toast('Reply generated','success');
+    replies[reviewId]=d.content?.find(b=>b.type==='text')?.text||'';
+    logActivity('✍️',`Reply generated for ${rev.author}'s ${rev.stars}★ review`,biz.name);
+    toast('Reply generated!','success');
   }catch(e){toast('Error: '+e.message,'error');}
   loadingIds.delete(reviewId);renderReviews();
 }
 
+async function instantReply(reviewId,bizId){
+  selectedBizId=bizId;
+  await genReply(reviewId);
+  if(replies[reviewId])await postReply(reviewId);
+}
+
 async function quickGen(reviewId,bizId){
   selectedBizId=bizId;
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.nav-item')[1].classList.add('active');
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-reviews').classList.add('active');
-  document.getElementById('topbarTitle').textContent='Reviews';
-  renderReviewsPage();await genReply(reviewId);
+  nav('reviews',document.querySelectorAll('.nav-item')[1]);
+  renderReviewsPage();
+  await genReply(reviewId);
 }
 
 async function postReply(reviewId){
-  const rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId),reply=replies[reviewId]||rev.ai_reply;
+  const rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId);
+  const reply=replies[reviewId]||rev?.ai_reply;
+  if(!rev||!reply)return;
   if(rev.google_review_id&&googleAccessToken&&selectedLocation){
     try{
       const res=await fetch('/api/post-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name,review_id:rev.google_review_id,reply_text:reply})});
       const d=await res.json();
       if(d.error){toast('Google error: '+JSON.stringify(d.error),'error');return;}
-      toast('Reply posted to Google! ✓','success');
+      toast('✅ Reply posted to Google!','success');
+      logActivity('📤','Reply posted to Google',businesses.find(b=>b.id===selectedBizId)?.name);
     }catch(e){toast('Error posting to Google','error');return;}
   }
   await sb.from('reviews').update({status:'responded',ai_reply:reply}).eq('id',reviewId);
   rev.status='responded';rev.ai_reply=reply;
+  logActivity('✅','Review marked as responded',businesses.find(b=>b.id===selectedBizId)?.name);
   updateStats();renderReviews();renderDashboard();
+  toast('Response saved!','success');
 }
 
 async function autoRespondAll(){
   if(!selectedBizId){if(businesses.length)selectedBizId=businesses[0].id;else{toast('No clients','error');return;}}
   const pending=(allReviews[selectedBizId]||[]).filter(r=>r.status==='new');
   if(!pending.length){toast('No pending reviews','error');return;}
+  toast(`Processing ${pending.length} reviews...`,'info');
   for(const r of pending)await genReply(r.id);
+  toast('All replies generated!','success');
 }
 
 async function connectGoogle(){
   const btn=document.getElementById('connectGoogleBtn');
-  btn.disabled=true;btn.textContent='Connecting...';
+  btn.disabled=true;btn.innerHTML='Connecting...';
   try{const res=await fetch('/api/google-auth-url');const {url}=await res.json();window.location.href=url;}
   catch(e){toast('Error connecting Google','error');btn.disabled=false;renderGooglePage();}
 }
 
 async function showLocationSelector(){
   const wrap=document.getElementById('locationSelectWrap');
-  wrap.classList.remove('hidden');
   wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">🔄 Finding your business locations...</div></div>`;
   let locations=[];
   const accountsToTry=googleAccounts.length>0?googleAccounts:[{name:'accounts/me'}];
@@ -534,13 +786,12 @@ async function showLocationSelector(){
       const res=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
       const d=await res.json();
       if(d.locations)locations=[...locations,...d.locations.map(l=>({...l,accountName:acc.name}))];
-    }catch(e){console.log('loc error',e);}
+    }catch(e){}
   }
   if(!locations.length){
     try{
       const res=await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts',{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
-      const d=await res.json();
-      const accs=d.accounts||[];
+      const accs=(await res.json()).accounts||[];
       for(const acc of accs){
         try{
           const r2=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
@@ -551,18 +802,20 @@ async function showLocationSelector(){
     }catch(e){}
   }
   if(!locations.length){
-    wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found</div><p style="font-size:13px;color:#92400e">Make sure you're signed in with the Google account that manages your Business Profile. You may need to request API access at <a href="https://business.google.com" target="_blank">business.google.com</a>.</p></div>`;
+    wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found yet</div><p style="font-size:13px;color:#78350f;line-height:1.6;margin-top:4px">Google Business Profile API access is still pending approval. Once approved (2-5 days), your locations will appear here automatically.</p></div>`;
     return;
   }
-  wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>${locations.map((l,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1.5px solid transparent;transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="selectLocation(${i})"><div><div style="font-size:13px;font-weight:600">${l.title||l.name}</div><div style="font-size:12px;color:var(--text-secondary)">${l.storefrontAddress?.addressLines?.[0]||''}</div></div></div>`).join('')}</div>`;
+  wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>${locations.map((l,i)=>`<div class="location-item" onclick="selectLocation(${i})"><div style="font-size:22px">🏢</div><div><div style="font-size:13px;font-weight:600">${l.title||l.name}</div><div style="font-size:12px;color:var(--text-secondary)">${l.storefrontAddress?.addressLines?.[0]||''}</div></div></div>`).join('')}</div>`;
   window._locations=locations;
 }
 
 function selectLocation(idx){
   const loc=window._locations[idx];selectedLocation=loc;
   localStorage.setItem('g_location',JSON.stringify(loc));
-  document.getElementById('locationSelectWrap').classList.add('hidden');
-  toast('Location selected: '+(loc.title||loc.name),'success');renderGooglePage();
+  document.getElementById('locationSelectWrap').innerHTML='';
+  toast('✅ Location selected: '+(loc.title||loc.name),'success');
+  logActivity('🔗','Google Business connected',loc.title||loc.name);
+  renderGooglePage();
 }
 
 function renderGooglePage(){
@@ -573,14 +826,19 @@ function renderGooglePage(){
     btn.innerHTML=gIcon+'✓ Connected: '+(selectedLocation.title||selectedLocation.name);
     btn.onclick=disconnectGoogle;btn.disabled=false;
     autoCard.style.display='block';
-    const connLoc=document.getElementById('connectedLocations');
-    connLoc.classList.remove('hidden');
-    connLoc.innerHTML=`<div style="background:var(--primary-light);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:16px 20px"><div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">✓ Connected to Google Business</div><div style="font-size:12px;color:var(--primary-dark);margin-bottom:12px">${selectedLocation.title||selectedLocation.name}</div><button class="btn btn-sm" style="border-color:var(--primary);color:var(--primary)" onclick="fetchLiveReviews()">🔄 Fetch latest reviews now</button></div>`;
+    document.getElementById('connectedLocations').innerHTML=`<div style="background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:18px 20px;margin-top:16px">
+      <div style="font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:4px">✅ Connected to Google Business</div>
+      <div style="font-size:13px;color:var(--primary-dark);margin-bottom:14px">${selectedLocation.title||selectedLocation.name}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-primary" onclick="fetchLiveReviews()">🔄 Sync reviews now</button>
+        <button class="btn btn-sm btn-danger" onclick="disconnectGoogle()">Disconnect</button>
+      </div>
+    </div>`;
   }else{
     btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;
     btn.innerHTML=gIcon+'Connect Google Business';
     autoCard.style.display='none';
-    document.getElementById('connectedLocations').classList.add('hidden');
+    document.getElementById('connectedLocations').innerHTML='';
   }
 }
 
@@ -595,7 +853,7 @@ async function fetchLiveReviews(){
   if(!googleAccessToken||!selectedLocation){toast('Connect Google Business first','error');return;}
   if(!selectedBizId&&businesses.length)selectedBizId=businesses[0].id;
   if(!selectedBizId){toast('Add a client first','error');return;}
-  toast('Fetching live reviews...','success');
+  toast('Syncing reviews from Google...','info');
   try{
     const res=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name})});
     const d=await res.json();
@@ -611,7 +869,8 @@ async function fetchLiveReviews(){
       }
     }
     updateStats();renderReviews();
-    toast(newCount>0?`${newCount} new reviews imported!`:'Reviews up to date','success');
+    logActivity('🔄',`Synced ${newCount} new reviews from Google`,businesses.find(b=>b.id===selectedBizId)?.name);
+    toast(newCount>0?`✅ ${newCount} new reviews imported!`:'Already up to date','success');
   }catch(e){toast('Error fetching reviews','error');}
 }
 
@@ -619,42 +878,76 @@ function toggleAutoReply(){
   const on=document.getElementById('autoReplyToggle').checked;
   const slider=document.getElementById('toggleSlider');
   slider.style.background=on?'var(--primary)':'#cbd5e1';
-  slider.querySelector('span').style.transform=on?'translateX(20px)':'translateX(0)';
-  toast(on?'Auto-reply enabled':'Auto-reply disabled','success');
+  slider.querySelector('span').style.transform=on?'translateX(22px)':'translateX(0)';
+  toast(on?'⚡ Auto-reply enabled':'Auto-reply disabled',on?'success':'info');
+  logActivity(on?'⚡':'⏸',on?'Auto-reply enabled':'Auto-reply disabled');
 }
 
 async function renderClientsPage(){
   const {data:users}=await sb.from('profiles').select('*');
   const sel=document.getElementById('newBizOwner');
   sel.innerHTML=`<option value="">— Admin managed —</option>`+(users||[]).map(u=>`<option value="${u.id}">${u.email} (${u.role})</option>`).join('');
+  document.getElementById('clientCountLabel').textContent=`(${businesses.length} total)`;
   const table=document.getElementById('clientsTable');
-  if(!businesses.length){table.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No clients yet</div></div>`;return;}
-  table.innerHTML=`<table class="clients-table"><thead><tr><th>Business</th><th>Type</th><th>Tone</th><th>Reviews</th><th></th></tr></thead><tbody>`+businesses.map(b=>`<tr><td><strong>${b.name}</strong></td><td style="color:var(--text-secondary)">${b.type}</td><td style="color:var(--text-secondary)">${b.tone}</td><td>${(allReviews[b.id]||[]).length}</td><td><button class="btn btn-danger btn-sm" onclick="removeClient(${b.id})">Remove</button></td></tr>`).join('')+`</tbody></table>`;
+  if(!businesses.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client above</div></div>`;return;}
+  table.innerHTML=`<table class="data-table"><thead><tr><th>Business</th><th>Type</th><th>Fee</th><th>Reviews</th><th>Avg ★</th><th>Response %</th><th></th></tr></thead><tbody>`+
+  businesses.map(b=>{
+    const revs=allReviews[b.id]||[];
+    const avg=revs.length?(revs.reduce((s,r)=>s+r.stars,0)/revs.length).toFixed(1):'—';
+    const rr=revs.length?Math.round((revs.filter(r=>r.status==='responded').length/revs.length)*100):0;
+    return`<tr>
+      <td><strong>${b.name}</strong>${b.notes?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${b.notes}</div>`:''}</td>
+      <td style="color:var(--text-secondary)">${b.type}</td>
+      <td><span style="font-weight:600;color:var(--primary)">${b.monthly_fee?'£'+b.monthly_fee+'/mo':'—'}</span></td>
+      <td>${revs.length}</td>
+      <td style="color:var(--amber)">${avg!=='—'?'★ '+avg:'—'}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:${rr}%"></div></div><span style="font-size:11px;color:var(--text-muted);white-space:nowrap">${rr}%</span></div></td>
+      <td style="display:flex;gap:6px"><button class="btn btn-xs" onclick="selectClientAndNav(${b.id})">View</button><button class="btn btn-xs btn-danger" onclick="removeClient(${b.id})">Remove</button></td>
+    </tr>`;
+  }).join('')+`</tbody></table>`;
 }
 
 async function addClient(){
-  const name=document.getElementById('newBizName').value.trim(),type=document.getElementById('newBizType').value.trim(),tone=document.getElementById('newBizTone').value,owner=document.getElementById('newBizOwner').value||null;
-  if(!name||!type){toast('Fill in name and type','error');return;}
-  const {data,error}=await sb.from('businesses').insert({name,type,tone,owner_id:owner}).select().single();
+  const name=document.getElementById('newBizName').value.trim(),type=document.getElementById('newBizType').value.trim(),tone=document.getElementById('newBizTone').value;
+  const fee=parseFloat(document.getElementById('newBizFee').value)||0,owner=document.getElementById('newBizOwner').value||null,notes=document.getElementById('newBizNotes').value.trim();
+  if(!name||!type){toast('Fill in business name and type','error');return;}
+  const {data,error}=await sb.from('businesses').insert({name,type,tone,monthly_fee:fee,owner_id:owner,notes}).select().single();
   if(error){toast('Error: '+error.message,'error');return;}
   businesses.push(data);allReviews[data.id]=[];
-  document.getElementById('newBizName').value='';document.getElementById('newBizType').value='';
-  toast(name+' added!','success');updateStats();renderClientsPage();
+  document.getElementById('newBizName').value='';document.getElementById('newBizType').value='';document.getElementById('newBizFee').value='';document.getElementById('newBizNotes').value='';
+  logActivity('🏢','New client added',name);
+  toast('✅ '+name+' added!','success');updateStats();renderClientsPage();
 }
 
 async function removeClient(id){
-  if(!confirm('Remove this client?'))return;
+  if(!confirm('Remove this client and all their reviews?'))return;
   await sb.from('businesses').delete().eq('id',id);
+  const biz=businesses.find(b=>b.id===id);
   businesses=businesses.filter(b=>b.id!==id);delete allReviews[id];
   if(selectedBizId===id)selectedBizId=null;
+  logActivity('🗑️','Client removed',biz?.name);
   toast('Client removed','success');updateStats();renderClientsPage();
+}
+
+function renderBilling(){
+  updateStats();
+  const table=document.getElementById('billingTable');
+  if(!businesses.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">💳</span><div class="empty-state-title">No clients yet</div></div>`;return;}
+  table.innerHTML=`<table class="data-table"><thead><tr><th>Client</th><th>Monthly fee</th><th>Status</th><th>Annual value</th></tr></thead><tbody>`+
+  businesses.map(b=>`<tr>
+    <td><strong>${b.name}</strong><div style="font-size:11px;color:var(--text-muted)">${b.type}</div></td>
+    <td style="font-weight:700;color:var(--primary)">${b.monthly_fee?'£'+b.monthly_fee:'—'}</td>
+    <td><span class="billing-status ${b.monthly_fee?'billing-active':'billing-trial'}">${b.monthly_fee?'Active':'No fee set'}</span></td>
+    <td style="font-weight:600">${b.monthly_fee?'£'+(b.monthly_fee*12):'—'}</td>
+  </tr>`).join('')+`</tbody></table>`;
 }
 
 async function renderUsersPage(){
   const {data:users}=await sb.from('profiles').select('*');
   const table=document.getElementById('usersTable');
-  if(!users?.length){table.innerHTML=`<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No users yet</div></div>`;return;}
-  table.innerHTML=`<table class="clients-table"><thead><tr><th>Email</th><th>Role</th><th></th></tr></thead><tbody>`+users.map(u=>`<tr><td>${u.email}</td><td><span class="role-badge role-${u.role}">${u.role}</span></td><td>${u.id!==currentUser?.id?`<button class="btn btn-sm" onclick="toggleRole('${u.id}','${u.role}')">${u.role==='admin'?'Make client':'Make admin'}</button>`:'<span style="color:var(--text-muted);font-size:12px">You</span>'}</td></tr>`).join('')+`</tbody></table>`;
+  if(!users?.length){table.innerHTML=`<div class="empty-state"><span class="empty-state-icon">👥</span><div class="empty-state-title">No users yet</div></div>`;return;}
+  table.innerHTML=`<table class="data-table"><thead><tr><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>`+
+  users.map(u=>`<tr><td>${u.email}</td><td><span class="role-badge role-${u.role}">${u.role}</span></td><td>${u.id!==currentUser?.id?`<button class="btn btn-xs" onclick="toggleRole('${u.id}','${u.role}')">${u.role==='admin'?'Make client':'Make admin'}</button>`:'<span style="color:var(--text-muted);font-size:12px">You</span>'}</td></tr>`).join('')+`</tbody></table>`;
 }
 
 async function toggleRole(id,current){
@@ -665,11 +958,14 @@ async function toggleRole(id,current){
 
 function onApiKey(){
   const k=getKey(),bar=document.getElementById('apiKeyBar'),badge=document.getElementById('apiConnected');
-  if(k.startsWith('sk-ant')){badge.style.display='block';bar.classList.add('connected');localStorage.setItem('rb_key',k);}
+  if(k.startsWith('sk-ant')){badge.style.display='flex';bar.classList.add('connected');localStorage.setItem('rb_key',k);}
   else{badge.style.display='none';bar.classList.remove('connected');}
 }
 
-function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;t.style.display='block';setTimeout(()=>{t.style.display='none';},3000);}
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;t.style.display='block';
+  clearTimeout(t._timer);t._timer=setTimeout(()=>{t.style.display='none';},3500);
+}
 </script>
 </body>
 </html>
