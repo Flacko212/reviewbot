@@ -304,7 +304,6 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let currentUser=null,currentProfile=null,businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
 let googleAccessToken=null,googleRefreshToken=null,googleAccounts=[],selectedLocation=null;
 
-// Check immediately on page load before anything else
 (function(){
   if(localStorage.getItem('g_just_connected')==='true'){
     localStorage.removeItem('g_just_connected');
@@ -525,18 +524,36 @@ async function connectGoogle(){
 }
 
 async function showLocationSelector(){
-  if(!googleAccounts.length){toast('No Google Business accounts found','error');renderGooglePage();return;}
   const wrap=document.getElementById('locationSelectWrap');
   wrap.classList.remove('hidden');
+  wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">🔄 Finding your business locations...</div></div>`;
   let locations=[];
-  for(const acc of googleAccounts){
+  const accountsToTry=googleAccounts.length>0?googleAccounts:[{name:'accounts/me'}];
+  for(const acc of accountsToTry){
     try{
-      const res=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
+      const res=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
       const d=await res.json();
       if(d.locations)locations=[...locations,...d.locations.map(l=>({...l,accountName:acc.name}))];
+    }catch(e){console.log('loc error',e);}
+  }
+  if(!locations.length){
+    try{
+      const res=await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts',{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
+      const d=await res.json();
+      const accs=d.accounts||[];
+      for(const acc of accs){
+        try{
+          const r2=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations?readMask=name,title,storefrontAddress`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
+          const d2=await r2.json();
+          if(d2.locations)locations=[...locations,...d2.locations.map(l=>({...l,accountName:acc.name}))];
+        }catch(e){}
+      }
     }catch(e){}
   }
-  if(!locations.length){wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found</div><p style="font-size:13px;color:#92400e">No Google Business locations were found on this account.</p></div>`;return;}
+  if(!locations.length){
+    wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found</div><p style="font-size:13px;color:#92400e">Make sure you're signed in with the Google account that manages your Business Profile. You may need to request API access at <a href="https://business.google.com" target="_blank">business.google.com</a>.</p></div>`;
+    return;
+  }
   wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>${locations.map((l,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1.5px solid transparent;transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="selectLocation(${i})"><div><div style="font-size:13px;font-weight:600">${l.title||l.name}</div><div style="font-size:12px;color:var(--text-secondary)">${l.storefrontAddress?.addressLines?.[0]||''}</div></div></div>`).join('')}</div>`;
   window._locations=locations;
 }
