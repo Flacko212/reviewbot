@@ -1,637 +1,154 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ReviewBot</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --primary:#16a34a;--primary-light:#dcfce7;--primary-dark:#15803d;
-  --bg:#f8fafc;--white:#fff;--border:#e2e8f0;--border-strong:#cbd5e1;
-  --text:#0f172a;--text-secondary:#64748b;--text-muted:#94a3b8;
-  --red:#ef4444;--red-light:#fef2f2;--amber:#f59e0b;--amber-light:#fffbeb;
-  --blue:#3b82f6;--blue-light:#eff6ff;
-  --shadow:0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md:0 4px 6px rgba(0,0,0,0.07);
-  --shadow-lg:0 10px 15px rgba(0,0,0,0.1);
-  --radius:8px;--radius-lg:12px;--radius-xl:16px;
-}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
-.hidden{display:none!important}
-.loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#f0fdf4 0%,#f8fafc 50%,#f0f9ff 100%)}
-.auth-card{background:var(--white);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);padding:40px;width:100%;max-width:420px}
-.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.auth-logo-icon{width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
-.auth-logo-text{font-size:20px;font-weight:700}.auth-logo-text span{color:var(--primary)}
-.auth-title{font-size:22px;font-weight:700;margin-bottom:6px}
-.auth-sub{color:var(--text-secondary);font-size:14px;margin-bottom:28px}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
-.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border-color 0.15s}
-.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,0.1)}
-.auth-btn{width:100%;padding:11px;background:var(--primary);color:white;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s;margin-top:4px}
-.auth-btn:hover{background:var(--primary-dark)}
-.auth-btn:disabled{opacity:0.6;cursor:not-allowed}
-.auth-switch{text-align:center;margin-top:20px;font-size:13px;color:var(--text-secondary)}
-.auth-switch a{color:var(--primary);font-weight:500;cursor:pointer}
-.auth-error{background:var(--red-light);color:var(--red);padding:10px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:none}
-.app-shell{display:flex;min-height:100vh}
-.sidebar{width:240px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;left:0;top:0}
-.sidebar-logo{padding:20px;border-bottom:1px solid var(--border)}
-.sidebar-logo-inner{display:flex;align-items:center;gap:10px}
-.sidebar-logo-icon{width:34px;height:34px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0}
-.sidebar-logo-text{font-size:16px;font-weight:700}.sidebar-logo-text span{color:var(--primary)}
-.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
-.nav-section{margin-bottom:20px}
-.nav-section-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;padding:0 10px;margin-bottom:4px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text-secondary);font-size:13px;font-weight:500;transition:all 0.15s;margin-bottom:1px}
-.nav-item:hover{background:var(--bg);color:var(--text)}
-.nav-item.active{background:var(--primary-light);color:var(--primary-dark);font-weight:600}
-.nav-item-icon{font-size:15px;width:20px;text-align:center}
-.nav-item-badge{margin-left:auto;background:var(--primary);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
-.sidebar-footer{padding:12px 10px;border-top:1px solid var(--border)}
-.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius)}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-size:13px;font-weight:700;flex-shrink:0}
-.user-info{flex:1;min-width:0}
-.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:11px;color:var(--text-muted)}
-.logout-btn{font-size:16px;color:var(--text-muted);cursor:pointer;padding:4px}
-.logout-btn:hover{color:var(--red)}
-.main{margin-left:240px;flex:1;min-height:100vh}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.topbar-title{font-size:16px;font-weight:700}
-.topbar-actions{display:flex;gap:10px;align-items:center}
-.content{padding:28px}
-.page{display:none}.page.active{display:block}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.stat-card-label{font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px}
-.stat-card-value{font-size:28px;font-weight:700;line-height:1}
-.stat-card-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
-.stat-card.green .stat-card-value{color:var(--primary)}
-.client-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.client-tab{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--white);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
-.client-tab:hover{border-color:var(--primary);color:var(--primary)}
-.client-tab.active{background:var(--primary);border-color:var(--primary);color:white}
-.btn{padding:8px 16px;border-radius:var(--radius);border:1.5px solid var(--border-strong);background:var(--white);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
-.btn:hover{border-color:var(--primary);color:var(--primary)}
-.btn-primary{background:var(--primary);border-color:var(--primary);color:white}
-.btn-primary:hover{background:var(--primary-dark);color:white}
-.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
-.btn-danger{background:var(--red-light);border-color:var(--red);color:var(--red)}
-.btn-danger:hover{background:var(--red);color:white}
-.btn-google{background:var(--white);border-color:var(--border-strong);color:var(--text);display:flex;align-items:center;gap:8px}
-.btn-google:hover{border-color:var(--blue);color:var(--blue)}
-.btn-google.connected{background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark)}
-.btn-sm{padding:6px 12px;font-size:12px}
-.review-list{display:flex;flex-direction:column;gap:12px}
-.review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.review-card:hover{box-shadow:var(--shadow-md)}
-.review-card-header{display:flex;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
-.review-author{font-size:14px;font-weight:600}
-.review-meta-right{display:flex;align-items:center;gap:8px}
-.review-date{font-size:12px;color:var(--text-muted)}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
-.badge-new{background:#f1f5f9;color:#64748b}
-.badge-responded{background:var(--primary-light);color:var(--primary-dark)}
-.stars-row{display:flex;gap:2px;margin-bottom:10px}
-.review-text{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px}
-.review-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.already-responded{font-size:12px;color:var(--primary);font-weight:500}
-.reply-box{margin-top:14px;border:1.5px solid var(--primary-light);border-radius:var(--radius-lg);overflow:hidden}
-.reply-box-header{background:var(--primary-light);padding:8px 14px;display:flex;justify-content:space-between}
-.reply-box-label{font-size:11px;font-weight:600;color:var(--primary-dark);text-transform:uppercase}
-.reply-textarea{width:100%;border:none;padding:14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);line-height:1.6;resize:vertical;min-height:90px;outline:none}
-.dots{display:inline-flex;gap:3px;align-items:center}
-.dot{width:4px;height:4px;background:currentColor;border-radius:50%;animation:dp 1.2s infinite}
-.dot:nth-child(2){animation-delay:0.2s}.dot:nth-child(3){animation-delay:0.4s}
-@keyframes dp{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
-.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px}
-.section-card-title{font-size:15px;font-weight:700;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.form-group-inner{display:flex;flex-direction:column;gap:6px}
-.form-group-inner.full{grid-column:1/-1}
-.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--white);outline:none;cursor:pointer}
-.form-select:focus{border-color:var(--primary)}
-.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
-.clients-table{width:100%;border-collapse:collapse}
-.clients-table th{text-align:left;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;border-bottom:1px solid var(--border)}
-.clients-table td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
-.clients-table tr:last-child td{border-bottom:none}
-.clients-table tr:hover td{background:#fafafa}
-.api-key-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
-.api-key-bar.connected{border-color:var(--primary);background:var(--primary-light)}
-.api-key-label{font-size:13px;font-weight:600;white-space:nowrap}
-.api-key-input{flex:1;min-width:200px;padding:8px 12px;border:1.5px solid var(--border-strong);border-radius:var(--radius);font-family:monospace;font-size:12px;color:var(--text);outline:none;background:white}
-.api-connected-badge{font-size:12px;font-weight:600;color:var(--primary-dark);display:none}
-.google-icon{width:18px;height:18px}
-.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;display:none;z-index:999;box-shadow:var(--shadow-lg)}
-.toast.success{background:var(--primary);color:white}
-.toast.error{background:var(--red);color:white}
-.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
-.empty-state-icon{font-size:40px;margin-bottom:12px}
-.empty-state-title{font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
-.role-badge{display:inline-flex;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
-.role-admin{background:#faf5ff;color:#7c3aed}
-.role-client{background:var(--primary-light);color:var(--primary-dark)}
-.live-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600;background:var(--blue-light);color:var(--blue)}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.location-select-wrap{background:var(--amber-light);border:1px solid #fcd34d;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px}
-.location-select-title{font-size:13px;font-weight:600;color:#92400e;margin-bottom:10px}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
+from flask import Flask, request, jsonify, send_from_directory, redirect, session
+from flask_cors import CORS
+import requests
+import os
+import json
+import urllib.parse
 
-<div id="loadingScreen" class="loading-screen">
-  <div style="text-align:center;color:var(--text-secondary)"><div class="spinner"></div>Loading ReviewBot...</div>
-</div>
+app = Flask(__name__, static_folder='static')
+app.secret_key = os.environ.get('SECRET_KEY', 'reviewbot-secret-key-2024')
+CORS(app, supports_credentials=True)
 
-<div id="authWrap" class="auth-wrap hidden">
-  <div class="auth-card" id="loginCard">
-    <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
-    <div class="auth-title">Welcome back</div>
-    <div class="auth-sub">Sign in to manage your Google reviews</div>
-    <div class="auth-error" id="loginError"></div>
-    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in</button>
-    <div class="auth-switch">Don't have an account? <a onclick="showSignup()">Create one</a></div>
-  </div>
-  <div class="auth-card hidden" id="signupCard">
-    <div class="auth-logo"><div class="auth-logo-icon">⭐</div><div class="auth-logo-text">Review<span>Bot</span></div></div>
-    <div class="auth-title">Create account</div>
-    <div class="auth-sub">Get started with ReviewBot</div>
-    <div class="auth-error" id="signupError"></div>
-    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" type="text" placeholder="Your name"></div>
-    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" id="signupEmail" type="email" placeholder="you@example.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPassword" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()"></div>
-    <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create account</button>
-    <div class="auth-switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
-  </div>
-</div>
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+APP_URL = os.environ.get('APP_URL', 'https://automatedreviewbot.co.uk')
+REDIRECT_URI = f"{APP_URL}/oauth/callback"
 
-<div id="appShell" class="app-shell hidden">
-  <aside class="sidebar">
-    <div class="sidebar-logo"><div class="sidebar-logo-inner"><div class="sidebar-logo-icon">⭐</div><div class="sidebar-logo-text">Review<span>Bot</span></div></div></div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-label">Main</div>
-        <div class="nav-item active" onclick="nav('dashboard',this)"><span class="nav-item-icon">📊</span>Dashboard<span class="nav-item-badge hidden" id="pendingBadge">0</span></div>
-        <div class="nav-item" onclick="nav('reviews',this)"><span class="nav-item-icon">⭐</span>Reviews</div>
-        <div class="nav-item" onclick="nav('google',this)"><span class="nav-item-icon">🔗</span>Google Business</div>
-      </div>
-      <div class="nav-section hidden" id="adminNav">
-        <div class="nav-section-label">Admin</div>
-        <div class="nav-item" onclick="nav('clients',this)"><span class="nav-item-icon">🏢</span>Clients</div>
-        <div class="nav-item" onclick="nav('users',this)"><span class="nav-item-icon">👥</span>Users</div>
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="user-card">
-        <div class="user-avatar" id="userAvatar">?</div>
-        <div class="user-info"><div class="user-name" id="userName">Loading...</div><div class="user-role" id="userRole">—</div></div>
-        <div class="logout-btn" onclick="doLogout()" title="Sign out">↪</div>
-      </div>
-    </div>
-  </aside>
-  <main class="main">
-    <div class="topbar">
-      <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="topbar-actions">
-        <button class="btn btn-primary btn-sm" onclick="autoRespondAll()" id="autoBtn" style="display:none">Auto-respond all</button>
-      </div>
-    </div>
-    <div class="content">
-      <div class="api-key-bar" id="apiKeyBar">
-        <span class="api-key-label">🔑 Anthropic API Key</span>
-        <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." oninput="onApiKey()">
-        <span class="api-connected-badge" id="apiConnected">✓ Connected</span>
-      </div>
+@app.route('/')
+def index():
+    return send_from_directory('static', 'index.html')
 
-      <div class="page active" id="page-dashboard">
-        <div class="stats-grid">
-          <div class="stat-card green"><div class="stat-card-label">Pending replies</div><div class="stat-card-value" id="statPending">0</div><div class="stat-card-sub">Need attention</div></div>
-          <div class="stat-card"><div class="stat-card-label">Responded</div><div class="stat-card-value" id="statResponded">0</div><div class="stat-card-sub">All time</div></div>
-          <div class="stat-card"><div class="stat-card-label">Total reviews</div><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-sub">All time</div></div>
-          <div class="stat-card"><div class="stat-card-label">Clients</div><div class="stat-card-value" id="statClients">0</div><div class="stat-card-sub">Active</div></div>
-        </div>
-        <div id="dashRecentWrap"></div>
-      </div>
+@app.route('/oauth/callback')
+def oauth_callback():
+    code = request.args.get('code')
+    if not code:
+        return redirect('/?error=no_code')
+    token_response = requests.post('https://oauth2.googleapis.com/token', data={
+        'code': code,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'redirect_uri': REDIRECT_URI,
+        'grant_type': 'authorization_code'
+    })
+    tokens = token_response.json()
+    if 'error' in tokens:
+        return redirect(f'/?error={tokens["error"]}')
+    access_token = tokens.get('access_token')
+    refresh_token = tokens.get('refresh_token', '')
+    accounts_response = requests.get(
+        'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    accounts = accounts_response.json().get('accounts', [])
+    session['g_access'] = access_token
+    session['g_refresh'] = refresh_token
+    session['g_accounts'] = json.dumps(accounts)
+    return redirect('/google-success')
 
-      <div class="page" id="page-reviews">
-        <div class="client-tabs" id="clientTabs"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <div style="font-size:15px;font-weight:600" id="reviewsTitle">Reviews</div>
-          <button class="btn btn-sm" onclick="fetchLiveReviews()" id="fetchBtn" style="display:none">🔄 Fetch live reviews</button>
-        </div>
-        <div id="reviewsList"></div>
-      </div>
-
-      <div class="page" id="page-google">
-        <div class="section-card">
-          <div class="section-card-title">Connect Google Business Profile</div>
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6">Connect your Google Business Profile to automatically pull in real reviews and post AI-generated replies directly to Google.</p>
-          <div id="googleStatusWrap">
-            <button class="btn btn-google" onclick="connectGoogle()" id="connectGoogleBtn">
-              <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-              Connect Google Business
-            </button>
-          </div>
-          <div id="locationSelectWrap" class="hidden"></div>
-          <div id="connectedLocations" class="hidden" style="margin-top:20px"></div>
-        </div>
-        <div class="section-card" id="autoReplyCard" style="display:none">
-          <div class="section-card-title">Auto-reply Settings</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
-            <div>
-              <div style="font-size:13px;font-weight:600">Auto-respond to new reviews</div>
-              <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">Automatically generate and post replies when new reviews come in</div>
-            </div>
-            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
-              <input type="checkbox" id="autoReplyToggle" style="opacity:0;width:0;height:0" onchange="toggleAutoReply()">
-              <span id="toggleSlider" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:24px;transition:0.3s"><span style="position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s"></span></span>
-            </label>
-          </div>
-          <div style="padding:12px 0;font-size:13px;color:var(--text-secondary)">When enabled, ReviewBot checks for new reviews every hour and responds automatically using AI.</div>
-        </div>
-      </div>
-
-      <div class="page" id="page-clients">
-        <div class="section-card">
-          <div class="section-card-title">Add New Client</div>
-          <div class="form-grid">
-            <div class="form-group-inner"><label class="form-label">Business Name</label><input class="form-input" id="newBizName" placeholder="e.g. Oakwood Plumbing"></div>
-            <div class="form-group-inner"><label class="form-label">Business Type</label><input class="form-input" id="newBizType" placeholder="e.g. plumbing contractor"></div>
-            <div class="form-group-inner full"><label class="form-label">Reply Tone</label>
-              <select class="form-select" id="newBizTone">
-                <option value="professional and reassuring">Professional & Reassuring — trades, contractors</option>
-                <option value="warm, hospitable and genuine">Warm & Hospitable — restaurants, cafes</option>
-                <option value="friendly and personal">Friendly & Personal — salons, local shops</option>
-                <option value="confident and expert">Confident & Expert — professional services</option>
-                <option value="enthusiastic and energetic">Enthusiastic & Energetic — gyms, sports</option>
-                <option value="calm and trustworthy">Calm & Trustworthy — healthcare, wellness</option>
-              </select>
-            </div>
-            <div class="form-group-inner full"><label class="form-label">Assign to User (optional)</label><select class="form-select" id="newBizOwner"><option value="">— Admin managed —</option></select></div>
-          </div>
-          <div class="form-actions"><button class="btn btn-primary" onclick="addClient()">Add Client</button></div>
-        </div>
-        <div class="section-card"><div class="section-card-title">All Clients</div><div id="clientsTable"></div></div>
-      </div>
-
-      <div class="page" id="page-users">
-        <div class="section-card"><div class="section-card-title">All Users</div><div id="usersTable"></div></div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<div class="toast" id="toast"></div>
-
+@app.route('/google-success')
+def google_success():
+    access_token = session.get('g_access', '')
+    refresh_token = session.get('g_refresh', '')
+    accounts = session.get('g_accounts', '[]')
+    html = f"""<!DOCTYPE html>
+<html><head><title>Connected</title></head><body>
 <script>
-const SUPABASE_URL='https://oycuvjfkkyalxvwxhabd.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_qp_jSOZtqFAuRXuS60Qbkw_VIoYztuf';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-
-let currentUser=null,currentProfile=null,businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
-let googleAccessToken=null,googleRefreshToken=null,googleAccounts=[],selectedLocation=null;
-
-function checkOAuthCallback(){
-  const justConnected=localStorage.getItem('g_just_connected');
-  if(justConnected==='true'){
-    localStorage.removeItem('g_just_connected');
-    googleAccessToken=localStorage.getItem('g_access');
-    googleRefreshToken=localStorage.getItem('g_refresh')||'';
-    try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
-    if(googleAccessToken){
-      toast('Google Business connected!','success');
-      showLocationSelector();
-    }
-  }
-}
-
-function showLogin(){document.getElementById('loginCard').classList.remove('hidden');document.getElementById('signupCard').classList.add('hidden');}
-function showSignup(){document.getElementById('signupCard').classList.remove('hidden');document.getElementById('loginCard').classList.add('hidden');}
-
-async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value;
-  const btn=document.getElementById('loginBtn'),err=document.getElementById('loginError');
-  err.style.display='none';btn.disabled=true;btn.textContent='Signing in...';
-  const {error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Sign in';}
-}
-
-async function doSignup(){
-  const name=document.getElementById('signupName').value.trim(),email=document.getElementById('signupEmail').value.trim(),pass=document.getElementById('signupPassword').value;
-  const btn=document.getElementById('signupBtn'),err=document.getElementById('signupError');
-  err.style.display='none';btn.disabled=true;btn.textContent='Creating account...';
-  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
-  if(error){err.textContent=error.message;err.style.display='block';btn.disabled=false;btn.textContent='Create account';return;}
-  if(data.user){
-    await sb.from('profiles').upsert({id:data.user.id,email,role:'client'},{onConflict:'id'});
-    toast('Account created! Signing you in...','success');
-    btn.disabled=false;btn.textContent='Create account';
-  }
-}
-
-async function doLogout(){
-  localStorage.removeItem('g_access');localStorage.removeItem('g_refresh');localStorage.removeItem('g_accounts');localStorage.removeItem('g_location');
-  await sb.auth.signOut();
-}
-
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user){currentUser=session.user;await loadProfile();showApp();}
-  else{currentUser=null;currentProfile=null;document.getElementById('loadingScreen').classList.add('hidden');document.getElementById('authWrap').classList.remove('hidden');document.getElementById('appShell').classList.add('hidden');}
-});
-
-async function loadProfile(){
-  try{
-    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000));
-    const query=sb.from('profiles').select('*').eq('id',currentUser.id).single();
-    const {data}=await Promise.race([query,timeout]);
-    if(!data){const p={id:currentUser.id,email:currentUser.email,role:'client'};await sb.from('profiles').upsert(p,{onConflict:'id'});currentProfile=p;}
-    else{currentProfile=data;}
-  }catch(e){currentProfile={id:currentUser.id,email:currentUser.email,role:'client'};}
-}
-
-async function showApp(){
-  document.getElementById('loadingScreen').classList.add('hidden');
-  document.getElementById('authWrap').classList.add('hidden');
-  document.getElementById('appShell').classList.remove('hidden');
-  const name=currentUser.user_metadata?.full_name||currentUser.email.split('@')[0]||'User';
-  document.getElementById('userName').textContent=name;
-  document.getElementById('userAvatar').textContent=name[0].toUpperCase();
-  const isAdmin=currentProfile?.role==='admin';
-  document.getElementById('userRole').textContent=isAdmin?'Administrator':'Client';
-  if(isAdmin){document.getElementById('adminNav').classList.remove('hidden');document.getElementById('autoBtn').style.display='block';}
-  const saved=localStorage.getItem('rb_key');
-  if(saved){document.getElementById('apiKeyInput').value=saved;onApiKey();}
-  const ga=localStorage.getItem('g_access');
-  if(ga){
-    googleAccessToken=ga;googleRefreshToken=localStorage.getItem('g_refresh')||'';
-    try{googleAccounts=JSON.parse(localStorage.getItem('g_accounts')||'[]');}catch(e){googleAccounts=[];}
-    const loc=localStorage.getItem('g_location');
-    if(loc){try{selectedLocation=JSON.parse(loc);}catch(e){}}
-  }
-  await loadData();renderDashboard();checkOAuthCallback();renderGooglePage();
-}
-
-async function loadData(){
-  try{
-    let q=sb.from('businesses').select('*');
-    if(currentProfile?.role!=='admin')q=q.eq('owner_id',currentUser.id);
-    const {data:bizData}=await q;businesses=bizData||[];
-    allReviews={};
-    for(const b of businesses){const {data:r}=await sb.from('reviews').select('*').eq('business_id',b.id).order('id',{ascending:false});allReviews[b.id]=r||[];}
-    updateStats();
-  }catch(e){console.error(e);}
-}
-
-function updateStats(){
-  const all=Object.values(allReviews).flat(),pending=all.filter(r=>r.status==='new').length;
-  document.getElementById('statPending').textContent=pending;
-  document.getElementById('statResponded').textContent=all.filter(r=>r.status==='responded').length;
-  document.getElementById('statTotal').textContent=all.length;
-  document.getElementById('statClients').textContent=businesses.length;
-  const badge=document.getElementById('pendingBadge');
-  if(pending>0){badge.textContent=pending;badge.classList.remove('hidden');}else{badge.classList.add('hidden');}
-}
-
-function nav(page,el){
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  const titles={dashboard:'Dashboard',reviews:'Reviews',google:'Google Business',clients:'Clients',users:'Users'};
-  document.getElementById('topbarTitle').textContent=titles[page]||page;
-  if(page==='reviews')renderReviewsPage();
-  if(page==='clients')renderClientsPage();
-  if(page==='users')renderUsersPage();
-  if(page==='dashboard')renderDashboard();
-  if(page==='google')renderGooglePage();
-}
-
-function renderDashboard(){
-  const pending=Object.values(allReviews).flat().filter(r=>r.status==='new');
-  const wrap=document.getElementById('dashRecentWrap');
-  if(!pending.length){wrap.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-title">All caught up!</div><div style="font-size:13px;color:var(--text-muted)">No pending reviews.</div></div>`;return;}
-  wrap.innerHTML=`<div style="font-size:15px;font-weight:600;margin-bottom:14px">Needs attention</div><div class="review-list">`+
-  pending.slice(0,5).map(r=>{const biz=businesses.find(b=>b.id===r.business_id);return`<div class="review-card"><div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">${biz?.name||''}</div><div class="review-card-header"><span class="review-author">${r.author}</span><span class="review-date">${r.date}</span></div><div class="stars-row">${[1,2,3,4,5].map(i=>`<span style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div><div class="review-text">${r.text}</div><div class="review-actions"><button class="btn btn-primary btn-sm" onclick="quickGen(${r.id},${r.business_id})">Generate AI reply</button></div></div>`;}).join('')+`</div>`;
-}
-
-function renderReviewsPage(){
-  if(!businesses.length){document.getElementById('clientTabs').innerHTML='';document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No clients yet</div></div>`;return;}
-  if(!selectedBizId||!businesses.find(b=>b.id===selectedBizId))selectedBizId=businesses[0].id;
-  const fetchBtn=document.getElementById('fetchBtn');
-  if(googleAccessToken&&selectedLocation)fetchBtn.style.display='block';else fetchBtn.style.display='none';
-  renderClientTabs();renderReviews();
-}
-
-function renderClientTabs(){document.getElementById('clientTabs').innerHTML=businesses.map(b=>`<button class="client-tab ${b.id===selectedBizId?'active':''}" onclick="selectBiz(${b.id})">${b.name}</button>`).join('');}
-function selectBiz(id){selectedBizId=id;renderClientTabs();renderReviews();}
-
-function renderReviews(){
-  const biz=businesses.find(b=>b.id===selectedBizId);if(!biz)return;
-  document.getElementById('reviewsTitle').textContent=biz.name+' — Reviews';
-  const revs=allReviews[biz.id]||[];
-  if(!revs.length){document.getElementById('reviewsList').innerHTML=`<div class="empty-state"><div class="empty-state-icon">⭐</div><div class="empty-state-title">No reviews yet</div><div style="font-size:13px;color:var(--text-muted);margin-top:8px">Connect Google Business to fetch live reviews</div></div>`;return;}
-  document.getElementById('reviewsList').innerHTML=`<div class="review-list">`+revs.map(r=>{
-    const isLoad=loadingIds.has(r.id),reply=replies[r.id]||r.ai_reply,isLive=r.google_review_id;
-    const actions=r.status==='responded'&&!reply?`<span class="already-responded">✓ Already responded</span>`:`<button class="btn btn-primary btn-sm" onclick="genReply(${r.id})" ${isLoad?'disabled':''}>${isLoad?'<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>':'Generate AI reply'}</button>${reply?`<button class="btn btn-sm" onclick="postReply(${r.id})" style="border-color:var(--primary);color:var(--primary)">${isLive?'Post to Google':'Mark responded'}</button>`:''}`;
-    const replyBox=reply?`<div class="reply-box"><div class="reply-box-header"><span class="reply-box-label">✨ AI generated reply</span><span style="font-size:11px;color:var(--primary-dark)">${biz.tone}</span></div><textarea class="reply-textarea" oninput="replies[${r.id}]=this.value">${reply}</textarea></div>`:'';
-    return`<div class="review-card"><div class="review-card-header"><span class="review-author">${r.author}${isLive?` <span class="live-badge"><span class="live-dot"></span>Live</span>`:''}</span><div class="review-meta-right"><span class="review-date">${r.date}</span><span class="badge badge-${r.status}">${r.status}</span></div></div><div class="stars-row">${[1,2,3,4,5].map(i=>`<span style="color:${i<=r.stars?'#f59e0b':'#e2e8f0'}">★</span>`).join('')}</div><div class="review-text">${r.text}</div><div class="review-actions">${actions}</div>${replyBox}</div>`;
-  }).join('')+`</div>`;
-}
-
-function getKey(){return document.getElementById('apiKeyInput').value.trim()||localStorage.getItem('rb_key')||'';}
-
-async function genReply(reviewId){
-  const key=getKey();if(!key){toast('Add your API key first','error');return;}
-  const biz=businesses.find(b=>b.id===selectedBizId),rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId);
-  loadingIds.add(reviewId);renderReviews();
-  try{
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,prompt:`You manage Google reviews for "${biz.name}", a ${biz.type}. Write a ${biz.tone} reply to this ${rev.stars}-star review from ${rev.author}. Review: "${rev.text}". Under 80 words. Sound human, address their specifics. No hashtags or emojis.`})});
-    const d=await res.json();if(d.error)throw new Error(JSON.stringify(d.error));
-    replies[reviewId]=d.content?.find(b=>b.type==='text')?.text||'';toast('Reply generated','success');
-  }catch(e){toast('Error: '+e.message,'error');}
-  loadingIds.delete(reviewId);renderReviews();
-}
-
-async function quickGen(reviewId,bizId){
-  selectedBizId=bizId;
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.nav-item')[1].classList.add('active');
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-reviews').classList.add('active');
-  document.getElementById('topbarTitle').textContent='Reviews';
-  renderReviewsPage();await genReply(reviewId);
-}
-
-async function postReply(reviewId){
-  const rev=(allReviews[selectedBizId]||[]).find(r=>r.id===reviewId),reply=replies[reviewId]||rev.ai_reply;
-  if(rev.google_review_id&&googleAccessToken&&selectedLocation){
-    try{
-      const res=await fetch('/api/post-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name,review_id:rev.google_review_id,reply_text:reply})});
-      const d=await res.json();
-      if(d.error){toast('Google error: '+JSON.stringify(d.error),'error');return;}
-      toast('Reply posted to Google! ✓','success');
-    }catch(e){toast('Error posting to Google','error');return;}
-  }
-  await sb.from('reviews').update({status:'responded',ai_reply:reply}).eq('id',reviewId);
-  rev.status='responded';rev.ai_reply=reply;
-  updateStats();renderReviews();renderDashboard();
-}
-
-async function autoRespondAll(){
-  if(!selectedBizId){if(businesses.length)selectedBizId=businesses[0].id;else{toast('No clients','error');return;}}
-  const pending=(allReviews[selectedBizId]||[]).filter(r=>r.status==='new');
-  if(!pending.length){toast('No pending reviews','error');return;}
-  for(const r of pending)await genReply(r.id);
-}
-
-async function connectGoogle(){
-  const btn=document.getElementById('connectGoogleBtn');
-  btn.disabled=true;btn.textContent='Connecting...';
-  try{const res=await fetch('/api/google-auth-url');const {url}=await res.json();window.location.href=url;}
-  catch(e){toast('Error connecting Google','error');btn.disabled=false;renderGooglePage();}
-}
-
-async function showLocationSelector(){
-  if(!googleAccounts.length){toast('No Google Business accounts found','error');renderGooglePage();return;}
-  const wrap=document.getElementById('locationSelectWrap');
-  wrap.classList.remove('hidden');
-  let locations=[];
-  for(const acc of googleAccounts){
-    try{
-      const res=await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${acc.name}/locations`,{headers:{'Authorization':`Bearer ${googleAccessToken}`}});
-      const d=await res.json();
-      if(d.locations)locations=[...locations,...d.locations.map(l=>({...l,accountName:acc.name}))];
-    }catch(e){}
-  }
-  if(!locations.length){wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found</div><p style="font-size:13px;color:#92400e">No Google Business locations were found on this account.</p></div>`;return;}
-  wrap.innerHTML=`<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>${locations.map((l,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1.5px solid transparent;transition:border-color 0.15s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='transparent'" onclick="selectLocation(${i})"><div><div style="font-size:13px;font-weight:600">${l.title||l.name}</div><div style="font-size:12px;color:var(--text-secondary)">${l.storefrontAddress?.addressLines?.[0]||''}</div></div></div>`).join('')}</div>`;
-  window._locations=locations;
-}
-
-function selectLocation(idx){
-  const loc=window._locations[idx];selectedLocation=loc;
-  localStorage.setItem('g_location',JSON.stringify(loc));
-  document.getElementById('locationSelectWrap').classList.add('hidden');
-  toast('Location selected: '+(loc.title||loc.name),'success');renderGooglePage();
-}
-
-function renderGooglePage(){
-  const btn=document.getElementById('connectGoogleBtn'),autoCard=document.getElementById('autoReplyCard');
-  const gIcon=`<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`;
-  if(googleAccessToken&&selectedLocation){
-    btn.className='btn btn-google connected';
-    btn.innerHTML=gIcon+'✓ Connected: '+(selectedLocation.title||selectedLocation.name);
-    btn.onclick=disconnectGoogle;btn.disabled=false;
-    autoCard.style.display='block';
-    const connLoc=document.getElementById('connectedLocations');
-    connLoc.classList.remove('hidden');
-    connLoc.innerHTML=`<div style="background:var(--primary-light);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:16px 20px"><div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">✓ Connected to Google Business</div><div style="font-size:12px;color:var(--primary-dark);margin-bottom:12px">${selectedLocation.title||selectedLocation.name}</div><button class="btn btn-sm" style="border-color:var(--primary);color:var(--primary)" onclick="fetchLiveReviews()">🔄 Fetch latest reviews now</button></div>`;
-  }else{
-    btn.className='btn btn-google';btn.onclick=connectGoogle;btn.disabled=false;
-    btn.innerHTML=gIcon+'Connect Google Business';
-    autoCard.style.display='none';
-  }
-}
-
-function disconnectGoogle(){
-  if(!confirm('Disconnect Google Business?'))return;
-  googleAccessToken=null;googleRefreshToken=null;googleAccounts=[];selectedLocation=null;
-  localStorage.removeItem('g_access');localStorage.removeItem('g_refresh');localStorage.removeItem('g_accounts');localStorage.removeItem('g_location');
-  renderGooglePage();toast('Disconnected from Google','success');
-}
-
-async function fetchLiveReviews(){
-  if(!googleAccessToken||!selectedLocation){toast('Connect Google Business first','error');return;}
-  if(!selectedBizId&&businesses.length)selectedBizId=businesses[0].id;
-  if(!selectedBizId){toast('Add a client first','error');return;}
-  toast('Fetching live reviews...','success');
-  try{
-    const res=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleAccessToken,location_name:selectedLocation.name})});
-    const d=await res.json();
-    if(d.error){toast('Error: '+JSON.stringify(d.error),'error');return;}
-    const googleReviews=d.reviews||[];let newCount=0;
-    for(const gr of googleReviews){
-      const existing=allReviews[selectedBizId]?.find(r=>r.google_review_id===gr.reviewId);
-      if(!existing){
-        const stars=gr.starRating==='FIVE'?5:gr.starRating==='FOUR'?4:gr.starRating==='THREE'?3:gr.starRating==='TWO'?2:1;
-        const newRev={business_id:selectedBizId,author:gr.reviewer?.displayName||'Anonymous',stars,date:new Date(gr.createTime).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),text:gr.comment||'(No comment)',status:gr.reviewReply?'responded':'new',google_review_id:gr.reviewId,ai_reply:gr.reviewReply?.comment||null};
-        const {data}=await sb.from('reviews').insert(newRev).select().single();
-        if(data){allReviews[selectedBizId]=[data,...(allReviews[selectedBizId]||[])];newCount++;}
-      }
-    }
-    updateStats();renderReviews();
-    toast(newCount>0?`${newCount} new reviews imported!`:'Reviews up to date','success');
-  }catch(e){toast('Error fetching reviews','error');}
-}
-
-function toggleAutoReply(){
-  const on=document.getElementById('autoReplyToggle').checked;
-  const slider=document.getElementById('toggleSlider');
-  slider.style.background=on?'var(--primary)':'#cbd5e1';
-  slider.querySelector('span').style.transform=on?'translateX(20px)':'translateX(0)';
-  toast(on?'Auto-reply enabled':'Auto-reply disabled','success');
-}
-
-async function renderClientsPage(){
-  const {data:users}=await sb.from('profiles').select('*');
-  const sel=document.getElementById('newBizOwner');
-  sel.innerHTML=`<option value="">— Admin managed —</option>`+(users||[]).map(u=>`<option value="${u.id}">${u.email} (${u.role})</option>`).join('');
-  const table=document.getElementById('clientsTable');
-  if(!businesses.length){table.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🏢</div><div class="empty-state-title">No clients yet</div></div>`;return;}
-  table.innerHTML=`<table class="clients-table"><thead><tr><th>Business</th><th>Type</th><th>Tone</th><th>Reviews</th><th></th></tr></thead><tbody>`+businesses.map(b=>`<tr><td><strong>${b.name}</strong></td><td style="color:var(--text-secondary)">${b.type}</td><td style="color:var(--text-secondary)">${b.tone}</td><td>${(allReviews[b.id]||[]).length}</td><td><button class="btn btn-danger btn-sm" onclick="removeClient(${b.id})">Remove</button></td></tr>`).join('')+`</tbody></table>`;
-}
-
-async function addClient(){
-  const name=document.getElementById('newBizName').value.trim(),type=document.getElementById('newBizType').value.trim(),tone=document.getElementById('newBizTone').value,owner=document.getElementById('newBizOwner').value||null;
-  if(!name||!type){toast('Fill in name and type','error');return;}
-  const {data,error}=await sb.from('businesses').insert({name,type,tone,owner_id:owner}).select().single();
-  if(error){toast('Error: '+error.message,'error');return;}
-  businesses.push(data);allReviews[data.id]=[];
-  document.getElementById('newBizName').value='';document.getElementById('newBizType').value='';
-  toast(name+' added!','success');updateStats();renderClientsPage();
-}
-
-async function removeClient(id){
-  if(!confirm('Remove this client?'))return;
-  await sb.from('businesses').delete().eq('id',id);
-  businesses=businesses.filter(b=>b.id!==id);delete allReviews[id];
-  if(selectedBizId===id)selectedBizId=null;
-  toast('Client removed','success');updateStats();renderClientsPage();
-}
-
-async function renderUsersPage(){
-  const {data:users}=await sb.from('profiles').select('*');
-  const table=document.getElementById('usersTable');
-  if(!users?.length){table.innerHTML=`<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No users yet</div></div>`;return;}
-  table.innerHTML=`<table class="clients-table"><thead><tr><th>Email</th><th>Role</th><th></th></tr></thead><tbody>`+users.map(u=>`<tr><td>${u.email}</td><td><span class="role-badge role-${u.role}">${u.role}</span></td><td>${u.id!==currentUser?.id?`<button class="btn btn-sm" onclick="toggleRole('${u.id}','${u.role}')">${u.role==='admin'?'Make client':'Make admin'}</button>`:'<span style="color:var(--text-muted);font-size:12px">You</span>'}</td></tr>`).join('')+`</tbody></table>`;
-}
-
-async function toggleRole(id,current){
-  const newRole=current==='admin'?'client':'admin';
-  await sb.from('profiles').update({role:newRole}).eq('id',id);
-  toast('Role updated','success');renderUsersPage();
-}
-
-function onApiKey(){
-  const k=getKey(),bar=document.getElementById('apiKeyBar'),badge=document.getElementById('apiConnected');
-  if(k.startsWith('sk-ant')){badge.style.display='block';bar.classList.add('connected');localStorage.setItem('rb_key',k);}
-  else{badge.style.display='none';bar.classList.remove('connected');}
-}
-
-function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;t.style.display='block';setTimeout(()=>{t.style.display='none';},3000);}
+  localStorage.setItem('g_access', {json.dumps(access_token)});
+  localStorage.setItem('g_refresh', {json.dumps(refresh_token)});
+  localStorage.setItem('g_accounts', {json.dumps(accounts)});
+  localStorage.setItem('g_just_connected', 'true');
+  window.location.href = '/';
 </script>
-</body>
-</html>
+<p>Connecting... please wait.</p>
+</body></html>"""
+    return html
+
+@app.route('/api/generate', methods=['POST'])
+def generate():
+    data = request.json
+    api_key = data.get('apiKey', '').strip()
+    prompt = data.get('prompt', '').strip()
+    if not api_key:
+        return jsonify({'error': 'Missing API key'}), 400
+    if not prompt:
+        return jsonify({'error': 'Missing prompt'}), 400
+    response = requests.post(
+        'https://api.anthropic.com/v1/messages',
+        headers={
+            'x-api-key': api_key,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'model': 'claude-opus-4-5',
+            'max_tokens': 1000,
+            'messages': [{'role': 'user', 'content': prompt}]
+        }
+    )
+    return jsonify(response.json()), response.status_code
+
+@app.route('/api/reviews', methods=['POST'])
+def fetch_reviews():
+    data = request.json
+    access_token = data.get('access_token')
+    location_name = data.get('location_name')
+    if not access_token or not location_name:
+        return jsonify({'error': 'Missing params'}), 400
+    response = requests.get(
+        f'https://mybusiness.googleapis.com/v4/{location_name}/reviews',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    return jsonify(response.json()), response.status_code
+
+@app.route('/api/post-reply', methods=['POST'])
+def post_reply():
+    data = request.json
+    access_token = data.get('access_token')
+    location_name = data.get('location_name')
+    review_id = data.get('review_id')
+    reply_text = data.get('reply_text')
+    if not all([access_token, location_name, review_id, reply_text]):
+        return jsonify({'error': 'Missing params'}), 400
+    response = requests.put(
+        f'https://mybusiness.googleapis.com/v4/{location_name}/reviews/{review_id}/reply',
+        headers={
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        },
+        json={'comment': reply_text}
+    )
+    return jsonify(response.json()), response.status_code
+
+@app.route('/api/refresh-token', methods=['POST'])
+def refresh_token():
+    data = request.json
+    refresh_tok = data.get('refresh_token')
+    if not refresh_tok:
+        return jsonify({'error': 'Missing refresh_token'}), 400
+    response = requests.post('https://oauth2.googleapis.com/token', data={
+        'refresh_token': refresh_tok,
+        'client_id': GOOGLE_CLIENT_ID,
+        'client_secret': GOOGLE_CLIENT_SECRET,
+        'grant_type': 'refresh_token'
+    })
+    return jsonify(response.json()), response.status_code
+
+@app.route('/api/google-auth-url', methods=['GET'])
+def google_auth_url():
+    state = request.args.get('state', '')
+    url = (
+        'https://accounts.google.com/o/oauth2/v2/auth'
+        f'?client_id={GOOGLE_CLIENT_ID}'
+        f'&redirect_uri={REDIRECT_URI}'
+        '&response_type=code'
+        '&scope=https://www.googleapis.com/auth/business.manage'
+        '&access_type=offline'
+        '&prompt=consent'
+        f'&state={state}'
+    )
+    return jsonify({'url': url})
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    print(f"\n  ReviewBot running on port {port}\n")
+    app.run(debug=False, host='0.0.0.0', port=port)
