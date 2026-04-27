@@ -1,155 +1,253 @@
-from flask import Flask, request, jsonify, send_from_directory, redirect
-from flask_cors import CORS
-import requests
 import os
 import json
-import urllib.parse
+import httpx
+from flask import Flask, request, jsonify, send_from_directory
+from anthropic import Anthropic
 
 app = Flask(__name__, static_folder='static')
-CORS(app)
+client = Anthropic()
 
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+FROM_EMAIL = 'reviews@automatedreviewbot.co.uk'
 APP_URL = os.environ.get('APP_URL', 'https://automatedreviewbot.co.uk')
-ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY')
-REDIRECT_URI = f"{APP_URL}/oauth/callback"
 
+# ─── Static files ───────────────────────────────────────────────
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
 
-@app.route('/oauth/callback')
-def oauth_callback():
-    code = request.args.get('code')
-    if not code:
-        return redirect('/?error=no_code')
-    token_response = requests.post('https://oauth2.googleapis.com/token', data={
-        'code': code,
-        'client_id': GOOGLE_CLIENT_ID,
-        'client_secret': GOOGLE_CLIENT_SECRET,
-        'redirect_uri': REDIRECT_URI,
-        'grant_type': 'authorization_code'
-    })
-    tokens = token_response.json()
-    if 'error' in tokens:
-        return redirect(f'/?error={tokens["error"]}')
-    access_token = tokens.get('access_token', '')
-    refresh_token = tokens.get('refresh_token', '')
-    accounts_response = requests.get(
-        'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-    accounts = accounts_response.json().get('accounts', [])
-    accounts_json = urllib.parse.quote(json.dumps(accounts))
-    access_enc = urllib.parse.quote(access_token)
-    refresh_enc = urllib.parse.quote(refresh_token)
-    html = f"""<!DOCTYPE html>
-<html><head><title>Connecting...</title></head><body>
-<p>Connecting to Google Business, please wait...</p>
-<script>
-  try {{
-    localStorage.setItem('g_access', decodeURIComponent('{access_enc}'));
-    localStorage.setItem('g_refresh', decodeURIComponent('{refresh_enc}'));
-    localStorage.setItem('g_accounts', decodeURIComponent('{accounts_json}'));
-    localStorage.setItem('g_just_connected', 'true');
-    window.location.href = '/';
-  }} catch(e) {{
-    document.body.innerHTML = 'Error: ' + e.message;
-  }}
-</script>
-</body></html>"""
-    return html
+@app.route('/<path:path>')
+def static_files(path):
+    try:
+        return send_from_directory('static', path)
+    except:
+        return send_from_directory('static', 'index.html')
 
+# ─── AI Reply Generation ─────────────────────────────────────────
 @app.route('/api/generate', methods=['POST'])
 def generate():
-    data = request.json
-    prompt = data.get('prompt', '').strip()
-    if not prompt:
-        return jsonify({'error': 'Missing prompt'}), 400
-    api_key = ANTHROPIC_API_KEY or data.get('apiKey', '').strip()
-    if not api_key:
-        return jsonify({'error': 'No API key configured'}), 400
-    response = requests.post(
-        'https://api.anthropic.com/v1/messages',
-        headers={
-            'x-api-key': api_key,
-            'anthropic-version': '2023-06-01',
-            'Content-Type': 'application/json'
-        },
-        json={
-            'model': 'claude-opus-4-5',
-            'max_tokens': 1000,
-            'messages': [{'role': 'user', 'content': prompt}]
-        }
-    )
-    return jsonify(response.json()), response.status_code
+    try:
+        data = request.get_json()
+        prompt = data.get('prompt', '')
+        api_key = data.get('apiKey', '')
+        if not prompt:
+            return jsonify({'error': 'No prompt provided'}), 400
+        if api_key:
+            c = Anthropic(api_key=api_key)
+        else:
+            c = client
+        message = c.messages.create(
+            model='claude-opus-4-5',
+            max_tokens=300,
+            messages=[{'role': 'user', 'content': prompt}]
+        )
+        return jsonify({'content': [{'type': 'text', 'text': message.content[0].text}]})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/api/reviews', methods=['POST'])
-def fetch_reviews():
-    data = request.json
-    access_token = data.get('access_token')
-    location_name = data.get('location_name')
-    if not access_token or not location_name:
-        return jsonify({'error': 'Missing params'}), 400
-    response = requests.get(
-        f'https://mybusiness.googleapis.com/v4/{location_name}/reviews',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-    return jsonify(response.json()), response.status_code
+# ─── Check server API key ────────────────────────────────────────
+@app.route('/api/has-server-key', methods=['GET'])
+def has_server_key():
+    key = os.environ.get('ANTHROPIC_API_KEY', '')
+    return jsonify({'has_key': bool(key)})
 
-@app.route('/api/post-reply', methods=['POST'])
-def post_reply():
-    data = request.json
-    access_token = data.get('access_token')
-    location_name = data.get('location_name')
-    review_id = data.get('review_id')
-    reply_text = data.get('reply_text')
-    if not all([access_token, location_name, review_id, reply_text]):
-        return jsonify({'error': 'Missing params'}), 400
-    response = requests.put(
-        f'https://mybusiness.googleapis.com/v4/{location_name}/reviews/{review_id}/reply',
-        headers={
-            'Authorization': f'Bearer {access_token}',
-            'Content-Type': 'application/json'
-        },
-        json={'comment': reply_text}
-    )
-    return jsonify(response.json()), response.status_code
-
-@app.route('/api/refresh-token', methods=['POST'])
-def refresh_token():
-    data = request.json
-    refresh_tok = data.get('refresh_token')
-    if not refresh_tok:
-        return jsonify({'error': 'Missing refresh_token'}), 400
-    response = requests.post('https://oauth2.googleapis.com/token', data={
-        'refresh_token': refresh_tok,
-        'client_id': GOOGLE_CLIENT_ID,
-        'client_secret': GOOGLE_CLIENT_SECRET,
-        'grant_type': 'refresh_token'
-    })
-    return jsonify(response.json()), response.status_code
-
+# ─── Google OAuth URL ────────────────────────────────────────────
 @app.route('/api/google-auth-url', methods=['GET'])
 def google_auth_url():
-    state = request.args.get('state', '')
+    client_id = os.environ.get('GOOGLE_CLIENT_ID', '')
+    redirect_uri = f"{APP_URL}/oauth/callback"
+    scopes = [
+        'https://www.googleapis.com/auth/business.manage',
+        'https://www.googleapis.com/auth/userinfo.email'
+    ]
+    scope_str = ' '.join(scopes)
     url = (
-        'https://accounts.google.com/o/oauth2/v2/auth'
-        f'?client_id={GOOGLE_CLIENT_ID}'
-        f'&redirect_uri={REDIRECT_URI}'
-        '&response_type=code'
-        '&scope=https://www.googleapis.com/auth/business.manage'
-        '&access_type=offline'
-        '&prompt=consent'
-        f'&state={state}'
+        f"https://accounts.google.com/o/oauth2/v2/auth"
+        f"?client_id={client_id}"
+        f"&redirect_uri={redirect_uri}"
+        f"&response_type=code"
+        f"&scope={scope_str}"
+        f"&access_type=offline"
+        f"&prompt=consent"
     )
     return jsonify({'url': url})
 
-@app.route('/api/has-server-key', methods=['GET'])
-def has_server_key():
-    return jsonify({'has_key': bool(ANTHROPIC_API_KEY)})
+# ─── OAuth Callback ──────────────────────────────────────────────
+@app.route('/oauth/callback')
+def oauth_callback():
+    code = request.args.get('code', '')
+    if not code:
+        return "No code received", 400
+    client_id = os.environ.get('GOOGLE_CLIENT_ID', '')
+    client_secret = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+    redirect_uri = f"{APP_URL}/oauth/callback"
+    try:
+        resp = httpx.post('https://oauth2.googleapis.com/token', data={
+            'code': code,
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+            'grant_type': 'authorization_code'
+        })
+        tokens = resp.json()
+        access_token = tokens.get('access_token', '')
+        refresh_token = tokens.get('refresh_token', '')
+        accounts_resp = httpx.get(
+            'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+        accounts = accounts_resp.json().get('accounts', [])
+        accounts_json = json.dumps(accounts).replace('"', '&quot;')
+        return f"""
+        <html><body>
+        <script>
+        localStorage.setItem('g_access', '{access_token}');
+        localStorage.setItem('g_refresh', '{refresh_token}');
+        localStorage.setItem('g_accounts', "{accounts_json}");
+        localStorage.setItem('g_just_connected', 'true');
+        window.location.href = '/';
+        </script>
+        <p>Connected! Redirecting...</p>
+        </body></html>
+        """
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+
+# ─── Fetch Google Reviews ────────────────────────────────────────
+@app.route('/api/reviews', methods=['POST'])
+def fetch_reviews():
+    try:
+        data = request.get_json()
+        access_token = data.get('access_token', '')
+        location_name = data.get('location_name', '')
+        if not access_token or not location_name:
+            return jsonify({'error': 'Missing access_token or location_name'}), 400
+        resp = httpx.get(
+            f'https://mybusiness.googleapis.com/v4/{location_name}/reviews',
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ─── Post Reply to Google ────────────────────────────────────────
+@app.route('/api/post-reply', methods=['POST'])
+def post_reply():
+    try:
+        data = request.get_json()
+        access_token = data.get('access_token', '')
+        location_name = data.get('location_name', '')
+        review_id = data.get('review_id', '')
+        reply_text = data.get('reply_text', '')
+        resp = httpx.put(
+            f'https://mybusiness.googleapis.com/v4/{location_name}/reviews/{review_id}/reply',
+            headers={
+                'Authorization': f'Bearer {access_token}',
+                'Content-Type': 'application/json'
+            },
+            json={'comment': reply_text}
+        )
+        return jsonify(resp.json())
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ─── Send Review Request Email ───────────────────────────────────
+@app.route('/api/send-review-email', methods=['POST'])
+def send_review_email():
+    try:
+        data = request.get_json()
+        customer_name = data.get('customer_name', '').strip()
+        customer_email = data.get('customer_email', '').strip()
+        business_name = data.get('business_name', '').strip()
+        review_link = data.get('review_link', '').strip()
+        business_id = data.get('business_id', '')
+
+        if not customer_email or not business_name:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        if not RESEND_API_KEY:
+            return jsonify({'error': 'RESEND_API_KEY not configured in Railway'}), 500
+
+        if not review_link:
+            review_link = 'https://www.google.com/search?q=' + business_name.replace(' ', '+') + '+reviews'
+
+        unsubscribe_url = f"{APP_URL}/unsubscribe?email={customer_email}&biz={business_id}"
+
+        first_name = customer_name.split()[0] if customer_name else 'there'
+
+        html_body = f"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Helvetica Neue',Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 20px">
+<tr><td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+  <tr><td style="background:linear-gradient(135deg,#16a34a,#15803d);padding:36px 40px;text-align:center">
+    <div style="font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px">{business_name}</div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:6px">Thank you for choosing us</div>
+  </td></tr>
+  <tr><td style="padding:40px">
+    <p style="font-size:16px;font-weight:600;color:#0f172a;margin:0 0 12px">Hi {first_name}! 👋</p>
+    <p style="font-size:14px;color:#475569;line-height:1.7;margin:0 0 20px">We really hope you enjoyed your experience with us. We work hard to provide the best possible service, and hearing from customers like you means the world to us.</p>
+    <p style="font-size:14px;color:#475569;line-height:1.7;margin:0 0 32px">Would you mind taking 60 seconds to leave us a Google review? It helps other local people find us and tells us how we're doing.</p>
+    <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+      <a href="{review_link}" style="display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:white;text-decoration:none;font-size:15px;font-weight:700;padding:16px 40px;border-radius:10px;letter-spacing:0.2px">⭐ Leave a Google Review</a>
+    </td></tr></table>
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:24px 0 0;line-height:1.6">Takes less than a minute · No account needed</p>
+  </td></tr>
+  <tr><td style="padding:20px 40px;border-top:1px solid #e2e8f0;background:#f8fafc">
+    <p style="font-size:11px;color:#94a3b8;text-align:center;margin:0;line-height:1.8">
+      You're receiving this because you recently used {business_name}.<br>
+      <a href="{unsubscribe_url}" style="color:#94a3b8">Unsubscribe</a>
+    </p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>
+"""
+
+        resp = httpx.post(
+            'https://api.resend.com/emails',
+            headers={
+                'Authorization': f'Bearer {RESEND_API_KEY}',
+                'Content-Type': 'application/json'
+            },
+            json={
+                'from': f'{business_name} Reviews <{FROM_EMAIL}>',
+                'to': [customer_email],
+                'subject': f'How was your experience with {business_name}?',
+                'html': html_body
+            }
+        )
+        result = resp.json()
+        if resp.status_code == 200 or resp.status_code == 201:
+            return jsonify({'success': True, 'id': result.get('id', '')})
+        else:
+            return jsonify({'error': result}), 400
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ─── Unsubscribe ─────────────────────────────────────────────────
+@app.route('/unsubscribe')
+def unsubscribe():
+    email = request.args.get('email', '')
+    return f"""
+    <html>
+    <head><title>Unsubscribed</title>
+    <style>body{{font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f1f5f9}}
+    .card{{background:white;padding:48px;border-radius:16px;text-align:center;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,0.08)}}
+    h2{{color:#0f172a;margin:0 0 12px}}p{{color:#475569;line-height:1.6}}</style></head>
+    <body><div class="card">
+    <div style="font-size:48px;margin-bottom:16px">✅</div>
+    <h2>You've been unsubscribed</h2>
+    <p>{email} has been removed from review request emails.</p>
+    </div></body></html>
+    """
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    print(f"\n  ReviewBot running on port {port}\n")
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=False)
