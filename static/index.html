@@ -187,8 +187,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .client-welcome-sub{font-size:13px;opacity:0.85;line-height:1.5}
 .client-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
 .mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--text);font-size:18px}
-.email-log-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
-.email-log-row:last-child{border-bottom:none}
 .email-status-sent{color:var(--primary);font-weight:600;font-size:12px}
 .email-status-failed{color:var(--red);font-weight:600;font-size:12px}
 @media(max-width:1024px){.sidebar{transform:translateX(-100%);transition:transform 0.3s}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu-btn{display:flex}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
@@ -322,18 +320,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="section-card">
           <div class="section-card-title">📧 Send Review Request Email</div>
           <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:20px;font-size:13px;color:#1e40af;line-height:1.6">
-            <strong>How it works:</strong> Enter a customer's name and email after completing a job. They'll receive a branded email asking them to leave a Google review. All emails include an unsubscribe link.
+            <strong>How it works:</strong> Enter a customer's details after completing a job. They receive a branded email with a direct link to leave a Google review. Every email includes an unsubscribe link.
           </div>
           <div class="form-grid">
             <div class="form-group-inner"><label class="form-label">Select Business *</label>
-              <select class="form-select" id="emailBizSelect"><option value="">— Select a client —</option></select>
+              <select class="form-select" id="emailBizSelect" onchange="updateEmailPreview()"><option value="">— Select a client —</option></select>
             </div>
-            <div class="form-group-inner"><label class="form-label">Customer Name *</label><input class="form-input" id="emailCustomerName" placeholder="e.g. John Smith"></div>
+            <div class="form-group-inner"><label class="form-label">Customer Name *</label><input class="form-input" id="emailCustomerName" placeholder="e.g. John Smith" oninput="updateEmailPreview()"></div>
             <div class="form-group-inner full"><label class="form-label">Customer Email *</label><input class="form-input" id="emailCustomerEmail" type="email" placeholder="customer@example.com"></div>
           </div>
-          <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border)">
+          <div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border)">
             <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Email preview</div>
-            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6" id="emailPreview">Select a business to see the email preview.</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.7" id="emailPreview">Select a business to preview the email.</div>
           </div>
           <div class="form-actions">
             <button class="btn btn-email" id="sendEmailBtn" onclick="sendReviewEmail()">📧 Send Review Request</button>
@@ -420,7 +418,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="page" id="admin-page-settings">
         <div class="section-card">
           <div class="section-card-title">API Keys</div>
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Set your Anthropic API key. Best practice is to set both in Railway environment variables.</p>
           <div style="margin-bottom:16px">
             <label class="form-label" style="margin-bottom:8px;display:block">Anthropic API Key</label>
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
@@ -430,8 +427,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
             </div>
           </div>
           <div style="padding:14px;background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg)">
-            <div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">💡 Railway environment variables</div>
-            <div style="font-size:13px;color:var(--primary-dark);line-height:1.7">Set <code style="background:white;padding:2px 6px;border-radius:4px">ANTHROPIC_API_KEY</code> and <code style="background:white;padding:2px 6px;border-radius:4px">RESEND_API_KEY</code> in Railway for full functionality.</div>
+            <div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">💡 Set in Railway for best results</div>
+            <div style="font-size:13px;color:var(--primary-dark);line-height:1.7">Add <code style="background:white;padding:2px 6px;border-radius:4px">ANTHROPIC_API_KEY</code> and <code style="background:white;padding:2px 6px;border-radius:4px">RESEND_API_KEY</code> as Railway environment variables.</div>
           </div>
         </div>
         <div class="section-card">
@@ -537,8 +534,7 @@ var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 var currentUser=null,currentProfile=null,isAdmin=false;
 var businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
 var googleToken=null,googleRefresh=null,googleAccounts=[],selectedLocation=null;
-var activityLog=[],clientBiz=null,appInitialized=false;
-var emailLog=[];
+var activityLog=[],clientBiz=null,appInitialized=false,emailLog=[];
 try{activityLog=JSON.parse(localStorage.getItem('rb_activity')||'[]');}catch(e){activityLog=[];}
 try{emailLog=JSON.parse(localStorage.getItem('rb_emails')||'[]');}catch(e){emailLog=[];}
 (function(){if(localStorage.getItem('g_just_connected')==='true'){localStorage.removeItem('g_just_connected');localStorage.setItem('g_pending','true');}})();
@@ -644,8 +640,7 @@ async function initApp(){
   setLoadingStatus(isAdmin?'Loading admin dashboard...':'Loading your reviews...');
   if(isAdmin){
     showScreen('admin');
-    setText('adminName',name);
-    setText('adminAvatar',name.charAt(0).toUpperCase());
+    setText('adminName',name);setText('adminAvatar',name.charAt(0).toUpperCase());
     if(!appInitialized){
       document.querySelectorAll('#adminShell .nav-item').forEach(function(el){
         el.addEventListener('click',function(){adminNavClick(el);});
@@ -660,8 +655,7 @@ async function initApp(){
     handleOAuthReturn('admin');
   }else{
     showScreen('client');
-    setText('clientName',name);
-    setText('clientAvatar',name.charAt(0).toUpperCase());
+    setText('clientName',name);setText('clientAvatar',name.charAt(0).toUpperCase());
     setText('clientWelcomeMsg','Welcome back, '+name+'! 👋');
     if(!appInitialized){
       document.querySelectorAll('#clientShell .nav-item').forEach(function(el){
@@ -796,7 +790,7 @@ function adminViewAndGen(reviewId,bizId){selectedBizId=bizId;adminGoTo('reviews'
 function renderAdminReviewsPage(){
   if(!businesses.length){
     setHTML('adminClientTabs','');
-    setHTML('adminReviewsList','<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add a client first to manage their reviews.</div><button class="btn btn-primary" onclick="adminGoTo(\'clients\')">Go to Clients</button></div>');
+    setHTML('adminReviewsList','<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add a client first.</div><button class="btn btn-primary" onclick="adminGoTo(\'clients\')">Go to Clients</button></div>');
     return;
   }
   if(!selectedBizId||!businesses.find(function(b){return b.id===selectedBizId;}))selectedBizId=businesses[0].id;
@@ -852,12 +846,12 @@ async function callGenerate(reviewId,bizId){
   var revList=allReviews[bizId]||[];
   var rev=revList.find(function(r){return r.id===reviewId;});
   if(!rev)throw new Error('Review not found');
-  var body={prompt:'You manage Google reviews for "'+biz.name+'", a '+(biz.type||'business')+'. Write a '+(biz.tone||'professional')+' reply to this '+rev.stars+'-star review from '+(rev.author||'a customer')+'. Review: "'+(rev.text||'')+'". Keep it under 80 words. Sound human and genuine, address their specific points. No hashtags or emojis.'};
+  var body={prompt:'You manage Google reviews for "'+biz.name+'", a '+(biz.type||'business')+'. Write a '+(biz.tone||'professional')+' reply to this '+rev.stars+'-star review from '+(rev.author||'a customer')+'. Review: "'+(rev.text||'')+'". Keep it under 80 words. Sound human and genuine. No hashtags or emojis.'};
   var k=localStorage.getItem('rb_key')||($('apiKeyInput')?$('apiKeyInput').value.trim():'')||'';
   if(k)body.apiKey=k;
   var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   var d=await res.json();
-  if(d.error){var msg=typeof d.error==='string'?d.error:(d.error.message||JSON.stringify(d.error));throw new Error(msg);}
+  if(d.error){throw new Error(typeof d.error==='string'?d.error:(d.error.message||JSON.stringify(d.error)));}
   var tb=d.content&&d.content.find&&d.content.find(function(x){return x.type==='text';});
   return tb?tb.text:'';
 }
@@ -866,8 +860,11 @@ async function adminGenReply(reviewId){
   if(!selectedBizId){toast('No business selected','error');return;}
   var biz=businesses.find(function(b){return b.id===selectedBizId;});
   loadingIds.add(reviewId);renderAdminReviews();
-  try{var t=await callGenerate(reviewId,selectedBizId);if(!t){toast('Empty reply','error');}else{replies[reviewId]=t;logActivity('✍️','Reply generated',biz?biz.name:'');toast('Reply generated!','success');}}
-  catch(e){toast('Error: '+e.message,'error');}
+  try{
+    var t=await callGenerate(reviewId,selectedBizId);
+    if(!t){toast('Empty reply received','error');}
+    else{replies[reviewId]=t;logActivity('✍️','Reply generated',biz?biz.name:'');toast('Reply generated!','success');}
+  }catch(e){toast('Error: '+e.message,'error');}
   loadingIds.delete(reviewId);renderAdminReviews();
 }
 
@@ -882,7 +879,8 @@ async function adminPostReply(reviewId){
       var res=await fetch('/api/post-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({access_token:googleToken,location_name:selectedLocation.name,review_id:rev.google_review_id,reply_text:reply})});
       var d=await res.json();
       if(d.error){toast('Google error: '+JSON.stringify(d.error),'error');return;}
-      toast('✅ Posted to Google!','success');logActivity('📤','Reply posted to Google',biz?biz.name:'');
+      toast('✅ Posted to Google!','success');
+      logActivity('📤','Reply posted to Google',biz?biz.name:'');
     }catch(e){toast('Error posting to Google','error');return;}
   }
   try{
@@ -910,20 +908,20 @@ async function autoRespondAll(){
     await adminGenReply(pending[i].id);
     if(replies[pending[i].id])await adminPostReply(pending[i].id);
   }
-  toast('All done! '+pending.length+' reviews replied.','success');
+  toast('All done!','success');
 }
 
 function renderAdminClientsPage(){
   var t=$('adminClientsTable');if(!t)return;
   if(!businesses.length){
-    t.innerHTML='<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client above to get started.</div></div>';
+    t.innerHTML='<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client above.</div></div>';
     return;
   }
   t.innerHTML='<table class="data-table"><thead><tr><th>Business</th><th>Type</th><th>Fee</th><th>Reviews</th><th>Avg ★</th><th>Response %</th><th></th></tr></thead><tbody>'+businesses.map(function(b){
     var revs=allReviews[b.id]||[];
     var avg=revs.length?(revs.reduce(function(s,r){return s+(r.stars||0);},0)/revs.length).toFixed(1):'—';
     var rr=revs.length?Math.round(revs.filter(function(r){return r.status==='responded';}).length/revs.length*100):0;
-    return '<tr><td><strong>'+escapeHtml(b.name)+'</strong>'+(b.notes?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.notes)+'</div>':'')+'</td><td style="color:var(--text-secondary)">'+escapeHtml(b.type||'')+'</td><td style="font-weight:600;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee+'/mo':'—')+'</td><td>'+revs.length+'</td><td style="color:var(--amber)">'+(avg!=='—'?'★ '+avg:'—')+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:'+rr+'%"></div></div><span style="font-size:11px;color:var(--text-muted)">'+rr+'%</span></div></td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-xs btn-primary" onclick="adminViewClient('+b.id+')">Reviews</button><button class="btn btn-xs btn-email" onclick="quickEmail('+b.id+')">📧 Email</button><button class="btn btn-xs btn-instant" onclick="adminQuickAutoReply('+b.id+')">⚡ Auto</button><button class="btn btn-xs btn-danger" onclick="removeClient('+b.id+')">Remove</button></div></td></tr>';
+    return '<tr><td><strong>'+escapeHtml(b.name)+'</strong>'+(b.notes?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.notes)+'</div>':'')+'</td><td style="color:var(--text-secondary)">'+escapeHtml(b.type||'')+'</td><td style="font-weight:600;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee+'/mo':'—')+'</td><td>'+revs.length+'</td><td style="color:var(--amber)">'+(avg!=='—'?'★ '+avg:'—')+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:'+rr+'%"></div></div><span style="font-size:11px;color:var(--text-muted)">'+rr+'%</span></div></td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-xs btn-primary" onclick="adminViewClient('+b.id+')">Reviews</button><button class="btn btn-xs btn-email" onclick="quickEmail('+b.id+')">📧</button><button class="btn btn-xs btn-instant" onclick="adminQuickAutoReply('+b.id+')">⚡</button><button class="btn btn-xs btn-danger" onclick="removeClient('+b.id+')">Remove</button></div></td></tr>';
   }).join('')+'</tbody></table>';
 }
 
@@ -946,11 +944,7 @@ async function addClient(){
   if(reviewLink)payload.review_link=reviewLink;
   try{
     var r=await sb.from('businesses').insert(payload).select().single();
-    if(r.error){
-      toast('Error: '+r.error.message,'error');
-      if(btn){btn.disabled=false;btn.innerHTML='➕ Add Client';}
-      return;
-    }
+    if(r.error){toast('Error: '+r.error.message,'error');if(btn){btn.disabled=false;btn.innerHTML='➕ Add Client';}return;}
     businesses.push(r.data);
     allReviews[r.data.id]=[];
     ['newBizName','newBizType','newBizFee','newBizNotes','newBizReviewLink'].forEach(function(id){var e=$(id);if(e)e.value='';});
@@ -958,9 +952,7 @@ async function addClient(){
     toast('✅ '+name+' added!','success');
     updateAdminStats();
     renderAdminClientsPage();
-  }catch(e){
-    toast('Error: '+e.message,'error');
-  }
+  }catch(e){toast('Error: '+e.message,'error');}
   if(btn){btn.disabled=false;btn.innerHTML='➕ Add Client';}
 }
 
@@ -974,15 +966,14 @@ async function adminQuickAutoReply(bizId){
     if(replies[pending[i].id])await adminPostReply(pending[i].id);
   }
   toast('Done!','success');
-  renderAdminClientsPage();
 }
 
 function quickEmail(bizId){
   adminGoTo('email');
   setTimeout(function(){
     var sel=$('emailBizSelect');
-    if(sel){sel.value=bizId;updateEmailPreview();}
-  },100);
+    if(sel){sel.value=String(bizId);updateEmailPreview();}
+  },150);
 }
 
 async function removeClient(id){
@@ -1011,7 +1002,8 @@ function renderBilling(){
 
 async function renderAdminUsersPage(){
   try{
-    var r=await sb.from('profiles').select('*');var users=r.data||[];
+    var r=await sb.from('profiles').select('*');
+    var users=r.data||[];
     var t=$('adminUsersTable');if(!t)return;
     if(!users.length){t.innerHTML='<div class="empty-state"><span class="empty-state-icon">👥</span><div class="empty-state-title">No users</div></div>';return;}
     t.innerHTML='<table class="data-table"><thead><tr><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>'+users.map(function(u){
@@ -1027,8 +1019,8 @@ async function toggleRole(id,current){
 
 function renderSettings(){var k=localStorage.getItem('rb_key');if(k&&$('settingsApiKey'))$('settingsApiKey').value=k;updateAdminStats();}
 function saveApiKey(){
-  var el=$('settingsApiKey');if(!el)return;var k=el.value.trim();
-  if(!k){toast('Enter a key first','error');return;}
+  var el=$('settingsApiKey');if(!el)return;
+  var k=el.value.trim();if(!k){toast('Enter a key first','error');return;}
   localStorage.setItem('rb_key',k);
   if($('apiKeyInput')){$('apiKeyInput').value=k;onApiKeyChange();}
   toast('API key saved!','success');
@@ -1045,9 +1037,11 @@ function onApiKeyChange(){
 function renderEmailPage(){
   var sel=$('emailBizSelect');
   if(sel){
-    sel.innerHTML='<option value="">— Select a client —</option>'+businesses.map(function(b){return '<option value="'+b.id+'">'+escapeHtml(b.name)+'</option>';}).join('');
-    sel.onchange=updateEmailPreview;
+    sel.innerHTML='<option value="">— Select a client —</option>'+businesses.map(function(b){
+      return '<option value="'+b.id+'">'+escapeHtml(b.name)+'</option>';
+    }).join('');
   }
+  updateEmailPreview();
   renderEmailLog();
 }
 
@@ -1057,16 +1051,24 @@ function updateEmailPreview(){
   if(!sel||!prev)return;
   var bizId=parseInt(sel.value);
   var biz=businesses.find(function(b){return b.id===bizId;});
-  if(!biz){prev.textContent='Select a business to see the email preview.';return;}
-  var name=$('emailCustomerName')?$('emailCustomerName').value.trim()||'[Customer Name]':'[Customer Name]';
-  var firstName=name.split(' ')[0];
+  if(!biz){prev.innerHTML='Select a business to preview the email.';return;}
+  var customerName=$('emailCustomerName')?$('emailCustomerName').value.trim()||'[Customer Name]':'[Customer Name]';
+  var firstName=customerName.split(' ')[0];
   var reviewLink=biz.review_link||'https://g.page/r/[your-review-link]';
-  prev.innerHTML='<strong>To:</strong> [customer@email.com]<br><strong>Subject:</strong> How was your experience with '+escapeHtml(biz.name)+'?<br><br>'+'<strong>Body:</strong><br>Hi '+escapeHtml(firstName)+' 👋<br><br>We really hope you enjoyed your experience with us at '+escapeHtml(biz.name)+'. Would you mind taking 60 seconds to leave us a Google review?<br><br>👉 <a href="'+escapeHtml(reviewLink)+'" target="_blank">Leave a Google Review</a><br><br>Takes less than a minute and means the world to us!<br><br><em style="color:var(--text-muted);font-size:12px">Includes unsubscribe link in footer</em>';
+  prev.innerHTML=(
+    '<strong>Subject:</strong> How was your experience with '+escapeHtml(biz.name)+'?<br><br>'+
+    'Hi '+escapeHtml(firstName)+' 👋<br><br>'+
+    'We really hope you enjoyed your experience with <strong>'+escapeHtml(biz.name)+'</strong>. '+
+    'Would you mind taking 60 seconds to leave us a Google review?<br><br>'+
+    '<a href="'+escapeHtml(reviewLink)+'" target="_blank" style="background:#16a34a;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin:8px 0">⭐ Leave a Google Review</a><br><br>'+
+    '<em style="color:var(--text-muted);font-size:12px">Includes unsubscribe link · Takes less than a minute</em>'
+  );
 }
 
 async function sendReviewEmail(){
   var btn=$('sendEmailBtn');
-  var bizId=parseInt($('emailBizSelect')?$('emailBizSelect').value:'');
+  var sel=$('emailBizSelect');
+  var bizId=sel?parseInt(sel.value):0;
   var customerName=$('emailCustomerName')?$('emailCustomerName').value.trim():'';
   var customerEmail=$('emailCustomerEmail')?$('emailCustomerEmail').value.trim():'';
   if(!bizId||!customerName||!customerEmail){toast('Please fill in all fields','error');return;}
@@ -1088,12 +1090,11 @@ async function sendReviewEmail(){
     });
     var d=await res.json();
     if(d.error){
-      var errMsg=typeof d.error==='string'?d.error:JSON.stringify(d.error);
-      toast('Error: '+errMsg,'error');
+      toast('Error: '+(typeof d.error==='string'?d.error:JSON.stringify(d.error)),'error');
       if(btn){btn.disabled=false;btn.innerHTML='📧 Send Review Request';}
       return;
     }
-    var entry={id:Date.now(),customer_name:customerName,customer_email:customerEmail,business_name:biz.name,business_id:bizId,sent_at:Date.now(),status:'sent'};
+    var entry={customer_name:customerName,customer_email:customerEmail,business_name:biz.name,sent_at:Date.now(),status:'sent'};
     emailLog.unshift(entry);
     if(emailLog.length>200)emailLog.length=200;
     try{localStorage.setItem('rb_emails',JSON.stringify(emailLog));}catch(e){}
@@ -1102,9 +1103,7 @@ async function sendReviewEmail(){
     if($('emailCustomerName'))$('emailCustomerName').value='';
     if($('emailCustomerEmail'))$('emailCustomerEmail').value='';
     renderEmailLog();
-  }catch(e){
-    toast('Error: '+e.message,'error');
-  }
+  }catch(e){toast('Error: '+e.message,'error');}
   if(btn){btn.disabled=false;btn.innerHTML='📧 Send Review Request';}
 }
 
@@ -1186,8 +1185,11 @@ async function clientGenReply(reviewId){
   if(!clientBiz){toast('No business','error');return;}
   loadingIds.add(reviewId);renderClientReviews();
   if($('client-page-dashboard').classList.contains('active'))renderClientDashboard();
-  try{var t=await callGenerate(reviewId,clientBiz.id);if(!t){toast('Empty reply','error');}else{replies[reviewId]=t;logActivity('✍️','Reply generated',clientBiz.name);toast('Reply generated!','success');}}
-  catch(e){toast('Error: '+e.message,'error');}
+  try{
+    var t=await callGenerate(reviewId,clientBiz.id);
+    if(!t){toast('Empty reply','error');}
+    else{replies[reviewId]=t;logActivity('✍️','Reply generated',clientBiz.name);toast('Reply generated!','success');}
+  }catch(e){toast('Error: '+e.message,'error');}
   loadingIds.delete(reviewId);renderClientReviews();
   if($('client-page-dashboard').classList.contains('active'))renderClientDashboard();
 }
@@ -1265,7 +1267,10 @@ async function showLocationSelector(mode){
   }
   if(!locations.length){wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found yet</div><p style="font-size:13px;color:#78350f;line-height:1.6;margin-top:6px">Google Business Profile API approval still pending. Once approved locations appear here automatically.</p></div>';return;}
   window._locations=locations;
-  wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>'+locations.map(function(l,i){var addr=l.storefrontAddress&&l.storefrontAddress.addressLines?l.storefrontAddress.addressLines[0]:'';return '<div class="location-item" onclick="selectLocation('+i+')"><div style="font-size:22px">🏢</div><div><div style="font-size:13px;font-weight:600">'+escapeHtml(l.title||l.name)+'</div><div style="font-size:12px;color:var(--text-secondary)">'+escapeHtml(addr)+'</div></div></div>';}).join('')+'</div>';
+  wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>'+locations.map(function(l,i){
+    var addr=l.storefrontAddress&&l.storefrontAddress.addressLines?l.storefrontAddress.addressLines[0]:'';
+    return '<div class="location-item" onclick="selectLocation('+i+')"><div style="font-size:22px">🏢</div><div><div style="font-size:13px;font-weight:600">'+escapeHtml(l.title||l.name)+'</div><div style="font-size:12px;color:var(--text-secondary)">'+escapeHtml(addr)+'</div></div></div>';
+  }).join('')+'</div>';
 }
 
 function selectLocation(idx){
