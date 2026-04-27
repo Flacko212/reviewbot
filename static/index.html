@@ -304,6 +304,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
               <option value="2">⭐⭐ 2 star</option>
               <option value="1">⭐ 1 star</option>
             </select>
+            <button class="btn btn-sm btn-instant" onclick="autoRespondAll()" id="adminAutoBtn">⚡ Auto-reply all pending</button>
             <button class="btn btn-sm" onclick="fetchLiveReviews()" id="adminFetchBtn" style="display:none">🔄 Sync Google</button>
           </div>
         </div>
@@ -326,9 +327,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <div id="adminConnectedInfo"></div>
         </div>
         <div class="section-card" id="adminAutoReplyCard" style="display:none">
-          <div class="section-card-title">Auto-reply</div>
+          <div class="section-card-title">Auto-reply Settings</div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0">
-            <div><div style="font-size:14px;font-weight:600">⚡ Auto-reply new reviews</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically post AI replies within minutes</div></div>
+            <div><div style="font-size:14px;font-weight:600">⚡ Auto-reply new reviews</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically post AI replies within minutes of a new review</div></div>
             <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer">
               <input type="checkbox" id="autoReplyToggle" style="opacity:0;width:0;height:0" onchange="toggleAutoReply()">
               <span id="toggleSlider" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:26px;transition:0.3s"><span style="position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></span></span>
@@ -669,6 +670,7 @@ function clientNavClick(el){
   else if(page==='dashboard')renderClientDashboard();
 }
 function clientGoTo(page){var el=document.querySelector('#clientShell .nav-item[data-page="'+page+'"]');if(el)clientNavClick(el);}
+
 async function loadAdminData(){
   try{
     var br=await sb.from('businesses').select('*').order('id',{ascending:true});
@@ -685,6 +687,7 @@ async function loadAdminData(){
     updateAdminStats();
   }catch(e){console.error('loadAdminData:',e);toast('Failed to load: '+e.message,'error');}
 }
+
 async function refreshAllData(){
   toast('Refreshing...','info');
   await loadAdminData();
@@ -696,6 +699,7 @@ async function refreshAllData(){
   else if(ap==='billing')renderBilling();
   toast('Refreshed!','success');
 }
+
 function updateAdminStats(){
   var all=[];for(var k in allReviews){if(allReviews[k])all.push.apply(all,allReviews[k]);}
   var pending=all.filter(function(r){return r.status==='new';}).length;
@@ -710,6 +714,7 @@ function updateAdminStats(){
   if($('bMRR')){setText('bMRR','£'+mrr);setText('bClients',businesses.filter(function(b){return parseFloat(b.monthly_fee)>0;}).length);setText('bARR','£'+(mrr*12));}
   if($('sysClients')){setText('sysClients',businesses.length);setText('sysReviews',all.length);var rr=all.length?Math.round(responded/all.length*100):0;setText('sysRR',rr+'%');setText('sysMRR','£'+mrr);}
 }
+
 function renderAdminDashboard(){
   updateAdminStats();
   var grid=$('adminClientGrid');if(!grid)return;
@@ -737,6 +742,7 @@ function renderAdminDashboard(){
   }
   renderActivityWidget('adminActivityDash',8);
 }
+
 function renderActivityWidget(id,limit){
   var el=$(id);if(!el)return;
   if(!activityLog.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No activity yet</div>';return;}
@@ -745,19 +751,28 @@ function renderActivityWidget(id,limit){
 function renderActivityFull(){renderActivityWidget('adminActivityFull',100);}
 function adminViewClient(bizId){selectedBizId=bizId;adminGoTo('reviews');}
 function adminViewAndGen(reviewId,bizId){selectedBizId=bizId;adminGoTo('reviews');}
+
 function renderAdminReviewsPage(){
-  if(!businesses.length){setHTML('adminClientTabs','');setHTML('adminReviewsList','<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add a client first to manage their reviews.</div><button class="btn btn-primary" onclick="adminGoTo(\'clients\')">Go to Clients</button></div>');return;}
+  if(!businesses.length){
+    setHTML('adminClientTabs','');
+    setHTML('adminReviewsList','<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add a client first to manage their reviews.</div><button class="btn btn-primary" onclick="adminGoTo(\'clients\')">Go to Clients</button></div>');
+    return;
+  }
   if(!selectedBizId||!businesses.find(function(b){return b.id===selectedBizId;}))selectedBizId=businesses[0].id;
   var fb=$('adminFetchBtn');if(fb)fb.style.display=(googleToken&&selectedLocation)?'flex':'none';
-  renderAdminClientTabs();renderAdminReviews();
+  renderAdminClientTabs();
+  renderAdminReviews();
 }
+
 function renderAdminClientTabs(){
   setHTML('adminClientTabs',businesses.map(function(b){
     var p=(allReviews[b.id]||[]).filter(function(r){return r.status==='new';}).length;
     return '<button class="client-tab '+(b.id===selectedBizId?'active':'')+'" onclick="selectAdminBiz('+b.id+')">'+escapeHtml(b.name)+(p>0?'<span class="client-tab-count">'+p+'</span>':'')+'</button>';
   }).join(''));
 }
+
 function selectAdminBiz(id){selectedBizId=id;renderAdminClientTabs();renderAdminReviews();}
+
 function renderAdminReviews(){
   var biz=businesses.find(function(b){return b.id===selectedBizId;});if(!biz)return;
   var fe=$('adminReviewFilter');var filter=fe?fe.value:'all';
@@ -773,6 +788,7 @@ function renderAdminReviews(){
   if(!revs.length){setHTML('adminReviewsList','<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-title">No reviews found</div></div>');return;}
   setHTML('adminReviewsList',buildReviewCards(revs,biz,'admin'));
 }
+
 function buildReviewCards(revs,biz,mode){
   return '<div class="reviews-wrap">'+revs.map(function(r){
     var isLoad=loadingIds.has(r.id);
@@ -789,6 +805,7 @@ function buildReviewCards(revs,biz,mode){
     return '<div class="review-card'+(r.stars<=2?' priority':'')+'"><div class="review-card-header"><div class="review-author-wrap"><div class="review-avatar">'+escapeHtml((r.author||'?').charAt(0))+'</div><div><div class="review-author">'+escapeHtml(r.author||'Anonymous')+(isLive?' <span class="live-badge"><span class="live-dot"></span>Live</span>':'')+'</div><div class="review-source">🗓 '+escapeHtml(r.date||'')+'</div></div></div><span class="badge badge-'+r.status+'">'+(r.status==='responded'?'✅ responded':'🔔 new')+'</span></div><div class="stars-row">'+[1,2,3,4,5].map(function(i){return '<span class="star" style="color:'+(i<=r.stars?'#f59e0b':'#e2e8f0')+'">★</span>';}).join('')+'</div><div class="review-text">'+escapeHtml(r.text||'')+'</div><div class="review-actions">'+actions+'</div>'+replyBox+'</div>';
   }).join('')+'</div>';
 }
+
 async function callGenerate(reviewId,bizId){
   var biz=businesses.find(function(b){return b.id===bizId;})||clientBiz;
   if(!biz)throw new Error('Business not found');
@@ -804,6 +821,7 @@ async function callGenerate(reviewId,bizId){
   var tb=d.content&&d.content.find&&d.content.find(function(x){return x.type==='text';});
   return tb?tb.text:'';
 }
+
 async function adminGenReply(reviewId){
   if(!selectedBizId){toast('No business selected','error');return;}
   var biz=businesses.find(function(b){return b.id===selectedBizId;});
@@ -812,6 +830,7 @@ async function adminGenReply(reviewId){
   catch(e){toast('Error: '+e.message,'error');}
   loadingIds.delete(reviewId);renderAdminReviews();
 }
+
 async function adminPostReply(reviewId){
   if(!selectedBizId){toast('No business selected','error');return;}
   var rev=(allReviews[selectedBizId]||[]).find(function(r){return r.id===reviewId;});
@@ -834,30 +853,40 @@ async function adminPostReply(reviewId){
     toast('Saved!','success');
   }catch(e){toast('Save failed: '+e.message,'error');}
 }
+
 async function adminInstantReply(reviewId,bizId){
   selectedBizId=bizId;
   await adminGenReply(reviewId);
   if(replies[reviewId])await adminPostReply(reviewId);
 }
+
 async function autoRespondAll(){
   if(!selectedBizId&&businesses.length)selectedBizId=businesses[0].id;
   if(!selectedBizId){toast('No clients to respond to','error');return;}
   var pending=(allReviews[selectedBizId]||[]).filter(function(r){return r.status==='new';});
-  if(!pending.length){toast('No pending reviews','error');return;}
-  toast('Processing '+pending.length+' reviews...','info');
-  for(var i=0;i<pending.length;i++)await adminGenReply(pending[i].id);
-  toast('All done!','success');
+  if(!pending.length){toast('No pending reviews for this client','error');return;}
+  toast('Auto-replying to '+pending.length+' reviews...','info');
+  for(var i=0;i<pending.length;i++){
+    await adminGenReply(pending[i].id);
+    if(replies[pending[i].id])await adminPostReply(pending[i].id);
+  }
+  toast('All done! '+pending.length+' reviews replied.','success');
 }
-async function renderAdminClientsPage(){
+
+function renderAdminClientsPage(){
   var t=$('adminClientsTable');if(!t)return;
-  if(!businesses.length){t.innerHTML='<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client above to get started.</div></div>';return;}
+  if(!businesses.length){
+    t.innerHTML='<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No clients yet</div><div class="empty-state-text">Add your first client above to get started.</div></div>';
+    return;
+  }
   t.innerHTML='<table class="data-table"><thead><tr><th>Business</th><th>Type</th><th>Fee</th><th>Reviews</th><th>Avg ★</th><th>Response %</th><th></th></tr></thead><tbody>'+businesses.map(function(b){
     var revs=allReviews[b.id]||[];
     var avg=revs.length?(revs.reduce(function(s,r){return s+(r.stars||0);},0)/revs.length).toFixed(1):'—';
     var rr=revs.length?Math.round(revs.filter(function(r){return r.status==='responded';}).length/revs.length*100):0;
-    return '<tr><td><strong>'+escapeHtml(b.name)+'</strong>'+(b.notes?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.notes)+'</div>':'')+'</td><td style="color:var(--text-secondary)">'+escapeHtml(b.type||'')+'</td><td style="font-weight:600;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee+'/mo':'—')+'</td><td>'+revs.length+'</td><td style="color:var(--amber)">'+(avg!=='—'?'★ '+avg:'—')+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:'+rr+'%"></div></div><span style="font-size:11px;color:var(--text-muted)">'+rr+'%</span></div></td><td><div style="display:flex;gap:6px"><button class="btn btn-xs" onclick="adminViewClient('+b.id+')">View</button><button class="btn btn-xs btn-danger" onclick="removeClient('+b.id+')">Remove</button></div></td></tr>';
+    return '<tr><td><strong>'+escapeHtml(b.name)+'</strong>'+(b.notes?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.notes)+'</div>':'')+'</td><td style="color:var(--text-secondary)">'+escapeHtml(b.type||'')+'</td><td style="font-weight:600;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee+'/mo':'—')+'</td><td>'+revs.length+'</td><td style="color:var(--amber)">'+(avg!=='—'?'★ '+avg:'—')+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:'+rr+'%"></div></div><span style="font-size:11px;color:var(--text-muted)">'+rr+'%</span></div></td><td><div style="display:flex;gap:6px"><button class="btn btn-xs btn-primary" onclick="adminViewClient('+b.id+')">View Reviews</button><button class="btn btn-xs btn-instant" onclick="adminQuickAutoReply('+b.id+')">⚡ Auto</button><button class="btn btn-xs btn-danger" onclick="removeClient('+b.id+')">Remove</button></div></td></tr>';
   }).join('')+'</tbody></table>';
 }
+
 async function addClient(){
   var btn=$('addClientBtn');
   if(btn){btn.disabled=true;btn.textContent='Adding...';}
@@ -865,23 +894,21 @@ async function addClient(){
   var type=$('newBizType').value.trim();
   if(!name||!type){
     toast('Business name and type are required','error');
-    if(btn){btn.disabled=false;btn.textContent='➕ Add Client';}
+    if(btn){btn.disabled=false;btn.innerHTML='➕ Add Client';}
     return;
   }
-  var tone=$('newBizTone').value;
-  var fee=parseFloat($('newBizFee').value)||0;
+  var tone=$('newBizTone')?$('newBizTone').value:'professional and reassuring';
+  var fee=parseFloat($('newBizFee')?$('newBizFee').value:0)||0;
+  var notes=$('newBizNotes')?$('newBizNotes').value.trim():'';
   var reviewLink=$('newBizReviewLink')?$('newBizReviewLink').value.trim():'';
-  var notes=$('newBizNotes').value.trim();
+  var payload={name:name,type:type,tone:tone,monthly_fee:fee};
+  if(notes)payload.notes=notes;
+  if(reviewLink)payload.review_link=reviewLink;
   try{
-    var payload={name:name,type:type,tone:tone,monthly_fee:fee,notes:notes};
-    if(reviewLink)payload.review_link=reviewLink;
-    console.log('Inserting business:',payload);
     var r=await sb.from('businesses').insert(payload).select().single();
-    console.log('Insert result:',r);
     if(r.error){
-      console.error('Insert error:',r.error);
       toast('Error: '+r.error.message,'error');
-      if(btn){btn.disabled=false;btn.textContent='➕ Add Client';}
+      if(btn){btn.disabled=false;btn.innerHTML='➕ Add Client';}
       return;
     }
     businesses.push(r.data);
@@ -890,13 +917,26 @@ async function addClient(){
     logActivity('🏢','New client added',name);
     toast('✅ '+name+' added!','success');
     updateAdminStats();
-    await renderAdminClientsPage();
+    renderAdminClientsPage();
   }catch(e){
-    console.error('addClient exception:',e);
     toast('Error: '+e.message,'error');
   }
-  if(btn){btn.disabled=false;btn.textContent='➕ Add Client';}
+  if(btn){btn.disabled=false;btn.innerHTML='➕ Add Client';}
 }
+
+async function adminQuickAutoReply(bizId){
+  selectedBizId=bizId;
+  var pending=(allReviews[bizId]||[]).filter(function(r){return r.status==='new';});
+  if(!pending.length){toast('No pending reviews for this client','info');return;}
+  toast('Auto-replying to '+pending.length+' reviews...','info');
+  for(var i=0;i<pending.length;i++){
+    await adminGenReply(pending[i].id);
+    if(replies[pending[i].id])await adminPostReply(pending[i].id);
+  }
+  toast('Done! All reviews replied.','success');
+  renderAdminClientsPage();
+}
+
 async function removeClient(id){
   if(!confirm('Remove this client and all their reviews?'))return;
   var biz=businesses.find(function(b){return b.id===id;});
@@ -911,6 +951,7 @@ async function removeClient(id){
     updateAdminStats();renderAdminClientsPage();
   }catch(e){toast('Error: '+e.message,'error');}
 }
+
 function renderBilling(){
   updateAdminStats();
   var t=$('adminBillingTable');if(!t)return;
@@ -919,6 +960,7 @@ function renderBilling(){
     return '<tr><td><strong>'+escapeHtml(b.name)+'</strong><div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.type||'')+'</div></td><td style="font-weight:700;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee:'—')+'</td><td><span class="role-badge" style="'+(b.monthly_fee?'background:var(--primary-light);color:var(--primary-dark)':'background:var(--amber-light);color:#92400e')+'">'+(b.monthly_fee?'Active':'No fee')+'</span></td><td style="font-weight:600">'+(b.monthly_fee?'£'+(b.monthly_fee*12):'—')+'</td></tr>';
   }).join('')+'</tbody></table>';
 }
+
 async function renderAdminUsersPage(){
   try{
     var r=await sb.from('profiles').select('*');var users=r.data||[];
@@ -929,11 +971,14 @@ async function renderAdminUsersPage(){
     }).join('')+'</tbody></table>';
   }catch(e){setHTML('adminUsersTable','<div class="empty-state"><div class="empty-state-text">Error loading users</div></div>');}
 }
+
 async function toggleRole(id,current){
   try{await sb.from('profiles').update({role:current==='admin'?'client':'admin'}).eq('id',id);toast('Role updated','success');renderAdminUsersPage();}
   catch(e){toast('Error: '+e.message,'error');}
 }
+
 function renderSettings(){var k=localStorage.getItem('rb_key');if(k&&$('settingsApiKey'))$('settingsApiKey').value=k;updateAdminStats();}
+
 function saveApiKey(){
   var el=$('settingsApiKey');if(!el)return;var k=el.value.trim();
   if(!k){toast('Enter a key first','error');return;}
@@ -941,7 +986,9 @@ function saveApiKey(){
   if($('apiKeyInput')){$('apiKeyInput').value=k;onApiKeyChange();}
   toast('API key saved!','success');
 }
+
 function toggleKeyVisibility(){var f=$('settingsApiKey');if(f)f.type=f.type==='password'?'text':'password';}
+
 function onApiKeyChange(){
   var input=$('apiKeyInput');if(!input)return;
   var k=input.value.trim();
@@ -949,6 +996,7 @@ function onApiKeyChange(){
   if(k.indexOf('sk-ant')===0){if(badge)badge.style.display='flex';if(bar)bar.classList.add('connected');localStorage.setItem('rb_key',k);}
   else{if(badge)badge.style.display='none';if(bar)bar.classList.remove('connected');}
 }
+
 async function loadClientData(){
   try{
     var r=await sb.from('businesses').select('*').eq('owner_id',currentUser.id);
@@ -964,6 +1012,7 @@ async function loadClientData(){
     updateClientStats();
   }catch(e){console.error('loadClientData:',e);toast('Failed to load','error');}
 }
+
 async function refreshClientData(){
   toast('Refreshing...','info');
   await loadClientData();
@@ -973,6 +1022,7 @@ async function refreshClientData(){
   else if(p==='reviews')renderClientReviews();
   toast('Refreshed!','success');
 }
+
 function updateClientStats(){
   if(!clientBiz)return;
   var revs=allReviews[clientBiz.id]||[];
@@ -982,6 +1032,7 @@ function updateClientStats(){
   var badge=$('clientPendingBadge');
   if(badge){if(pending>0){badge.textContent=pending;badge.classList.remove('hidden');}else{badge.classList.add('hidden');}}
 }
+
 function renderClientDashboard(){
   if(!clientBiz){setHTML('clientDashReviews','<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No business assigned yet</div><div class="empty-state-text">Please contact your ReviewBot administrator to get set up.</div></div>');return;}
   updateClientStats();
@@ -989,6 +1040,7 @@ function renderClientDashboard(){
   if(!revs.length){setHTML('clientDashReviews','<div class="empty-state"><span class="empty-state-icon">🎉</span><div class="empty-state-title">All caught up!</div><div class="empty-state-text">No reviews waiting for a reply.</div></div>');return;}
   setHTML('clientDashReviews',buildReviewCards(revs.slice(0,5),clientBiz,'client'));
 }
+
 function renderClientReviews(){
   if(!clientBiz){setHTML('clientReviewsList','<div class="empty-state"><span class="empty-state-icon">🏢</span><div class="empty-state-title">No business assigned yet</div></div>');return;}
   var fe=$('clientReviewFilter');var filter=fe?fe.value:'all';
@@ -1005,6 +1057,7 @@ function renderClientReviews(){
   if(!revs.length){setHTML('clientReviewsList','<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-title">No reviews found</div></div>');return;}
   setHTML('clientReviewsList',buildReviewCards(revs,clientBiz,'client'));
 }
+
 async function clientGenReply(reviewId){
   if(!clientBiz){toast('No business','error');return;}
   loadingIds.add(reviewId);renderClientReviews();
@@ -1014,6 +1067,7 @@ async function clientGenReply(reviewId){
   loadingIds.delete(reviewId);renderClientReviews();
   if($('client-page-dashboard').classList.contains('active'))renderClientDashboard();
 }
+
 async function clientPostReply(reviewId){
   if(!clientBiz){toast('No business','error');return;}
   var rev=(allReviews[clientBiz.id]||[]).find(function(r){return r.id===reviewId;});
@@ -1034,7 +1088,9 @@ async function clientPostReply(reviewId){
     toast('Saved!','success');
   }catch(e){toast('Save failed','error');}
 }
+
 async function clientInstantReply(reviewId){await clientGenReply(reviewId);if(replies[reviewId])await clientPostReply(reviewId);}
+
 function handleOAuthReturn(mode){
   if(localStorage.getItem('g_pending')!=='true')return;
   localStorage.removeItem('g_pending');
@@ -1048,6 +1104,7 @@ function handleOAuthReturn(mode){
     else{clientGoTo('google');showLocationSelector('client');}
   },400);
 }
+
 async function connectGoogle(){
   var btnId=isAdmin?'adminGoogleBtn':'clientGoogleBtn';
   var btn=$(btnId);
@@ -1055,6 +1112,7 @@ async function connectGoogle(){
   try{var r=await fetch('/api/google-auth-url');var d=await r.json();window.location.href=d.url;}
   catch(e){toast('Error connecting','error');if(btn)btn.disabled=false;renderAdminGooglePage();renderClientGooglePage();}
 }
+
 async function showLocationSelector(mode){
   var wrapId=mode==='admin'?'adminLocationWrap':'clientLocationWrap';
   var wrap=$(wrapId);if(!wrap)return;
@@ -1085,6 +1143,7 @@ async function showLocationSelector(mode){
   window._locations=locations;
   wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>'+locations.map(function(l,i){var addr=l.storefrontAddress&&l.storefrontAddress.addressLines?l.storefrontAddress.addressLines[0]:'';return '<div class="location-item" onclick="selectLocation('+i+')"><div style="font-size:22px">🏢</div><div><div style="font-size:13px;font-weight:600">'+escapeHtml(l.title||l.name)+'</div><div style="font-size:12px;color:var(--text-secondary)">'+escapeHtml(addr)+'</div></div></div>';}).join('')+'</div>';
 }
+
 function selectLocation(idx){
   var loc=window._locations[idx];if(!loc)return;
   selectedLocation=loc;
@@ -1094,7 +1153,9 @@ function selectLocation(idx){
   toast('✅ Location selected: '+(loc.title||loc.name),'success');
   renderAdminGooglePage();renderClientGooglePage();
 }
+
 var GICON='<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>';
+
 function renderAdminGooglePage(){
   var btn=$('adminGoogleBtn');if(!btn)return;
   var autoCard=$('adminAutoReplyCard');
@@ -1111,6 +1172,7 @@ function renderAdminGooglePage(){
     setHTML('adminConnectedInfo','');
   }
 }
+
 function renderClientGooglePage(){
   var btn=$('clientGoogleBtn');if(!btn)return;
   if(googleToken&&selectedLocation){
@@ -1124,6 +1186,7 @@ function renderClientGooglePage(){
     setHTML('clientConnectedInfo','');
   }
 }
+
 function disconnectGoogle(){
   if(!confirm('Disconnect Google Business?'))return;
   googleToken=null;googleRefresh=null;googleAccounts=[];selectedLocation=null;
@@ -1131,6 +1194,7 @@ function disconnectGoogle(){
   renderAdminGooglePage();renderClientGooglePage();
   toast('Disconnected from Google','success');
 }
+
 async function fetchLiveReviews(){
   if(!googleToken||!selectedLocation){toast('Connect Google Business first','error');return;}
   var bizId=isAdmin?selectedBizId:(clientBiz?clientBiz.id:null);
@@ -1157,6 +1221,7 @@ async function fetchLiveReviews(){
     toast(newCount>0?'✅ '+newCount+' new reviews imported!':'Already up to date','success');
   }catch(e){toast('Error syncing: '+e.message,'error');}
 }
+
 function toggleAutoReply(){
   var cb=$('autoReplyToggle');if(!cb)return;
   var on=cb.checked;
