@@ -94,6 +94,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
 .btn-instant{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-color:#7c3aed;color:white}
 .btn-instant:hover{background:linear-gradient(135deg,#6d28d9,#5b21b6);transform:translateY(-1px);color:white;border-color:#6d28d9}
+.btn-email{background:linear-gradient(135deg,#0ea5e9,#0284c7);border-color:#0ea5e9;color:white}
+.btn-email:hover{background:linear-gradient(135deg,#0284c7,#0369a1);transform:translateY(-1px);color:white}
 .client-tabs-wrap{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .client-tab{padding:7px 16px;border-radius:99px;border:1.5px solid var(--border-strong);background:var(--white);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px}
 .client-tab:hover{border-color:var(--primary);color:var(--primary)}
@@ -185,6 +187,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .client-welcome-sub{font-size:13px;opacity:0.85;line-height:1.5}
 .client-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
 .mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;color:var(--text);font-size:18px}
+.email-log-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
+.email-log-row:last-child{border-bottom:none}
+.email-status-sent{color:var(--primary);font-weight:600;font-size:12px}
+.email-status-failed{color:var(--red);font-weight:600;font-size:12px}
 @media(max-width:1024px){.sidebar{transform:translateX(-100%);transition:transform 0.3s}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-menu-btn{display:flex}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
 @media(max-width:640px){.stats-grid{grid-template-columns:1fr}.client-stats-grid{grid-template-columns:1fr 1fr}.content{padding:16px}.topbar{padding:0 16px}}
 </style>
@@ -231,6 +237,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="nav-section-label">Main</div>
         <div class="nav-item active" data-page="dashboard"><span class="nav-item-icon">📊</span>Dashboard<span class="nav-item-badge hidden" id="adminPendingBadge">0</span></div>
         <div class="nav-item" data-page="reviews"><span class="nav-item-icon">⭐</span>All Reviews</div>
+        <div class="nav-item" data-page="email"><span class="nav-item-icon">📧</span>Review Requests</div>
         <div class="nav-item" data-page="activity"><span class="nav-item-icon">⚡</span>Activity Feed</div>
         <div class="nav-item" data-page="google"><span class="nav-item-icon">🔗</span>Google Business</div>
       </div>
@@ -293,7 +300,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="client-tabs-wrap" id="adminClientTabs"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
           <div><div style="font-size:15px;font-weight:700" id="adminReviewsTitle">Reviews</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="adminReviewsSub"></div></div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <select class="form-select" style="width:auto;padding:6px 10px;font-size:12px" id="adminReviewFilter" onchange="renderAdminReviews()">
               <option value="all">All reviews</option>
               <option value="new">🔔 Pending</option>
@@ -304,11 +311,38 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
               <option value="2">⭐⭐ 2 star</option>
               <option value="1">⭐ 1 star</option>
             </select>
-            <button class="btn btn-sm btn-instant" onclick="autoRespondAll()" id="adminAutoBtn">⚡ Auto-reply all pending</button>
+            <button class="btn btn-sm btn-instant" onclick="autoRespondAll()">⚡ Auto-reply all</button>
             <button class="btn btn-sm" onclick="fetchLiveReviews()" id="adminFetchBtn" style="display:none">🔄 Sync Google</button>
           </div>
         </div>
         <div id="adminReviewsList"></div>
+      </div>
+
+      <div class="page" id="admin-page-email">
+        <div class="section-card">
+          <div class="section-card-title">📧 Send Review Request Email</div>
+          <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:20px;font-size:13px;color:#1e40af;line-height:1.6">
+            <strong>How it works:</strong> Enter a customer's name and email after completing a job. They'll receive a branded email asking them to leave a Google review. All emails include an unsubscribe link.
+          </div>
+          <div class="form-grid">
+            <div class="form-group-inner"><label class="form-label">Select Business *</label>
+              <select class="form-select" id="emailBizSelect"><option value="">— Select a client —</option></select>
+            </div>
+            <div class="form-group-inner"><label class="form-label">Customer Name *</label><input class="form-input" id="emailCustomerName" placeholder="e.g. John Smith"></div>
+            <div class="form-group-inner full"><label class="form-label">Customer Email *</label><input class="form-input" id="emailCustomerEmail" type="email" placeholder="customer@example.com"></div>
+          </div>
+          <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--border)">
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px">Email preview</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6" id="emailPreview">Select a business to see the email preview.</div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-email" id="sendEmailBtn" onclick="sendReviewEmail()">📧 Send Review Request</button>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">Sent Emails <span id="emailLogCount" style="font-size:12px;font-weight:500;color:var(--text-muted)"></span></div>
+          <div id="emailLog"></div>
+        </div>
       </div>
 
       <div class="page" id="admin-page-activity">
@@ -329,7 +363,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="section-card" id="adminAutoReplyCard" style="display:none">
           <div class="section-card-title">Auto-reply Settings</div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0">
-            <div><div style="font-size:14px;font-weight:600">⚡ Auto-reply new reviews</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically post AI replies within minutes of a new review</div></div>
+            <div><div style="font-size:14px;font-weight:600">⚡ Auto-reply new reviews</div><div style="font-size:12px;color:var(--text-secondary);margin-top:3px">Automatically post AI replies within minutes</div></div>
             <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer">
               <input type="checkbox" id="autoReplyToggle" style="opacity:0;width:0;height:0" onchange="toggleAutoReply()">
               <span id="toggleSlider" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:26px;transition:0.3s"><span style="position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></span></span>
@@ -385,16 +419,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
       <div class="page" id="admin-page-settings">
         <div class="section-card">
-          <div class="section-card-title">API Key Settings</div>
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Your Anthropic API key. Clients never see this — they use the server key automatically.</p>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <input class="form-input" id="settingsApiKey" type="password" placeholder="sk-ant-api03-..." style="max-width:440px">
-            <button class="btn btn-primary" onclick="saveApiKey()">Save</button>
-            <button class="btn btn-ghost" onclick="toggleKeyVisibility()">👁 Show/Hide</button>
+          <div class="section-card-title">API Keys</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6">Set your Anthropic API key. Best practice is to set both in Railway environment variables.</p>
+          <div style="margin-bottom:16px">
+            <label class="form-label" style="margin-bottom:8px;display:block">Anthropic API Key</label>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <input class="form-input" id="settingsApiKey" type="password" placeholder="sk-ant-api03-..." style="max-width:440px">
+              <button class="btn btn-primary" onclick="saveApiKey()">Save</button>
+              <button class="btn btn-ghost" onclick="toggleKeyVisibility()">👁 Show/Hide</button>
+            </div>
           </div>
-          <div style="margin-top:16px;padding:14px;background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg)">
-            <div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">💡 Best practice — set in Railway</div>
-            <div style="font-size:13px;color:var(--primary-dark);line-height:1.6">Add <code style="background:white;padding:2px 6px;border-radius:4px">ANTHROPIC_API_KEY</code> as a Railway environment variable.</div>
+          <div style="padding:14px;background:var(--primary-50);border:1px solid var(--primary);border-radius:var(--radius-lg)">
+            <div style="font-size:13px;font-weight:600;color:var(--primary-dark);margin-bottom:4px">💡 Railway environment variables</div>
+            <div style="font-size:13px;color:var(--primary-dark);line-height:1.7">Set <code style="background:white;padding:2px 6px;border-radius:4px">ANTHROPIC_API_KEY</code> and <code style="background:white;padding:2px 6px;border-radius:4px">RESEND_API_KEY</code> in Railway for full functionality.</div>
           </div>
         </div>
         <div class="section-card">
@@ -501,7 +538,9 @@ var currentUser=null,currentProfile=null,isAdmin=false;
 var businesses=[],allReviews={},selectedBizId=null,replies={},loadingIds=new Set();
 var googleToken=null,googleRefresh=null,googleAccounts=[],selectedLocation=null;
 var activityLog=[],clientBiz=null,appInitialized=false;
+var emailLog=[];
 try{activityLog=JSON.parse(localStorage.getItem('rb_activity')||'[]');}catch(e){activityLog=[];}
+try{emailLog=JSON.parse(localStorage.getItem('rb_emails')||'[]');}catch(e){emailLog=[];}
 (function(){if(localStorage.getItem('g_just_connected')==='true'){localStorage.removeItem('g_just_connected');localStorage.setItem('g_pending','true');}})();
 function $(id){return document.getElementById(id);}
 function setText(id,t){var e=$(id);if(e)e.textContent=t;}
@@ -642,7 +681,7 @@ async function initApp(){
   el.classList.add('active');
   document.querySelectorAll('#adminShell .page').forEach(function(p){p.classList.remove('active');});
   var pg=$('admin-page-'+page);if(pg)pg.classList.add('active');
-  var titles={dashboard:'Dashboard',reviews:'All Reviews',activity:'Activity Feed',google:'Google Business',clients:'Clients',billing:'Billing',users:'Users',settings:'Settings'};
+  var titles={dashboard:'Dashboard',reviews:'All Reviews',email:'Review Requests',activity:'Activity Feed',google:'Google Business',clients:'Clients',billing:'Billing',users:'Users',settings:'Settings'};
   setText('adminPageTitle',titles[page]||page);
   $('adminSidebar').classList.remove('open');
   if(page==='reviews')renderAdminReviewsPage();
@@ -653,6 +692,7 @@ async function initApp(){
   else if(page==='activity')renderActivityFull();
   else if(page==='billing')renderBilling();
   else if(page==='settings')renderSettings();
+  else if(page==='email')renderEmailPage();
 }
 function adminGoTo(page){var el=document.querySelector('#adminShell .nav-item[data-page="'+page+'"]');if(el)adminNavClick(el);}
 function clientNavClick(el){
@@ -697,6 +737,7 @@ async function refreshAllData(){
   else if(ap==='reviews')renderAdminReviewsPage();
   else if(ap==='clients')renderAdminClientsPage();
   else if(ap==='billing')renderBilling();
+  else if(ap==='email')renderEmailPage();
   toast('Refreshed!','success');
 }
 
@@ -760,8 +801,7 @@ function renderAdminReviewsPage(){
   }
   if(!selectedBizId||!businesses.find(function(b){return b.id===selectedBizId;}))selectedBizId=businesses[0].id;
   var fb=$('adminFetchBtn');if(fb)fb.style.display=(googleToken&&selectedLocation)?'flex':'none';
-  renderAdminClientTabs();
-  renderAdminReviews();
+  renderAdminClientTabs();renderAdminReviews();
 }
 
 function renderAdminClientTabs(){
@@ -883,7 +923,7 @@ function renderAdminClientsPage(){
     var revs=allReviews[b.id]||[];
     var avg=revs.length?(revs.reduce(function(s,r){return s+(r.stars||0);},0)/revs.length).toFixed(1):'—';
     var rr=revs.length?Math.round(revs.filter(function(r){return r.status==='responded';}).length/revs.length*100):0;
-    return '<tr><td><strong>'+escapeHtml(b.name)+'</strong>'+(b.notes?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.notes)+'</div>':'')+'</td><td style="color:var(--text-secondary)">'+escapeHtml(b.type||'')+'</td><td style="font-weight:600;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee+'/mo':'—')+'</td><td>'+revs.length+'</td><td style="color:var(--amber)">'+(avg!=='—'?'★ '+avg:'—')+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:'+rr+'%"></div></div><span style="font-size:11px;color:var(--text-muted)">'+rr+'%</span></div></td><td><div style="display:flex;gap:6px"><button class="btn btn-xs btn-primary" onclick="adminViewClient('+b.id+')">View Reviews</button><button class="btn btn-xs btn-instant" onclick="adminQuickAutoReply('+b.id+')">⚡ Auto</button><button class="btn btn-xs btn-danger" onclick="removeClient('+b.id+')">Remove</button></div></td></tr>';
+    return '<tr><td><strong>'+escapeHtml(b.name)+'</strong>'+(b.notes?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(b.notes)+'</div>':'')+'</td><td style="color:var(--text-secondary)">'+escapeHtml(b.type||'')+'</td><td style="font-weight:600;color:var(--primary)">'+(b.monthly_fee?'£'+b.monthly_fee+'/mo':'—')+'</td><td>'+revs.length+'</td><td style="color:var(--amber)">'+(avg!=='—'?'★ '+avg:'—')+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;height:6px"><div class="progress-fill" style="width:'+rr+'%"></div></div><span style="font-size:11px;color:var(--text-muted)">'+rr+'%</span></div></td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-xs btn-primary" onclick="adminViewClient('+b.id+')">Reviews</button><button class="btn btn-xs btn-email" onclick="quickEmail('+b.id+')">📧 Email</button><button class="btn btn-xs btn-instant" onclick="adminQuickAutoReply('+b.id+')">⚡ Auto</button><button class="btn btn-xs btn-danger" onclick="removeClient('+b.id+')">Remove</button></div></td></tr>';
   }).join('')+'</tbody></table>';
 }
 
@@ -933,8 +973,16 @@ async function adminQuickAutoReply(bizId){
     await adminGenReply(pending[i].id);
     if(replies[pending[i].id])await adminPostReply(pending[i].id);
   }
-  toast('Done! All reviews replied.','success');
+  toast('Done!','success');
   renderAdminClientsPage();
+}
+
+function quickEmail(bizId){
+  adminGoTo('email');
+  setTimeout(function(){
+    var sel=$('emailBizSelect');
+    if(sel){sel.value=bizId;updateEmailPreview();}
+  },100);
 }
 
 async function removeClient(id){
@@ -978,7 +1026,6 @@ async function toggleRole(id,current){
 }
 
 function renderSettings(){var k=localStorage.getItem('rb_key');if(k&&$('settingsApiKey'))$('settingsApiKey').value=k;updateAdminStats();}
-
 function saveApiKey(){
   var el=$('settingsApiKey');if(!el)return;var k=el.value.trim();
   if(!k){toast('Enter a key first','error');return;}
@@ -986,15 +1033,92 @@ function saveApiKey(){
   if($('apiKeyInput')){$('apiKeyInput').value=k;onApiKeyChange();}
   toast('API key saved!','success');
 }
-
 function toggleKeyVisibility(){var f=$('settingsApiKey');if(f)f.type=f.type==='password'?'text':'password';}
-
 function onApiKeyChange(){
   var input=$('apiKeyInput');if(!input)return;
   var k=input.value.trim();
   var bar=$('apiKeyBar'),badge=$('apiConnectedBadge');
   if(k.indexOf('sk-ant')===0){if(badge)badge.style.display='flex';if(bar)bar.classList.add('connected');localStorage.setItem('rb_key',k);}
   else{if(badge)badge.style.display='none';if(bar)bar.classList.remove('connected');}
+}
+
+function renderEmailPage(){
+  var sel=$('emailBizSelect');
+  if(sel){
+    sel.innerHTML='<option value="">— Select a client —</option>'+businesses.map(function(b){return '<option value="'+b.id+'">'+escapeHtml(b.name)+'</option>';}).join('');
+    sel.onchange=updateEmailPreview;
+  }
+  renderEmailLog();
+}
+
+function updateEmailPreview(){
+  var sel=$('emailBizSelect');
+  var prev=$('emailPreview');
+  if(!sel||!prev)return;
+  var bizId=parseInt(sel.value);
+  var biz=businesses.find(function(b){return b.id===bizId;});
+  if(!biz){prev.textContent='Select a business to see the email preview.';return;}
+  var name=$('emailCustomerName')?$('emailCustomerName').value.trim()||'[Customer Name]':'[Customer Name]';
+  var firstName=name.split(' ')[0];
+  var reviewLink=biz.review_link||'https://g.page/r/[your-review-link]';
+  prev.innerHTML='<strong>To:</strong> [customer@email.com]<br><strong>Subject:</strong> How was your experience with '+escapeHtml(biz.name)+'?<br><br>'+'<strong>Body:</strong><br>Hi '+escapeHtml(firstName)+' 👋<br><br>We really hope you enjoyed your experience with us at '+escapeHtml(biz.name)+'. Would you mind taking 60 seconds to leave us a Google review?<br><br>👉 <a href="'+escapeHtml(reviewLink)+'" target="_blank">Leave a Google Review</a><br><br>Takes less than a minute and means the world to us!<br><br><em style="color:var(--text-muted);font-size:12px">Includes unsubscribe link in footer</em>';
+}
+
+async function sendReviewEmail(){
+  var btn=$('sendEmailBtn');
+  var bizId=parseInt($('emailBizSelect')?$('emailBizSelect').value:'');
+  var customerName=$('emailCustomerName')?$('emailCustomerName').value.trim():'';
+  var customerEmail=$('emailCustomerEmail')?$('emailCustomerEmail').value.trim():'';
+  if(!bizId||!customerName||!customerEmail){toast('Please fill in all fields','error');return;}
+  if(!customerEmail.includes('@')){toast('Please enter a valid email address','error');return;}
+  var biz=businesses.find(function(b){return b.id===bizId;});
+  if(!biz){toast('Business not found','error');return;}
+  if(btn){btn.disabled=true;btn.textContent='Sending...';}
+  try{
+    var res=await fetch('/api/send-review-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        customer_name:customerName,
+        customer_email:customerEmail,
+        business_name:biz.name,
+        review_link:biz.review_link||'',
+        business_id:biz.id
+      })
+    });
+    var d=await res.json();
+    if(d.error){
+      var errMsg=typeof d.error==='string'?d.error:JSON.stringify(d.error);
+      toast('Error: '+errMsg,'error');
+      if(btn){btn.disabled=false;btn.innerHTML='📧 Send Review Request';}
+      return;
+    }
+    var entry={id:Date.now(),customer_name:customerName,customer_email:customerEmail,business_name:biz.name,business_id:bizId,sent_at:Date.now(),status:'sent'};
+    emailLog.unshift(entry);
+    if(emailLog.length>200)emailLog.length=200;
+    try{localStorage.setItem('rb_emails',JSON.stringify(emailLog));}catch(e){}
+    logActivity('📧','Review request sent to '+customerName,biz.name);
+    toast('✅ Email sent to '+customerName+'!','success');
+    if($('emailCustomerName'))$('emailCustomerName').value='';
+    if($('emailCustomerEmail'))$('emailCustomerEmail').value='';
+    renderEmailLog();
+  }catch(e){
+    toast('Error: '+e.message,'error');
+  }
+  if(btn){btn.disabled=false;btn.innerHTML='📧 Send Review Request';}
+}
+
+function renderEmailLog(){
+  var el=$('emailLog');if(!el)return;
+  var countEl=$('emailLogCount');
+  if(countEl)countEl.textContent='('+emailLog.length+' sent)';
+  if(!emailLog.length){
+    el.innerHTML='<div class="empty-state" style="padding:40px"><span class="empty-state-icon">📧</span><div class="empty-state-title">No emails sent yet</div><div class="empty-state-text">Send your first review request above.</div></div>';
+    return;
+  }
+  el.innerHTML='<table class="data-table"><thead><tr><th>Customer</th><th>Business</th><th>Sent</th><th>Status</th></tr></thead><tbody>'+emailLog.slice(0,50).map(function(e){
+    return '<tr><td><strong>'+escapeHtml(e.customer_name||'')+'</strong><div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(e.customer_email||'')+'</div></td><td>'+escapeHtml(e.business_name||'')+'</td><td style="font-size:12px;color:var(--text-muted)">'+timeAgo(e.sent_at)+'</td><td><span class="email-status-'+e.status+'">'+escapeHtml(e.status||'')+'</span></td></tr>';
+  }).join('')+'</tbody></table>';
 }
 
 async function loadClientData(){
@@ -1139,7 +1263,7 @@ async function showLocationSelector(mode){
       }
     }catch(e){}
   }
-  if(!locations.length){wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found yet</div><p style="font-size:13px;color:#78350f;line-height:1.6;margin-top:6px">Google Business Profile API approval is still pending (2-5 days). Once approved your locations will appear here automatically.</p></div>';return;}
+  if(!locations.length){wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">⚠ No locations found yet</div><p style="font-size:13px;color:#78350f;line-height:1.6;margin-top:6px">Google Business Profile API approval still pending. Once approved locations appear here automatically.</p></div>';return;}
   window._locations=locations;
   wrap.innerHTML='<div class="location-select-wrap"><div class="location-select-title">Select your business location:</div>'+locations.map(function(l,i){var addr=l.storefrontAddress&&l.storefrontAddress.addressLines?l.storefrontAddress.addressLines[0]:'';return '<div class="location-item" onclick="selectLocation('+i+')"><div style="font-size:22px">🏢</div><div><div style="font-size:13px;font-weight:600">'+escapeHtml(l.title||l.name)+'</div><div style="font-size:12px;color:var(--text-secondary)">'+escapeHtml(addr)+'</div></div></div>';}).join('')+'</div>';
 }
